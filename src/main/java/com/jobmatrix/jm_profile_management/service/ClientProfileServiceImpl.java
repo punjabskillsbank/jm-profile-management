@@ -1,7 +1,5 @@
 package com.jobmatrix.jm_profile_management.service;
 
-
-
 import com.jobmatrix.jm_profile_management.dto.ClientProfileDTO;
 import com.jobmatrix.jm_profile_management.entity.ClientEntity;
 import com.jobmatrix.jm_profile_management.repository.ClientProfileRepository;
