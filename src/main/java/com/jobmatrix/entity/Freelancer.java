@@ -2,8 +2,6 @@ package com.jobmatrix.entity;
 
 
 import com.common.enums.ProfileStatus;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
