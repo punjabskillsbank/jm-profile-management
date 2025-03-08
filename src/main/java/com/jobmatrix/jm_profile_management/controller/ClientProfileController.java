@@ -1,6 +1,5 @@
 package com.jobmatrix.jm_profile_management.controller;
 
-
 import com.jobmatrix.jm_profile_management.dto.ClientProfileDTO;
 import com.jobmatrix.jm_profile_management.entity.ClientEntity;
 import com.jobmatrix.jm_profile_management.service.ClientProfileService;
@@ -24,6 +23,7 @@ public class ClientProfileController {
     @PostMapping
     public ResponseEntity<ClientEntity> createClientProfile(@Valid @RequestBody ClientProfileDTO dto){
         ClientEntity savedClient = service.saveClientProfile(dto);
+        System.out.println("Client created successfully");
         return new ResponseEntity<>(savedClient, HttpStatus.CREATED);
     }
 
