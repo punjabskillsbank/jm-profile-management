@@ -3,6 +3,7 @@ package com.jobmatrix.jm_profile_management.service;
 import com.jobmatrix.jm_profile_management.dto.ClientProfileDTO;
 import com.jobmatrix.jm_profile_management.entity.ClientEntity;
 import com.jobmatrix.jm_profile_management.repository.ClientProfileRepository;
+import com.jobmatrix.jm_profile_management.serviceImpl.ClientProfileServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

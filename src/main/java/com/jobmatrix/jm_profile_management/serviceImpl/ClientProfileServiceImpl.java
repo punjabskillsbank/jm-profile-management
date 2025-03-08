@@ -1,18 +1,18 @@
-package com.jobmatrix.jm_profile_management.service;
+package com.jobmatrix.jm_profile_management.serviceImpl;
 
 import com.jobmatrix.jm_profile_management.dto.ClientProfileDTO;
 import com.jobmatrix.jm_profile_management.entity.ClientEntity;
 import com.jobmatrix.jm_profile_management.repository.ClientProfileRepository;
+import com.jobmatrix.jm_profile_management.service.ClientProfileService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 
 @Service
-public class ClientProfileServiceImpl implements ClientProfileService{
+public class ClientProfileServiceImpl implements ClientProfileService {
 
     private final ClientProfileRepository clientProfileRepository;
     private final ModelMapper modelMapper;
