@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/freelancer")
+@tag(name = "Freelancer Profile Controller", description = "APIs to manage freelancer profile")
 @RequiredArgsConstructor
 public class FreelancerProfileController {
 
