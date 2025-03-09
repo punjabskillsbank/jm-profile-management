@@ -1,6 +1,6 @@
-package com.jobmatrix.jm_profile_management.repository;
+package com.jobmatrix.repository;
 
-import com.jobmatrix.jm_profile_management.entity.ClientEntity;
+import com.jobmatrix.entity.ClientEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

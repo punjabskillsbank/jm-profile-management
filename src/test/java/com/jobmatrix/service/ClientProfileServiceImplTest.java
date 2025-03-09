@@ -1,9 +1,9 @@
-package com.jobmatrix.jm_profile_management.service;
+package com.jobmatrix.service;
 
-import com.jobmatrix.jm_profile_management.dto.ClientProfileDTO;
-import com.jobmatrix.jm_profile_management.entity.ClientEntity;
-import com.jobmatrix.jm_profile_management.repository.ClientProfileRepository;
-import com.jobmatrix.jm_profile_management.serviceImpl.ClientProfileServiceImpl;
+import com.jobmatrix.dto.ClientProfileDTO;
+import com.jobmatrix.entity.ClientEntity;
+import com.jobmatrix.repository.ClientProfileRepository;
+import com.jobmatrix.serviceimpl.ClientProfileServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

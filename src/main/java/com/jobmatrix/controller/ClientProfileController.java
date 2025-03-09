@@ -1,8 +1,8 @@
-package com.jobmatrix.jm_profile_management.controller;
+package com.jobmatrix.controller;
 
-import com.jobmatrix.jm_profile_management.dto.ClientProfileDTO;
-import com.jobmatrix.jm_profile_management.entity.ClientEntity;
-import com.jobmatrix.jm_profile_management.service.ClientProfileService;
+import com.jobmatrix.entity.ClientEntity;
+import com.jobmatrix.dto.ClientProfileDTO;
+import com.jobmatrix.service.ClientProfileService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

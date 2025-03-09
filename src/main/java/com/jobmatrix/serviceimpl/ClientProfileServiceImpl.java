@@ -1,9 +1,9 @@
-package com.jobmatrix.jm_profile_management.serviceImpl;
+package com.jobmatrix.serviceimpl;
 
-import com.jobmatrix.jm_profile_management.dto.ClientProfileDTO;
-import com.jobmatrix.jm_profile_management.entity.ClientEntity;
-import com.jobmatrix.jm_profile_management.repository.ClientProfileRepository;
-import com.jobmatrix.jm_profile_management.service.ClientProfileService;
+import com.jobmatrix.dto.ClientProfileDTO;
+import com.jobmatrix.entity.ClientEntity;
+import com.jobmatrix.repository.ClientProfileRepository;
+import com.jobmatrix.service.ClientProfileService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;

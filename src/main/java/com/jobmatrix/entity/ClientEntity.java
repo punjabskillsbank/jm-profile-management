@@ -1,4 +1,4 @@
-package com.jobmatrix.jm_profile_management.entity;
+package com.jobmatrix.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

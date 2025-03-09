@@ -1,4 +1,4 @@
-package com.jobmatrix.jm_profile_management.exceptionHandling;
+package com.jobmatrix.exceptionHandling;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

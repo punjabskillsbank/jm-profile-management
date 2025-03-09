@@ -1,4 +1,4 @@
-package com.jobmatrix.jm_profile_management.dto;
+package com.jobmatrix.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;

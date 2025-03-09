@@ -1,9 +1,9 @@
-package com.jobmatrix.jm_profile_management.controller;
+package com.jobmatrix.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jobmatrix.jm_profile_management.dto.ClientProfileDTO;
-import com.jobmatrix.jm_profile_management.entity.ClientEntity;
-import com.jobmatrix.jm_profile_management.service.ClientProfileService;
+import com.jobmatrix.dto.ClientProfileDTO;
+import com.jobmatrix.entity.ClientEntity;
+import com.jobmatrix.service.ClientProfileService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;

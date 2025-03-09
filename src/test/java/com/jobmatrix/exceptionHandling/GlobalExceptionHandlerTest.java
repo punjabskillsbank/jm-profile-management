@@ -1,9 +1,9 @@
-package com.jobmatrix.jm_profile_management.exceptionHandling;
+package com.jobmatrix.exceptionHandling;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jobmatrix.jm_profile_management.controller.ClientProfileController;
-import com.jobmatrix.jm_profile_management.dto.ClientProfileDTO;
-import com.jobmatrix.jm_profile_management.service.ClientProfileService;
+import com.jobmatrix.controller.ClientProfileController;
+import com.jobmatrix.dto.ClientProfileDTO;
+import com.jobmatrix.service.ClientProfileService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
