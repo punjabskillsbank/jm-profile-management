@@ -32,7 +32,7 @@ class ClientProfileDTOTest {
     @Test
     void testValidClientProfileDTO() {
         ClientProfileDTO client = new ClientProfileDTO();
-        client.setUser_id(UUID.randomUUID()); // Assigns a random valid UUID.
+        client.setUserId(UUID.randomUUID()); // Assigns a random valid UUID.
         client.setPhoneNumber("+919876543210"); // Valid phone number.
         client.setBio("This is a sample bio."); // Valid bio.
         client.setCompanyName("Tech Innovations"); // Valid company name.
@@ -50,7 +50,7 @@ class ClientProfileDTOTest {
     @Test
     void testNullUserId(){
         ClientProfileDTO clientProfileDTO = new ClientProfileDTO();
-        clientProfileDTO.setUser_id(null);
+        clientProfileDTO.setUserId(null);
         clientProfileDTO.setCompanyName("ABC");
 
         Set<ConstraintViolation<ClientProfileDTO>> violations = validator.validate(clientProfileDTO);
@@ -61,7 +61,7 @@ class ClientProfileDTOTest {
     @Test
     void testInvalidPhoneNumber(){
         ClientProfileDTO clientProfileDTO = new ClientProfileDTO();
-        clientProfileDTO.setUser_id(UUID.randomUUID());
+        clientProfileDTO.setUserId(UUID.randomUUID());
         clientProfileDTO.setCompanyName("ABC");
         clientProfileDTO.setPhoneNumber("12345"); // Invalid phone number.
 
@@ -73,7 +73,7 @@ class ClientProfileDTOTest {
     @Test
     void testBlankCompanyName(){
         ClientProfileDTO clientProfileDTO = new ClientProfileDTO();
-        clientProfileDTO.setUser_id(UUID.randomUUID());
+        clientProfileDTO.setUserId(UUID.randomUUID());
         clientProfileDTO.setCompanyName(""); // Blank company name.
 
         Set<ConstraintViolation<ClientProfileDTO>> violations = validator.validate(clientProfileDTO);
@@ -84,7 +84,7 @@ class ClientProfileDTOTest {
     @Test
     void testLongBio(){
         ClientProfileDTO clientProfileDTO = new ClientProfileDTO();
-        clientProfileDTO.setUser_id(UUID.randomUUID());
+        clientProfileDTO.setUserId(UUID.randomUUID());
         clientProfileDTO.setCompanyName("ABC");
         clientProfileDTO.setBio("A".repeat(501)); //Exceeds 500 characters.
 
@@ -96,7 +96,7 @@ class ClientProfileDTOTest {
     @Test
     void testInvalidCompanySize(){
         ClientProfileDTO clientProfileDTO = new ClientProfileDTO();
-        clientProfileDTO.setUser_id(UUID.randomUUID());
+        clientProfileDTO.setUserId(UUID.randomUUID());
         clientProfileDTO.setCompanyName("ABC");
         clientProfileDTO.setCompanySize("0-10"); // Invalid format.
 
@@ -108,7 +108,7 @@ class ClientProfileDTOTest {
     @Test
     void testInvalidPostalCode(){
         ClientProfileDTO clientProfileDTO = new ClientProfileDTO();
-        clientProfileDTO.setUser_id(UUID.randomUUID());
+        clientProfileDTO.setUserId(UUID.randomUUID());
         clientProfileDTO.setCompanyName("ABC");
         clientProfileDTO.setPostalCode("1234");
 

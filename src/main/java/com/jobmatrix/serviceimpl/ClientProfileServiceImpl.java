@@ -25,7 +25,7 @@ public class ClientProfileServiceImpl implements ClientProfileService {
     @Transactional
     public ClientEntity saveClientProfile(ClientProfileDTO dto){
 
-        if(dto.getUser_id() == null){
+        if(dto.getUserId() == null){
             throw new IllegalArgumentException("user_id cannot be null. It must be linked to a user");
         }
         ClientEntity client = modelMapper.map(dto, ClientEntity.class);

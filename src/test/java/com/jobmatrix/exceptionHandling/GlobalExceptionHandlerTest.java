@@ -32,7 +32,7 @@ class GlobalExceptionHandlerTest {
 
         //Create an invalid ClientProfileDTO object with missing fields
         ClientProfileDTO InvalidClientProfileDTO = new ClientProfileDTO();
-        InvalidClientProfileDTO.setUser_id(UUID.randomUUID());
+        InvalidClientProfileDTO.setUserId(UUID.randomUUID());
         InvalidClientProfileDTO.setPhoneNumber("12345");
         InvalidClientProfileDTO.setBio("Sample Bio");
         InvalidClientProfileDTO.setProfilePhotoURL("image.jpg");

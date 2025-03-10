@@ -35,7 +35,7 @@ class ClientProfileControllerTest {
     void createClientProfileTest() throws Exception {
 
         ClientProfileDTO clientProfileDTO = new ClientProfileDTO();
-        clientProfileDTO.setUser_id(userId);
+        clientProfileDTO.setUserId(userId);
         clientProfileDTO.setPhoneNumber("+919876543210");
         clientProfileDTO.setBio("Experienced client");
         clientProfileDTO.setProfilePhotoURL("https://example.com/profile.jpg");
@@ -50,7 +50,7 @@ class ClientProfileControllerTest {
         clientProfileDTO.setAddress("123, MG Road, Bangalore, Karnataka, India");
 
         ClientEntity clientEntity = new ClientEntity();
-        clientEntity.setUser_id(userId);
+        clientEntity.setUserId(userId);
         clientEntity.setPhoneNumber("+919876543210");
         clientEntity.setBio("Experienced client");
         clientEntity.setProfilePhotoURL("https://example.com/profile.jpg");
@@ -77,7 +77,7 @@ class ClientProfileControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(clientProfileDTO)))
                 .andExpect(MockMvcResultMatchers.status().isCreated()) // Expect 201 Created
-                .andExpect(MockMvcResultMatchers.jsonPath("$.user_id").value(userId.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.userId").value(userId.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.phoneNumber").value("+919876543210"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.bio").value("Experienced client"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.profilePhotoURL").value("https://example.com/profile.jpg"))

@@ -37,7 +37,7 @@ class ClientProfileServiceImplTest {
         UUID userId = UUID.randomUUID();
 
         clientProfileDTO = new ClientProfileDTO();
-        clientProfileDTO.setUser_id(userId);
+        clientProfileDTO.setUserId(userId);
         clientProfileDTO.setPhoneNumber("+919876543210");
         clientProfileDTO.setBio("Sample Bio");
         clientProfileDTO.setCompanyName("ABC");
@@ -45,7 +45,7 @@ class ClientProfileServiceImplTest {
         clientProfileDTO.setPostalCode("141003");
 
         clientEntity = new ClientEntity();
-        clientEntity.setUser_id(userId);
+        clientEntity.setUserId(userId);
         clientEntity.setPhoneNumber("+919876543210");
         clientEntity.setBio("Sample Bio");
         clientEntity.setCompanyName("ABC");
@@ -62,7 +62,7 @@ class ClientProfileServiceImplTest {
         ClientEntity savedClientEntity = clientProfileService.saveClientProfile(clientProfileDTO);
 
         assertNotNull(savedClientEntity);
-        assertEquals(clientProfileDTO.getUser_id(), savedClientEntity.getUser_id());
+        assertEquals(clientProfileDTO.getUserId(), savedClientEntity.getUserId());
         assertEquals(clientProfileDTO.getPhoneNumber(), savedClientEntity.getPhoneNumber());
         assertEquals(clientProfileDTO.getBio(), savedClientEntity.getBio());
         assertEquals(clientProfileDTO.getCompanyName(), savedClientEntity.getCompanyName());
@@ -76,13 +76,13 @@ class ClientProfileServiceImplTest {
     @Test
     void saveClientProfile_user_idShouldNotBeNull(){
 
-        clientProfileDTO.setUser_id(null);
+        clientProfileDTO.setUserId(null);
 
        IllegalArgumentException exception =  assertThrows(IllegalArgumentException.class, ()->
                 clientProfileService.saveClientProfile(clientProfileDTO),
-                "sub cannot be null. It must be linked to a user");
+                "user_id cannot be null. It must be linked to a user");
 
-       assertEquals("sub cannot be null. It must be linked to a user", exception.getMessage());
+       assertEquals("user_id cannot be null. It must be linked to a user", exception.getMessage());
 
        verify(clientProfileRepository, never()).save(any(ClientEntity.class));
 

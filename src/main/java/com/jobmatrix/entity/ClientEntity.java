@@ -19,7 +19,7 @@ public class ClientEntity {
 
     @Id
     @Column(name = "user_id", nullable = false, updatable = false)
-    private UUID user_id;
+    private UUID userId;
 
     @Column(name ="phone_number")
     private String phoneNumber;
