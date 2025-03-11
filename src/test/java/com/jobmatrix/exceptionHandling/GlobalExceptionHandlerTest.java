@@ -2,7 +2,7 @@ package com.jobmatrix.exceptionHandling;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jobmatrix.controller.ClientProfileController;
-import com.jobmatrix.dto.ClientProfileDTO;
+import com.jobmatrix.dto.ClientDTO;
 import com.jobmatrix.service.ClientProfileService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +30,8 @@ class GlobalExceptionHandlerTest {
     @Test
     void shouldReturnValidationErrors_whenInvalidInputGiven() throws Exception {
 
-        //Create an invalid ClientProfileDTO object with missing fields
-        ClientProfileDTO InvalidClientProfileDTO = new ClientProfileDTO();
+        //Create an invalid ClientDTO object with missing fields
+        ClientDTO InvalidClientProfileDTO = new ClientDTO();
         InvalidClientProfileDTO.setUserId(UUID.randomUUID());
         InvalidClientProfileDTO.setPhoneNumber("12345");
         InvalidClientProfileDTO.setBio("Sample Bio");

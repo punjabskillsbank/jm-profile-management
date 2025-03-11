@@ -2,13 +2,15 @@ package com.jobmatrix.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
 
 @Getter
 @Setter
-public class ClientProfileDTO {
+@NoArgsConstructor
+public class ClientDTO {
 
     @NotNull(message = "user_id cannot be null. It must be linked to a user.")
     private UUID userId;

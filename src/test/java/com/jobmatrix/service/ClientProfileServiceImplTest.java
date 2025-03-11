@@ -1,6 +1,6 @@
 package com.jobmatrix.service;
 
-import com.jobmatrix.dto.ClientProfileDTO;
+import com.jobmatrix.dto.ClientDTO;
 import com.jobmatrix.entity.ClientEntity;
 import com.jobmatrix.repository.ClientProfileRepository;
 import com.jobmatrix.serviceimpl.ClientProfileServiceImpl;
@@ -29,14 +29,14 @@ class ClientProfileServiceImplTest {
     private ClientProfileServiceImpl clientProfileService;
 
     private ClientEntity clientEntity;
-    private ClientProfileDTO clientProfileDTO;
+    private ClientDTO clientProfileDTO;
 
     @BeforeEach
     void setup(){
 
         UUID userId = UUID.randomUUID();
 
-        clientProfileDTO = new ClientProfileDTO();
+        clientProfileDTO = new ClientDTO();
         clientProfileDTO.setUserId(userId);
         clientProfileDTO.setPhoneNumber("+919876543210");
         clientProfileDTO.setBio("Sample Bio");

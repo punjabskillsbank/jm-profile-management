@@ -1,7 +1,7 @@
 package com.jobmatrix.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jobmatrix.dto.ClientProfileDTO;
+import com.jobmatrix.dto.ClientDTO;
 import com.jobmatrix.entity.ClientEntity;
 import com.jobmatrix.service.ClientProfileService;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ class ClientProfileControllerTest {
     @Test
     void createClientProfileTest() throws Exception {
 
-        ClientProfileDTO clientProfileDTO = new ClientProfileDTO();
+        ClientDTO clientProfileDTO = new ClientDTO();
         clientProfileDTO.setUserId(userId);
         clientProfileDTO.setPhoneNumber("+919876543210");
         clientProfileDTO.setBio("Experienced client");
@@ -70,7 +70,7 @@ class ClientProfileControllerTest {
 
 
         // Mock service behavior (assuming save returns the saved profile)
-        Mockito.when(clientProfileService.saveClientProfile(Mockito.any(ClientProfileDTO.class)))
+        Mockito.when(clientProfileService.saveClientProfile(Mockito.any(ClientDTO.class)))
                 .thenReturn(clientEntity);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/clients")

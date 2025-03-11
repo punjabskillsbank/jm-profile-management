@@ -1,7 +1,7 @@
 package com.jobmatrix.controller;
 
 import com.jobmatrix.entity.ClientEntity;
-import com.jobmatrix.dto.ClientProfileDTO;
+import com.jobmatrix.dto.ClientDTO;
 import com.jobmatrix.service.ClientProfileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ClientProfileController {
 
-    private final ClientProfileService service;
+    private final ClientProfileService clientProfileService;
 
-    @PostMapping
-    public ResponseEntity<ClientEntity> createClientProfile(@Valid @RequestBody ClientProfileDTO dto){
-        ClientEntity savedClient = service.saveClientProfile(dto);
+    @PostMapping("/create_client")
+    public ResponseEntity<ClientEntity> createClientProfile(@Valid @RequestBody ClientDTO dto){
+        ClientEntity savedClient = clientProfileService.saveClientProfile(dto);
         return new ResponseEntity<>(savedClient, HttpStatus.CREATED);
     }
 
