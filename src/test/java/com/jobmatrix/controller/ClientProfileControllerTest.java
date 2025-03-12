@@ -2,7 +2,7 @@ package com.jobmatrix.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jobmatrix.dto.ClientDTO;
-import com.jobmatrix.entity.ClientEntity;
+import com.jobmatrix.entity.Client;
 import com.jobmatrix.service.ClientProfileService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -49,7 +49,7 @@ class ClientProfileControllerTest {
         clientProfileDTO.setPostalCode("560001");
         clientProfileDTO.setAddress("123, MG Road, Bangalore, Karnataka, India");
 
-        ClientEntity clientEntity = new ClientEntity();
+        Client clientEntity = new Client();
         clientEntity.setUserId(userId);
         clientEntity.setPhoneNumber("+919876543210");
         clientEntity.setBio("Experienced client");
@@ -63,10 +63,8 @@ class ClientProfileControllerTest {
         clientEntity.setCountry("India");
         clientEntity.setPostalCode("560001");
         clientEntity.setAddress("123, MG Road, Bangalore, Karnataka, India");
-        clientEntity.setCreated_at(LocalDateTime.now());
-        clientEntity.setUpdated_at(LocalDateTime.now());
-
-
+        clientEntity.setCreatedAt(LocalDateTime.now());
+        clientEntity.setUpdatedAt(LocalDateTime.now());
 
 
         // Mock service behavior (assuming save returns the saved profile)
@@ -90,8 +88,8 @@ class ClientProfileControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.country").value("India"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.postalCode").value("560001"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.address").value("123, MG Road, Bangalore, Karnataka, India"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.created_at").exists()) // Ensures created_at is present
-                .andExpect(MockMvcResultMatchers.jsonPath("$.updated_at").exists()); // Ensures updated_at is present
+                .andExpect(MockMvcResultMatchers.jsonPath("$.createdAt").exists()) // Ensures created_at is present
+                .andExpect(MockMvcResultMatchers.jsonPath("$.updatedAt").exists()); // Ensures updated_at is present
 
     }
 }

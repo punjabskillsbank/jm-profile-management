@@ -1,7 +1,7 @@
 package com.jobmatrix.serviceimpl;
 
 import com.jobmatrix.dto.ClientDTO;
-import com.jobmatrix.entity.ClientEntity;
+import com.jobmatrix.entity.Client;
 import com.jobmatrix.repository.ClientProfileRepository;
 import com.jobmatrix.service.ClientProfileService;
 import jakarta.transaction.Transactional;
@@ -20,9 +20,9 @@ public class ClientProfileServiceImpl implements ClientProfileService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public ClientEntity saveClientProfile(ClientDTO dto){
+    public Client saveClientProfile(ClientDTO dto){
 
-        ClientEntity client = modelMapper.map(dto, ClientEntity.class);
+        Client client = modelMapper.map(dto, Client.class);
 
         client.setCreated_at(LocalDateTime.now());
         client.setUpdated_at(LocalDateTime.now());

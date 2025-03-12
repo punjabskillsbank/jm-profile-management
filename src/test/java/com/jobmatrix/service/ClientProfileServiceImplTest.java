@@ -1,7 +1,7 @@
 package com.jobmatrix.service;
 
 import com.jobmatrix.dto.ClientDTO;
-import com.jobmatrix.entity.ClientEntity;
+import com.jobmatrix.entity.Client;
 import com.jobmatrix.repository.ClientProfileRepository;
 import com.jobmatrix.serviceimpl.ClientProfileServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +28,7 @@ class ClientProfileServiceImplTest {
     @InjectMocks
     private ClientProfileServiceImpl clientProfileService;
 
-    private ClientEntity clientEntity;
+    private Client clientEntity;
     private ClientDTO clientProfileDTO;
 
     @BeforeEach
@@ -44,7 +44,7 @@ class ClientProfileServiceImplTest {
         clientProfileDTO.setState("Punjab");
         clientProfileDTO.setPostalCode("141003");
 
-        clientEntity = new ClientEntity();
+        clientEntity = new Client();
         clientEntity.setUserId(userId);
         clientEntity.setPhoneNumber("+919876543210");
         clientEntity.setBio("Sample Bio");
@@ -56,10 +56,10 @@ class ClientProfileServiceImplTest {
     @Test
     void saveClientProfile_shouldSaveAndReturnClientEntity(){
 
-        when(modelMapper.map(clientProfileDTO,ClientEntity.class)).thenReturn(clientEntity);
-        when(clientProfileRepository.save(any(ClientEntity.class))).thenReturn(clientEntity);
+        when(modelMapper.map(clientProfileDTO, Client.class)).thenReturn(clientEntity);
+        when(clientProfileRepository.save(any(Client.class))).thenReturn(clientEntity);
 
-        ClientEntity savedClientEntity = clientProfileService.saveClientProfile(clientProfileDTO);
+        Client savedClientEntity = clientProfileService.saveClientProfile(clientProfileDTO);
 
         assertNotNull(savedClientEntity);
         assertEquals(clientProfileDTO.getUserId(), savedClientEntity.getUserId());
@@ -69,8 +69,8 @@ class ClientProfileServiceImplTest {
         assertEquals(clientProfileDTO.getState(), savedClientEntity.getState());
         assertEquals(clientProfileDTO.getPostalCode(), savedClientEntity.getPostalCode());
 
-        verify(modelMapper, times(1)).map(clientProfileDTO, ClientEntity.class);
-        verify(clientProfileRepository, times(1)).save(any(ClientEntity.class));
+        verify(modelMapper, times(1)).map(clientProfileDTO, Client.class);
+        verify(clientProfileRepository, times(1)).save(any(Client.class));
     }
 
     @Test
@@ -84,7 +84,7 @@ class ClientProfileServiceImplTest {
 
        assertEquals("user_id cannot be null. It must be linked to a user", exception.getMessage());
 
-       verify(clientProfileRepository, never()).save(any(ClientEntity.class));
+       verify(clientProfileRepository, never()).save(any(Client.class));
 
     }
 
@@ -92,15 +92,15 @@ class ClientProfileServiceImplTest {
     @Test
     void saveClientProfile_shouldUpdateTimestamps(){
 
-        when(modelMapper.map(clientProfileDTO,ClientEntity.class)).thenReturn(clientEntity);
-        when(clientProfileRepository.save(any(ClientEntity.class))).thenReturn(clientEntity);
+        when(modelMapper.map(clientProfileDTO, Client.class)).thenReturn(clientEntity);
+        when(clientProfileRepository.save(any(Client.class))).thenReturn(clientEntity);
 
-        ClientEntity savedClientEntity = clientProfileService.saveClientProfile(clientProfileDTO);
+        Client savedClientEntity = clientProfileService.saveClientProfile(clientProfileDTO);
 
-        assertNotNull(savedClientEntity.getCreated_at());
-        assertNotNull(savedClientEntity.getUpdated_at());
+        assertNotNull(savedClientEntity.getCreatedAt());
+        assertNotNull(savedClientEntity.getUpdatedAt());
 
-        verify(modelMapper, times(1)).map(clientProfileDTO, ClientEntity.class);
-        verify(clientProfileRepository, times(1)).save(any(ClientEntity.class));
+        verify(modelMapper, times(1)).map(clientProfileDTO, Client.class);
+        verify(clientProfileRepository, times(1)).save(any(Client.class));
     }
 }

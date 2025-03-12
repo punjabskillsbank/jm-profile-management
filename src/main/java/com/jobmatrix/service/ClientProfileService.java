@@ -3,8 +3,8 @@ package com.jobmatrix.service;
 
 
 import com.jobmatrix.dto.ClientDTO;
-import com.jobmatrix.entity.ClientEntity;
+import com.jobmatrix.entity.Client;
 
 public interface ClientProfileService {
-    ClientEntity saveClientProfile(ClientDTO dto);
+    Client saveClientProfile(ClientDTO dto);
 }

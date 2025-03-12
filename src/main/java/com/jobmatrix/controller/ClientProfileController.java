@@ -1,6 +1,6 @@
 package com.jobmatrix.controller;
 
-import com.jobmatrix.entity.ClientEntity;
+import com.jobmatrix.entity.Client;
 import com.jobmatrix.dto.ClientDTO;
 import com.jobmatrix.service.ClientProfileService;
 import jakarta.validation.Valid;
@@ -17,8 +17,8 @@ public class ClientProfileController {
     private final ClientProfileService clientProfileService;
 
     @PostMapping("/create_client")
-    public ResponseEntity<ClientEntity> createClientProfile(@Valid @RequestBody ClientDTO dto){
-        ClientEntity savedClient = clientProfileService.saveClientProfile(dto);
+    public ResponseEntity<Client> createClientProfile(@Valid @RequestBody ClientDTO dto){
+        Client savedClient = clientProfileService.saveClientProfile(dto);
         return new ResponseEntity<>(savedClient, HttpStatus.CREATED);
     }
 
