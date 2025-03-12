@@ -24,8 +24,7 @@ public class ClientProfileServiceImpl implements ClientProfileService {
 
         Client client = modelMapper.map(dto, Client.class);
 
-        client.setCreated_at(LocalDateTime.now());
-        client.setUpdated_at(LocalDateTime.now());
+        client.setCreatedAt(LocalDateTime.now());
         return clientProfileRepository.save(client);
     }
 }
