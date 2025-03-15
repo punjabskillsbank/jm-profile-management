@@ -7,7 +7,6 @@ import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -17,11 +16,12 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Client {
 
     @Id
-    @Column(name = "user_id", nullable = false, updatable = false)
-    private UUID userId;
+    @Column(name = "client_id", nullable = false, updatable = false)
+    private UUID clientId;
 
     @Column(name = "phone_number")
     private String phoneNumber;

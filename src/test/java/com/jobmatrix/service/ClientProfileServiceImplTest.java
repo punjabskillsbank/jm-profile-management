@@ -36,21 +36,23 @@ class ClientProfileServiceImplTest {
 
         UUID userId = UUID.randomUUID();
 
-        clientProfileDTO = new ClientDTO();
-        clientProfileDTO.setUserId(userId);
-        clientProfileDTO.setPhoneNumber("+919876543210");
-        clientProfileDTO.setBio("Sample Bio");
-        clientProfileDTO.setCompanyName("ABC");
-        clientProfileDTO.setState("Punjab");
-        clientProfileDTO.setPostalCode("141003");
+        clientProfileDTO = ClientDTO.builder()
+                .clientId(userId)
+                .phoneNumber("+919876543210")
+                .bio("Sample Bio")
+                .companyName("ABC")
+                .state("Punjab")
+                .postalCode("141003")
+                .build();
 
-        clientEntity = new Client();
-        clientEntity.setUserId(userId);
-        clientEntity.setPhoneNumber("+919876543210");
-        clientEntity.setBio("Sample Bio");
-        clientEntity.setCompanyName("ABC");
-        clientEntity.setState("Punjab");
-        clientEntity.setPostalCode("141003");
+        clientEntity = Client.builder()
+                .clientId(userId)
+                .phoneNumber("+919876543210")
+                .bio("Sample Bio")
+                .companyName("ABC")
+                .state("Punjab")
+                .postalCode("141003")
+                .build();
     }
 
     @Test
@@ -62,7 +64,7 @@ class ClientProfileServiceImplTest {
         Client savedClientEntity = clientProfileService.saveClientProfile(clientProfileDTO);
 
         assertNotNull(savedClientEntity);
-        assertEquals(clientProfileDTO.getUserId(), savedClientEntity.getUserId());
+        assertEquals(clientProfileDTO.getClientId(), savedClientEntity.getClientId());
         assertEquals(clientProfileDTO.getPhoneNumber(), savedClientEntity.getPhoneNumber());
         assertEquals(clientProfileDTO.getBio(), savedClientEntity.getBio());
         assertEquals(clientProfileDTO.getCompanyName(), savedClientEntity.getCompanyName());
@@ -76,13 +78,13 @@ class ClientProfileServiceImplTest {
     @Test
     void saveClientProfile_user_idShouldNotBeNull(){
 
-        clientProfileDTO.setUserId(null);
+        clientProfileDTO.setClientId(null);
 
        IllegalArgumentException exception =  assertThrows(IllegalArgumentException.class, ()->
                 clientProfileService.saveClientProfile(clientProfileDTO),
-                "user_id cannot be null. It must be linked to a user");
+                "client_id cannot be null.");
 
-       assertEquals("user_id cannot be null. It must be linked to a user", exception.getMessage());
+       assertEquals("client_id cannot be null.", exception.getMessage());
 
        verify(clientProfileRepository, never()).save(any(Client.class));
 

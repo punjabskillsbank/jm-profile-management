@@ -31,23 +31,24 @@ class GlobalExceptionHandlerTest {
     void shouldReturnValidationErrors_whenInvalidInputGiven() throws Exception {
 
         //Create an invalid ClientDTO object with missing fields
-        ClientDTO InvalidClientProfileDTO = new ClientDTO();
-        InvalidClientProfileDTO.setUserId(UUID.randomUUID());
-        InvalidClientProfileDTO.setPhoneNumber("12345");
-        InvalidClientProfileDTO.setBio("Sample Bio");
-        InvalidClientProfileDTO.setProfilePhotoURL("image.jpg");
-        InvalidClientProfileDTO.setCompanyName("");
-        InvalidClientProfileDTO.setCompanySize("0-50");
-        InvalidClientProfileDTO.setIndustry("Software Development");
-        InvalidClientProfileDTO.setTimeZone("Asia/Kolkata");
-        InvalidClientProfileDTO.setCity("Bangalore");
-        InvalidClientProfileDTO.setState("Karnataka");
-        InvalidClientProfileDTO.setCountry("India");
-        InvalidClientProfileDTO.setPostalCode("560001");
-        InvalidClientProfileDTO.setAddress("123, MG Road, Bangalore, Karnataka, India");
+        ClientDTO InvalidClientProfileDTO = ClientDTO.builder()
+                .clientId(UUID.randomUUID())
+                .phoneNumber("12345")
+                .bio("Sample Bio")
+                .profilePhotoURL("image.jpg")
+                .companyName("")
+                .companySize("0-50")
+                .industry("Software Development")
+                .timeZone("Asia/Kolkata")
+                .city("Bangalore")
+                .state("Karnataka")
+                .country("India")
+                .postalCode("560001")
+                .address("123, MG Road, Bangalore, Karnataka, India")
+                .build();
 
         //Send a POST request with Invalid JSON
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/clients")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/clients/create_profile")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(InvalidClientProfileDTO)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())

@@ -1,19 +1,19 @@
 package com.jobmatrix.dto;
 
 import jakarta.validation.constraints.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ClientDTO {
 
-    @NotNull(message = "user_id cannot be null. It must be linked to a user.")
-    private UUID userId;
+    @NotNull(message = "client_id cannot be null.")
+    private UUID clientId;
 
     @Pattern(regexp = "^(\\+91)?[6789]\\d{9}$", message = "Please enter a valid Phone Number")
     private String phoneNumber;

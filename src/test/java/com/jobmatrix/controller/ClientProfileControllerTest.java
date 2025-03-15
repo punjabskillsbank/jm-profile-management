@@ -29,53 +29,56 @@ class ClientProfileControllerTest {
     @MockitoBean
     private ClientProfileService clientProfileService; // Mock the service layer
 
-    private final UUID userId = UUID.randomUUID();
+    private final UUID clientId = UUID.randomUUID();
 
     @Test
     void createClientProfileTest() throws Exception {
 
-        ClientDTO clientProfileDTO = new ClientDTO();
-        clientProfileDTO.setUserId(userId);
-        clientProfileDTO.setPhoneNumber("+919876543210");
-        clientProfileDTO.setBio("Experienced client");
-        clientProfileDTO.setProfilePhotoURL("https://example.com/profile.jpg");
-        clientProfileDTO.setCompanyName("Tech Innovators Pvt Ltd");
-        clientProfileDTO.setCompanySize("10-50");
-        clientProfileDTO.setIndustry("Software Development");
-        clientProfileDTO.setTimeZone("Asia/Kolkata");
-        clientProfileDTO.setCity("Bangalore");
-        clientProfileDTO.setState("Karnataka");
-        clientProfileDTO.setCountry("India");
-        clientProfileDTO.setPostalCode("560001");
-        clientProfileDTO.setAddress("123, MG Road, Bangalore, Karnataka, India");
 
-        Client clientEntity = new Client();
-        clientEntity.setUserId(userId);
-        clientEntity.setPhoneNumber("+919876543210");
-        clientEntity.setBio("Experienced client");
-        clientEntity.setProfilePhotoURL("https://example.com/profile.jpg");
-        clientEntity.setCompanyName("Tech Innovators Pvt Ltd");
-        clientEntity.setCompanySize("10-50");
-        clientEntity.setIndustry("Software Development");
-        clientEntity.setTimeZone("Asia/Kolkata");
-        clientEntity.setCity("Bangalore");
-        clientEntity.setState("Karnataka");
-        clientEntity.setCountry("India");
-        clientEntity.setPostalCode("560001");
-        clientEntity.setAddress("123, MG Road, Bangalore, Karnataka, India");
-        clientEntity.setCreatedAt(LocalDateTime.now());
-        clientEntity.setUpdatedAt(LocalDateTime.now());
+        ClientDTO clientProfileDTO = ClientDTO.builder()
+                .clientId(clientId)
+                .phoneNumber("+919876543210")
+                .bio("Experienced client")
+                .profilePhotoURL("https://example.com/profile.jpg")
+                .companyName("Tech Innovators Pvt Ltd")
+                .companySize("10-50")
+                .industry("Software Development")
+                .timeZone("Asia/Kolkata")
+                .city("Bangalore")
+                .state("Karnataka")
+                .country("India")
+                .postalCode("560001")
+                .address("123, MG Road, Bangalore, Karnataka, India")
+                .build();
+
+        Client clientEntity = Client.builder()
+                .clientId(clientId)
+                .phoneNumber("+919876543210")
+                .bio("Experienced client")
+                .profilePhotoURL("https://example.com/profile.jpg")
+                .companyName("Tech Innovators Pvt Ltd")
+                .companySize("10-50")
+                .industry("Software Development")
+                .timeZone("Asia/Kolkata")
+                .city("Bangalore")
+                .state("Karnataka")
+                .country("India")
+                .postalCode("560001")
+                .address("123, MG Road, Bangalore, Karnataka, India")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
 
 
         // Mock service behavior (assuming save returns the saved profile)
         Mockito.when(clientProfileService.saveClientProfile(Mockito.any(ClientDTO.class)))
                 .thenReturn(clientEntity);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/clients")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/clients/create_profile")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(clientProfileDTO)))
                 .andExpect(MockMvcResultMatchers.status().isCreated()) // Expect 201 Created
-                .andExpect(MockMvcResultMatchers.jsonPath("$.userId").value(userId.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.userId").value(clientId.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.phoneNumber").value("+919876543210"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.bio").value("Experienced client"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.profilePhotoURL").value("https://example.com/profile.jpg"))

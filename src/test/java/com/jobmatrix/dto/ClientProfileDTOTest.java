@@ -31,17 +31,18 @@ class ClientProfileDTOTest {
 
     @Test
     void testValidClientProfileDTO() {
-        ClientDTO client = new ClientDTO();
-        client.setUserId(UUID.randomUUID()); // Assigns a random valid UUID.
-        client.setPhoneNumber("+919876543210"); // Valid phone number.
-        client.setBio("This is a sample bio."); // Valid bio.
-        client.setCompanyName("Tech Innovations"); // Valid company name.
-        client.setCompanySize("10-50"); // Valid format.
-        client.setIndustry("IT");
-        client.setCity("New Delhi");
-        client.setState("Delhi");
-        client.setPostalCode("110001"); // Valid postal code.
-        client.setAddress("123, Business Street, New Delhi");
+        ClientDTO client = ClientDTO.builder()
+                .clientId(UUID.randomUUID()) // Assigns a random valid UUID.
+                .phoneNumber("+919876543210") // Valid phone number.
+                .bio("This is a sample bio.") // Valid bio.
+                .companyName("Tech Innovations") // Valid company name.
+                .companySize("10-50") // Valid format.
+                .industry("IT")
+                .city("New Delhi")
+                .state("Delhi")
+                .postalCode("110001") // Valid postal code.
+                .address("123, Business Street, New Delhi")
+                .build();
 
         Set<ConstraintViolation<ClientDTO>> violations = validator.validate(client);
         assertTrue(violations.isEmpty(), "DTO should be valid");
@@ -50,18 +51,18 @@ class ClientProfileDTOTest {
     @Test
     void testNullUserId(){
         ClientDTO clientProfileDTO = new ClientDTO();
-        clientProfileDTO.setUserId(null);
+        clientProfileDTO.setClientId(null);
         clientProfileDTO.setCompanyName("ABC");
 
         Set<ConstraintViolation<ClientDTO>> violations = validator.validate(clientProfileDTO);
         assertFalse(violations.isEmpty(), "User_id cannot be null");
-        assertEquals("user_id cannot be null. It must be linked to a user.", violations.iterator().next().getMessage());
+        assertEquals("client_id cannot be null.", violations.iterator().next().getMessage());
     }
 
     @Test
     void testInvalidPhoneNumber(){
         ClientDTO clientProfileDTO = new ClientDTO();
-        clientProfileDTO.setUserId(UUID.randomUUID());
+        clientProfileDTO.setClientId(UUID.randomUUID());
         clientProfileDTO.setCompanyName("ABC");
         clientProfileDTO.setPhoneNumber("12345"); // Invalid phone number.
 
@@ -73,7 +74,7 @@ class ClientProfileDTOTest {
     @Test
     void testBlankCompanyName(){
         ClientDTO clientProfileDTO = new ClientDTO();
-        clientProfileDTO.setUserId(UUID.randomUUID());
+        clientProfileDTO.setClientId(UUID.randomUUID());
         clientProfileDTO.setCompanyName(""); // Blank company name.
 
         Set<ConstraintViolation<ClientDTO>> violations = validator.validate(clientProfileDTO);
@@ -84,7 +85,7 @@ class ClientProfileDTOTest {
     @Test
     void testLongBio(){
         ClientDTO clientProfileDTO = new ClientDTO();
-        clientProfileDTO.setUserId(UUID.randomUUID());
+        clientProfileDTO.setClientId(UUID.randomUUID());
         clientProfileDTO.setCompanyName("ABC");
         clientProfileDTO.setBio("A".repeat(501)); //Exceeds 500 characters.
 
@@ -96,7 +97,7 @@ class ClientProfileDTOTest {
     @Test
     void testInvalidCompanySize(){
         ClientDTO clientProfileDTO = new ClientDTO();
-        clientProfileDTO.setUserId(UUID.randomUUID());
+        clientProfileDTO.setClientId(UUID.randomUUID());
         clientProfileDTO.setCompanyName("ABC");
         clientProfileDTO.setCompanySize("0-10"); // Invalid format.
 
@@ -108,7 +109,7 @@ class ClientProfileDTOTest {
     @Test
     void testInvalidPostalCode(){
         ClientDTO clientProfileDTO = new ClientDTO();
-        clientProfileDTO.setUserId(UUID.randomUUID());
+        clientProfileDTO.setClientId(UUID.randomUUID());
         clientProfileDTO.setCompanyName("ABC");
         clientProfileDTO.setPostalCode("1234");
 
