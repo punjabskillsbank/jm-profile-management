@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jobmatrix.dto.ClientDTO;
 import com.jobmatrix.entity.Client;
 import com.jobmatrix.service.ClientProfileService;
+import com.jobmatrix.test_utils.factory.ClientTestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,46 +30,12 @@ class ClientProfileControllerTest {
     @MockitoBean
     private ClientProfileService clientProfileService; // Mock the service layer
 
-    private final UUID clientId = UUID.randomUUID();
+    private final UUID CLIENT_ID = UUID.randomUUID();
 
     @Test
     void createClientProfileTest() throws Exception {
-
-
-        ClientDTO clientProfileDTO = ClientDTO.builder()
-                .clientId(clientId)
-                .phoneNumber("+919876543210")
-                .bio("Experienced client")
-                .profilePhotoURL("https://example.com/profile.jpg")
-                .companyName("Tech Innovators Pvt Ltd")
-                .companySize("10-50")
-                .industry("Software Development")
-                .timeZone("Asia/Kolkata")
-                .city("Bangalore")
-                .state("Karnataka")
-                .country("India")
-                .postalCode("560001")
-                .address("123, MG Road, Bangalore, Karnataka, India")
-                .build();
-
-        Client clientEntity = Client.builder()
-                .clientId(clientId)
-                .phoneNumber("+919876543210")
-                .bio("Experienced client")
-                .profilePhotoURL("https://example.com/profile.jpg")
-                .companyName("Tech Innovators Pvt Ltd")
-                .companySize("10-50")
-                .industry("Software Development")
-                .timeZone("Asia/Kolkata")
-                .city("Bangalore")
-                .state("Karnataka")
-                .country("India")
-                .postalCode("560001")
-                .address("123, MG Road, Bangalore, Karnataka, India")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-
+        Client clientEntity = ClientTestDataFactory.createClientEntity(CLIENT_ID);
+        ClientDTO clientProfileDTO = ClientTestDataFactory.createClientDTO(CLIENT_ID);
 
         // Mock service behavior (assuming save returns the saved profile)
         Mockito.when(clientProfileService.saveClientProfile(Mockito.any(ClientDTO.class)))
@@ -78,7 +45,7 @@ class ClientProfileControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(clientProfileDTO)))
                 .andExpect(MockMvcResultMatchers.status().isCreated()) // Expect 201 Created
-                .andExpect(MockMvcResultMatchers.jsonPath("$.userId").value(clientId.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.clientId").value(CLIENT_ID.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.phoneNumber").value("+919876543210"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.bio").value("Experienced client"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.profilePhotoURL").value("https://example.com/profile.jpg"))

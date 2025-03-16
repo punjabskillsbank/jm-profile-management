@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jobmatrix.controller.ClientProfileController;
 import com.jobmatrix.dto.ClientDTO;
 import com.jobmatrix.service.ClientProfileService;
+import com.jobmatrix.test_utils.factory.ClientTestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -31,26 +32,15 @@ class GlobalExceptionHandlerTest {
     void shouldReturnValidationErrors_whenInvalidInputGiven() throws Exception {
 
         //Create an invalid ClientDTO object with missing fields
-        ClientDTO InvalidClientProfileDTO = ClientDTO.builder()
-                .clientId(UUID.randomUUID())
-                .phoneNumber("12345")
-                .bio("Sample Bio")
-                .profilePhotoURL("image.jpg")
-                .companyName("")
-                .companySize("0-50")
-                .industry("Software Development")
-                .timeZone("Asia/Kolkata")
-                .city("Bangalore")
-                .state("Karnataka")
-                .country("India")
-                .postalCode("560001")
-                .address("123, MG Road, Bangalore, Karnataka, India")
-                .build();
+        ClientDTO invalidClientDTO = ClientTestDataFactory.createClientDTO(UUID.randomUUID());
+        invalidClientDTO.setCompanyName("");
+        invalidClientDTO.setCompanySize("0-50");
+        invalidClientDTO.setPhoneNumber("12345");
 
         //Send a POST request with Invalid JSON
         mockMvc.perform(MockMvcRequestBuilders.post("/api/clients/create_profile")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(InvalidClientProfileDTO)))
+                .content(objectMapper.writeValueAsString(invalidClientDTO)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.phoneNumber").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.companyName").exists())

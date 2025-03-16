@@ -24,7 +24,6 @@ public class ClientProfileServiceImpl implements ClientProfileService {
     @Transactional
     @Override
     public Client saveClientProfile(ClientDTO dto){
-
         Client client = modelMapper.map(dto, Client.class);
         return clientProfileRepository.save(client);
     }

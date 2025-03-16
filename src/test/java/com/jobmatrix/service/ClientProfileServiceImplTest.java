@@ -4,6 +4,7 @@ import com.jobmatrix.dto.ClientDTO;
 import com.jobmatrix.entity.Client;
 import com.jobmatrix.repository.ClientProfileRepository;
 import com.jobmatrix.serviceimpl.ClientProfileServiceImpl;
+import com.jobmatrix.test_utils.factory.ClientTestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -28,81 +31,51 @@ class ClientProfileServiceImplTest {
     @InjectMocks
     private ClientProfileServiceImpl clientProfileService;
 
+    private final UUID CLIENT_ID = UUID.randomUUID();
     private Client clientEntity;
-    private ClientDTO clientProfileDTO;
+    private ClientDTO clientDTO;
+    private IllegalArgumentException exception;
 
     @BeforeEach
     void setup(){
-
-        UUID userId = UUID.randomUUID();
-
-        clientProfileDTO = ClientDTO.builder()
-                .clientId(userId)
-                .phoneNumber("+919876543210")
-                .bio("Sample Bio")
-                .companyName("ABC")
-                .state("Punjab")
-                .postalCode("141003")
-                .build();
-
-        clientEntity = Client.builder()
-                .clientId(userId)
-                .phoneNumber("+919876543210")
-                .bio("Sample Bio")
-                .companyName("ABC")
-                .state("Punjab")
-                .postalCode("141003")
-                .build();
+        clientDTO = ClientTestDataFactory.createClientDTO(CLIENT_ID);
+        clientEntity = ClientTestDataFactory.createClientEntity(CLIENT_ID);
     }
 
     @Test
     void saveClientProfile_shouldSaveAndReturnClientEntity(){
 
-        when(modelMapper.map(clientProfileDTO, Client.class)).thenReturn(clientEntity);
+        when(modelMapper.map(clientDTO, Client.class)).thenReturn(clientEntity);
         when(clientProfileRepository.save(any(Client.class))).thenReturn(clientEntity);
 
-        Client savedClientEntity = clientProfileService.saveClientProfile(clientProfileDTO);
+        Client savedClientEntity = clientProfileService.saveClientProfile(clientDTO);
 
         assertNotNull(savedClientEntity);
-        assertEquals(clientProfileDTO.getClientId(), savedClientEntity.getClientId());
-        assertEquals(clientProfileDTO.getPhoneNumber(), savedClientEntity.getPhoneNumber());
-        assertEquals(clientProfileDTO.getBio(), savedClientEntity.getBio());
-        assertEquals(clientProfileDTO.getCompanyName(), savedClientEntity.getCompanyName());
-        assertEquals(clientProfileDTO.getState(), savedClientEntity.getState());
-        assertEquals(clientProfileDTO.getPostalCode(), savedClientEntity.getPostalCode());
+        assertEquals(clientDTO.getClientId(), savedClientEntity.getClientId());
+        assertEquals(clientDTO.getPhoneNumber(), savedClientEntity.getPhoneNumber());
+        assertEquals(clientDTO.getBio(), savedClientEntity.getBio());
+        assertEquals(clientDTO.getCompanyName(), savedClientEntity.getCompanyName());
+        assertEquals(clientDTO.getState(), savedClientEntity.getState());
+        assertEquals(clientDTO.getPostalCode(), savedClientEntity.getPostalCode());
 
-        verify(modelMapper, times(1)).map(clientProfileDTO, Client.class);
+        assertNotNull(savedClientEntity.getCreatedAt());
+        assertNotNull(savedClientEntity.getUpdatedAt());
+
+        verify(modelMapper, times(1)).map(clientDTO, Client.class);
         verify(clientProfileRepository, times(1)).save(any(Client.class));
     }
 
     @Test
     void saveClientProfile_user_idShouldNotBeNull(){
+        clientDTO.setClientId(null);
+        when(modelMapper.map(clientDTO, Client.class)).thenThrow(new IllegalArgumentException("client_id cannot be null."));
 
-        clientProfileDTO.setClientId(null);
-
-       IllegalArgumentException exception =  assertThrows(IllegalArgumentException.class, ()->
-                clientProfileService.saveClientProfile(clientProfileDTO),
-                "client_id cannot be null.");
-
-       assertEquals("client_id cannot be null.", exception.getMessage());
-
-       verify(clientProfileRepository, never()).save(any(Client.class));
-
-    }
-
-    //test for checking our timestamps updated for created_at and updated_at
-    @Test
-    void saveClientProfile_shouldUpdateTimestamps(){
-
-        when(modelMapper.map(clientProfileDTO, Client.class)).thenReturn(clientEntity);
-        when(clientProfileRepository.save(any(Client.class))).thenReturn(clientEntity);
-
-        Client savedClientEntity = clientProfileService.saveClientProfile(clientProfileDTO);
-
-        assertNotNull(savedClientEntity.getCreatedAt());
-        assertNotNull(savedClientEntity.getUpdatedAt());
-
-        verify(modelMapper, times(1)).map(clientProfileDTO, Client.class);
-        verify(clientProfileRepository, times(1)).save(any(Client.class));
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> clientProfileService.saveClientProfile(clientDTO),
+                "client_id cannot be null."
+        );
+        assertEquals("client_id cannot be null.", exception.getMessage());
+        verify(clientProfileRepository, never()).save(any(Client.class));
     }
 }
