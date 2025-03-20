@@ -1,5 +1,7 @@
 package com.jobmatrix.dto;
 
+import com.jobmatrix.service.EducationService;
+import com.jobmatrix.serviceimpl.EducationServiceImpl;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -110,14 +112,14 @@ class EducationDTOTest {
         assertEquals("startYear cannot be null.", violations.iterator().next().getMessage());
     }
 
-    //  startYear should not be before 2000
+    //  startYear should not be before 1950
     @Test
     void testStartYear_BelowMinimum() {
-        educationDTO.setStartYear(1999);
+        educationDTO.setStartYear(1949);
         Set<ConstraintViolation<EducationDTO>> violations = validator.validate(educationDTO);
 
         assertEquals(1, violations.size(), "Expected 1 validation error for startYear below minimum.");
-        assertEquals("startYear must be after 2000.", violations.iterator().next().getMessage());
+        assertEquals("startYear must be after 1950.", violations.iterator().next().getMessage());
     }
 
     //  endYear should not be null
@@ -130,24 +132,39 @@ class EducationDTOTest {
         assertEquals("endYear cannot be null.", violations.iterator().next().getMessage());
     }
 
+//
+//    //  endYear should not be before startYear
+//    @Test
+//    void testEndYear_BeforeStartYear() {
+//        educationDTO.setStartYear(2015);
+//        educationDTO.setEndYear(2010);
+//        Set<ConstraintViolation<EducationDTO>> violations = validator.validate(educationDTO);
+//
+//        assertEquals(1, violations.size(), "Expected 1 validation error for endYear before startYear.");
+//    }
 
-    //  endYear should not be before startYear
     @Test
-    void testEndYear_BeforeStartYear() {
+    void testCreateEducation_InvalidYears() {
+        EducationService educationService = new EducationServiceImpl();
+
+        EducationDTO educationDTO = new EducationDTO();
         educationDTO.setStartYear(2015);
         educationDTO.setEndYear(2010);
-        Set<ConstraintViolation<EducationDTO>> violations = validator.validate(educationDTO);
 
-        assertEquals(1, violations.size(), "Expected 1 validation error for endYear before startYear.");
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            educationService.createEducation(educationDTO);
+        });
+
+        assertEquals("End year must be greater than or equal to start year.", exception.getMessage());
     }
 
     //  userId should not be null
     @Test
     void testUserId_Null() {
-        educationDTO.setUserId(null);
+        educationDTO.setFreelancerId(null);
         Set<ConstraintViolation<EducationDTO>> violations = validator.validate(educationDTO);
 
         assertEquals(1, violations.size(), "Expected 1 validation error for null userId.");
-        assertEquals("userId cannot be null.", violations.iterator().next().getMessage());
+        assertEquals("freelancerId cannot be null.", violations.iterator().next().getMessage());
     }
 }

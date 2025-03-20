@@ -31,19 +31,14 @@ public class EducationDTO {
     private String institution;
 
     @NotNull(message = "startYear cannot be null.")
-    @Min(value = 2000, message = "startYear must be after 2000.")
+    @Min(value = 1950, message = "startYear must be after 1950.")
     private Integer startYear;
 
     @NotNull(message = "endYear cannot be null.")
-    @Min(value = 2000, message = "endYear must be after 2000.")
+    @Min(value = 1950, message = "endYear must be after 1950.")
     private Integer endYear;
 
-    @NotNull(message = "userId cannot be null.")
-    private UUID userId;
-
-    @AssertTrue(message = "endYear must be greater than or equal to startYear.")
-    public boolean isEndYearValid() {
-        return endYear == null || startYear == null || (endYear >= 2000 && endYear >= startYear);
-    }
+    @NotNull(message = "freelancerId cannot be null.")
+    private UUID freelancerId;
 
 }

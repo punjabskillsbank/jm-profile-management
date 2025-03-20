@@ -18,7 +18,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.UUID;
 
 @WebMvcTest(FreelancerProfileController.class)
-@TestPropertySource(properties = {"spring.main.allow-bean-definition-overriding=true"})
 class FreelancerProfileControllerTest {
 
     @Autowired

@@ -1,63 +1,30 @@
 package com.jobmatrix.dto;
 
 import com.common.enums.ProfileStatus;
+import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
 public class FreelancerDTOTest {
 
     private Validator validator;
-
-    @InjectMocks
     private FreelancerDTO freelancerDTO;
-
-    @Mock
-    private List<EducationDTO> educations;
-
-    @Mock
-    private List<JobDTO> jobs;
-
-    @Mock
-    private List<CertificateDTO> certificates;
 
     @BeforeEach
     public void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
-
-        freelancerDTO = FreelancerDTO.builder()
-                .freelancerId(UUID.randomUUID())
-                .title("Software Developer")
-                .bio("Experienced software engineer.")
-                .hourlyRate(50.0)
-                .address("123 Main St")
-                .city("Anytown")
-                .state("ABC")
-                .country("USA")
-                .postalCode("123456")
-                .phoneNumber("+919876543210")
-                .isAbcMember(true)
-                .profilePhotoURL("http://example.com/photo.jpg")
-                .educations(educations)
-                .jobs(jobs)
-                .certificates(certificates)
-                .profileStatus(ProfileStatus.APPROVED)
-                .build();
+        UUID freelancerId = UUID.randomUUID();
+        freelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(freelancerId);
     }
 
     // Positive Case: All valid data
@@ -90,7 +57,7 @@ public class FreelancerDTOTest {
     public void testFreelancerDTO_Title_Empty() {
         freelancerDTO.setTitle("");
         Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
-        assertEquals(1, violations.size(), "Expected 0 validation error for empty title");
+        assertEquals(1, violations.size(), "Expected 1 validation error for empty title");
     }
 
     // Negative Case: Invalid postal code (less than 6 digits)
