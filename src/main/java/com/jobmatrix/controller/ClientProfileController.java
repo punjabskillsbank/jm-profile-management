@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/clients")
@@ -20,6 +23,13 @@ public class ClientProfileController {
     public ResponseEntity<Client> createClientProfile(@Valid @RequestBody ClientDTO dto){
         Client savedClient = clientProfileService.saveClientProfile(dto);
         return new ResponseEntity<>(savedClient, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{clientId}")
+    public ResponseEntity<Client> getClientProfileById(@PathVariable UUID clientId){
+        Client client = clientProfileService.getClientProfileById(clientId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Client not found at given clientId"));
+        return ResponseEntity.ok(client);
     }
 
 }
