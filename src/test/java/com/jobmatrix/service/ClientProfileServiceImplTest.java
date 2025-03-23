@@ -12,6 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+
+import java.util.Optional;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -64,7 +66,7 @@ class ClientProfileServiceImplTest {
     }
 
     @Test
-    void saveClientProfile_user_idShouldNotBeNull(){
+    void saveClientProfile_client_idShouldNotBeNull(){
         clientDTO.setClientId(null);
         when(modelMapper.map(clientDTO, Client.class)).thenThrow(new IllegalArgumentException("client_id cannot be null."));
 
@@ -76,4 +78,22 @@ class ClientProfileServiceImplTest {
         assertEquals("client_id cannot be null.", exception.getMessage());
         verify(clientProfileRepository, never()).save(any(Client.class));
     }
+
+    @Test
+    void getClientProfileById_shouldReturnClientEntity(){
+        when(clientProfileRepository.findById(CLIENT_ID)).thenReturn(Optional.ofNullable(clientEntity));
+
+        Optional<Client> client = clientProfileService.getClientProfileById(CLIENT_ID);
+        assertNotNull(client);
+        assertTrue(client.isPresent());
+        assertEquals(clientEntity.getClientId(), client.get().getClientId());
+        assertEquals(clientEntity.getPhoneNumber(), client.get().getPhoneNumber());
+        assertEquals(clientEntity.getBio(), client.get().getBio());
+        assertEquals(clientEntity.getCompanyName(), client.get().getCompanyName());
+        assertEquals(clientEntity.getState(), client.get().getState());
+        assertEquals(clientEntity.getPostalCode(), client.get().getPostalCode());
+
+        verify(clientProfileRepository, times(1)).findById(CLIENT_ID);
+    }
+
 }
