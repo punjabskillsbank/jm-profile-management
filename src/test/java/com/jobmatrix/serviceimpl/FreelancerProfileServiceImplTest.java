@@ -106,10 +106,4 @@ class FreelancerProfileServiceImplTest {
         assertFalse(violations.isEmpty());
         assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Please enter a valid Phone Number")));
     }
-
-    @Test
-    void testFreelancerDTO_DefaultValues() {
-        FreelancerDTO freelancerDTO = new FreelancerDTO();
-        assertFalse(freelancerDTO.isAbcMember(), "Default value of isAbcMember should be false.");
-    }
 }

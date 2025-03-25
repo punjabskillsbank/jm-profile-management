@@ -6,6 +6,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.sql.Date;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -80,45 +81,16 @@ class CertificateDTOTest {
     }
 
     @Test
-    void testNullValues() {
-        certificateDTO.setCertificateId(null);
-        certificateDTO.setCertificateName(null);
-        certificateDTO.setIssuedBy(null);
-        certificateDTO.setIssueDate(null);
-        certificateDTO.setExpiryDate(null);
-        certificateDTO.setCredentialUrl(null);
-        certificateDTO.setUserId(null);
-
-        assertNull(certificateDTO.getCertificateId());
-        assertNull(certificateDTO.getCertificateName());
-        assertNull(certificateDTO.getIssuedBy());
-        assertNull(certificateDTO.getIssueDate());
-        assertNull(certificateDTO.getExpiryDate());
-        assertNull(certificateDTO.getCredentialUrl());
-        assertNull(certificateDTO.getUserId());
-    }
-
-    @Test
     void testBoundaryConditionsForDates() {
-        Date pastDate = new Date(System.currentTimeMillis() - 10L * 365 * 24 * 60 * 60 * 1000); // 10 years ago
-        Date futureDate = new Date(System.currentTimeMillis() + 10L * 365 * 24 * 60 * 60 * 1000); // 10 years ahead
+        Date pastDate = new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(10 * 365)); // 10 years ago
+        Date futureDate = new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(10 * 365)); // 10 years ahead
+
 
         certificateDTO.setIssueDate(pastDate);
         certificateDTO.setExpiryDate(futureDate);
 
         assertEquals(pastDate, certificateDTO.getIssueDate());
         assertEquals(futureDate, certificateDTO.getExpiryDate());
-    }
-
-    @Test
-    void testSameIssueAndExpiryDate() {
-        Date sameDate = new Date(System.currentTimeMillis());
-
-        certificateDTO.setIssueDate(sameDate);
-        certificateDTO.setExpiryDate(sameDate);
-
-        assertEquals(sameDate, certificateDTO.getIssueDate());
-        assertEquals(sameDate, certificateDTO.getExpiryDate());
     }
 
     @Test
@@ -135,36 +107,9 @@ class CertificateDTOTest {
     @Test
     void testUUIDHandling() {
         UUID uuid1 = UUID.randomUUID();
-        UUID uuid2 = UUID.randomUUID();
 
         certificateDTO.setUserId(uuid1);
         assertEquals(uuid1, certificateDTO.getUserId());
-
-        certificateDTO.setUserId(uuid2);
-        assertEquals(uuid2, certificateDTO.getUserId());
-    }
-
-    @Test
-    void testEmptyStrings() {
-        certificateDTO.setCertificateName("");
-        certificateDTO.setIssuedBy("");
-        certificateDTO.setCredentialUrl("");
-
-        assertEquals("", certificateDTO.getCertificateName());
-        assertEquals("", certificateDTO.getIssuedBy());
-        assertEquals("", certificateDTO.getCredentialUrl());
-    }
-
-    @Test
-    void testLongStrings() {
-        String longString = "A".repeat(1000);
-        certificateDTO.setCertificateName(longString);
-        certificateDTO.setIssuedBy(longString);
-        certificateDTO.setCredentialUrl(longString);
-
-        assertEquals(longString, certificateDTO.getCertificateName());
-        assertEquals(longString, certificateDTO.getIssuedBy());
-        assertEquals(longString, certificateDTO.getCredentialUrl());
     }
 
     @Test

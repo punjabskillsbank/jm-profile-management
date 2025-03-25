@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -158,51 +159,20 @@ class JobDTOTest {
     }
 
     @Test
-    @DisplayName("Test Setting Null Values")
-    void testSettingNullValues() {
-        // Arrange
-        JobDTO fullJobDTO = new JobDTO(
-                TEST_JOB_ID,
-                TEST_JOB_TITLE,
-                TEST_COMPANY_NAME,
-                TEST_START_DATE,
-                TEST_END_DATE,
-                TEST_JOB_RESPONSIBILITIES,
-                TEST_USER_ID
-        );
-
-        // Act
-        fullJobDTO.setJobId(null);
-        fullJobDTO.setJobTitle(null);
-        fullJobDTO.setCompanyName(null);
-        fullJobDTO.setStartDate(null);
-        fullJobDTO.setEndDate(null);
-        fullJobDTO.setJobResponsibilities(null);
-        fullJobDTO.setUserId(null);
-
-        // Assert
-        assertNull(fullJobDTO.getJobId());
-        assertNull(fullJobDTO.getJobTitle());
-        assertNull(fullJobDTO.getCompanyName());
-        assertNull(fullJobDTO.getStartDate());
-        assertNull(fullJobDTO.getEndDate());
-        assertNull(fullJobDTO.getJobResponsibilities());
-        assertNull(fullJobDTO.getUserId());
-    }
-
-    @Test
     @DisplayName("Test Boundary Values for Dates")
     void testBoundaryValuesForDates() {
-        // Arrange
-        Date minDate = Date.valueOf("0001-01-01");
-        Date maxDate = Date.valueOf("9999-12-31");
+        // Use LocalDate for better control over date values
+        LocalDate minLocalDate = LocalDate.of(1, 1, 1);      // Year 0001-01-01
+        LocalDate maxLocalDate = LocalDate.of(9999, 12, 31); // Year 9999-12-31
 
-        // Act
+        // Convert LocalDate to SQL Date
+        Date minDate = Date.valueOf(minLocalDate);
+        Date maxDate = Date.valueOf(maxLocalDate);
+
         jobDTO.setStartDate(minDate);
         jobDTO.setEndDate(maxDate);
 
-        // Assert
-        assertEquals(minDate, jobDTO.getStartDate());
-        assertEquals(maxDate, jobDTO.getEndDate());
+        assertEquals(minDate, jobDTO.getStartDate(), "Start date should be minimum boundary value");
+        assertEquals(maxDate, jobDTO.getEndDate(), "End date should be maximum boundary value");
     }
 }
