@@ -16,7 +16,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 public class FreelancerDTO {
     @NotNull(message = "freelancerId cannot be null.")
     private UUID freelancerId;

@@ -2,6 +2,7 @@ package com.jobmatrix.serviceimpl;
 
 import com.common.enums.ProfileStatus;
 import com.jobmatrix.dto.FreelancerDTO;
+import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -26,21 +27,8 @@ class FreelancerProfileServiceImplTest {
 
     @Test
     void testValidFreelancerDTO() {
-        FreelancerDTO freelancerDTO = FreelancerDTO.builder()
-                .freelancerId(UUID.randomUUID())
-                .title("Software Developer")
-                .bio("Experienced Java Developer with expertise in Spring Boot")
-                .hourlyRate(50.0)
-                .address("123 Street")
-                .city("New York")
-                .state("NY")
-                .country("USA")
-                .postalCode("123456")
-                .phoneNumber("+919876543210")
-                .isAbcMember(true)
-                .profilePhotoURL("http://example.com/photo.jpg")
-                .profileStatus(ProfileStatus.APPROVED)
-                .build();
+        UUID freelancerId = UUID.randomUUID();
+        FreelancerDTO freelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(freelancerId);
 
         Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
         assertTrue(violations.isEmpty(), "Valid DTO should not have validation errors.");
@@ -48,7 +36,7 @@ class FreelancerProfileServiceImplTest {
 
     @Test
     void testFreelancerDTO_NullFields() {
-        FreelancerDTO freelancerDTO = new FreelancerDTO();
+        FreelancerDTO freelancerDTO = new FreelancerDTO();  // Empty DTO with null fields
 
         Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
         assertFalse(violations.isEmpty());
@@ -62,12 +50,10 @@ class FreelancerProfileServiceImplTest {
 
     @Test
     void testFreelancerDTO_InvalidHourlyRate() {
-        FreelancerDTO freelancerDTO = FreelancerDTO.builder()
-                .freelancerId(UUID.randomUUID())
-                .title("Software Developer")
-                .bio("Experienced Java Developer")
-                .hourlyRate(-10.0)  // Invalid: Should be positive
-                .profileStatus(ProfileStatus.APPROVED)
+        UUID freelancerId = UUID.randomUUID();
+        FreelancerDTO freelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(freelancerId)
+                .toBuilder()
+                .hourlyRate(-10.0)  // Invalid hourly rate
                 .build();
 
         Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
@@ -77,13 +63,10 @@ class FreelancerProfileServiceImplTest {
 
     @Test
     void testFreelancerDTO_InvalidPostalCode() {
-        FreelancerDTO freelancerDTO = FreelancerDTO.builder()
-                .freelancerId(UUID.randomUUID())
-                .title("Software Developer")
-                .bio("Experienced Java Developer")
-                .hourlyRate(50.0)
+        UUID freelancerId = UUID.randomUUID();
+        FreelancerDTO freelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(freelancerId)
+                .toBuilder()
                 .postalCode("1234A")  // Invalid format
-                .profileStatus(ProfileStatus.APPROVED)
                 .build();
 
         Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
@@ -93,13 +76,10 @@ class FreelancerProfileServiceImplTest {
 
     @Test
     void testFreelancerDTO_InvalidPhoneNumber() {
-        FreelancerDTO freelancerDTO = FreelancerDTO.builder()
-                .freelancerId(UUID.randomUUID())
-                .title("Software Developer")
-                .bio("Experienced Java Developer")
-                .hourlyRate(50.0)
-                .phoneNumber("12345")  // Invalid: Doesn't match pattern
-                .profileStatus(ProfileStatus.APPROVED)
+        UUID freelancerId = UUID.randomUUID();
+        FreelancerDTO freelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(freelancerId)
+                .toBuilder()
+                .phoneNumber("12345")  // Invalid phone number
                 .build();
 
         Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
