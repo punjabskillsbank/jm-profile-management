@@ -2,6 +2,7 @@ package com.jobmatrix.service;
 
 import com.jobmatrix.dto.ClientDTO;
 import com.jobmatrix.entity.Client;
+import com.jobmatrix.exceptionHandling.ClientNotFoundException;
 import com.jobmatrix.repository.ClientProfileRepository;
 import com.jobmatrix.serviceimpl.ClientProfileServiceImpl;
 import com.jobmatrix.test_utils.factory.ClientTestDataFactory;
@@ -12,6 +13,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+
+import java.util.Optional;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -64,7 +67,7 @@ class ClientProfileServiceImplTest {
     }
 
     @Test
-    void saveClientProfile_user_idShouldNotBeNull(){
+    void saveClientProfile_client_idShouldNotBeNull(){
         clientDTO.setClientId(null);
         when(modelMapper.map(clientDTO, Client.class)).thenThrow(new IllegalArgumentException("client_id cannot be null."));
 
@@ -76,4 +79,34 @@ class ClientProfileServiceImplTest {
         assertEquals("client_id cannot be null.", exception.getMessage());
         verify(clientProfileRepository, never()).save(any(Client.class));
     }
+
+    @Test
+    void getClientProfileById_shouldReturnClientEntity(){
+        when(clientProfileRepository.findById(CLIENT_ID)).thenReturn(Optional.of(clientEntity));
+
+       Client client = clientProfileService.getClientProfileById(CLIENT_ID);
+        assertNotNull(client);
+        assertEquals(clientEntity.getClientId(), client.getClientId());
+        assertEquals(clientEntity.getPhoneNumber(), client.getPhoneNumber());
+        assertEquals(clientEntity.getBio(), client.getBio());
+        assertEquals(clientEntity.getCompanyName(), client.getCompanyName());
+        assertEquals(clientEntity.getState(), client.getState());
+        assertEquals(clientEntity.getPostalCode(), client.getPostalCode());
+
+        verify(clientProfileRepository, times(1)).findById(CLIENT_ID);
+    }
+
+    @Test
+    void getClientProfileById_shouldThrowClientNotFoundException(){
+        when(clientProfileRepository.findById(CLIENT_ID)).thenReturn(Optional.empty());
+
+        ClientNotFoundException exception = assertThrows(
+                ClientNotFoundException.class,
+                () -> clientProfileService.getClientProfileById(CLIENT_ID),
+                "Client not found at given clientId"
+        );
+        assertEquals("Client not found at given clientId: " + CLIENT_ID, exception.getMessage());
+        verify(clientProfileRepository, times(1)).findById(CLIENT_ID);
+    }
+
 }
