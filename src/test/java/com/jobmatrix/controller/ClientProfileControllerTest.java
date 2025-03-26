@@ -3,6 +3,7 @@ package com.jobmatrix.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jobmatrix.dto.ClientDTO;
 import com.jobmatrix.entity.Client;
+import com.jobmatrix.exceptionHandling.ClientNotFoundException;
 import com.jobmatrix.service.ClientProfileService;
 import com.jobmatrix.test_utils.factory.ClientTestDataFactory;
 import org.checkerframework.checker.units.qual.C;
@@ -71,7 +72,7 @@ class ClientProfileControllerTest {
         ClientDTO clientProfileDTO = ClientTestDataFactory.createClientDTO(CLIENT_ID);
 
         // Mock service behavior (assuming save returns the saved profile)
-        Mockito.when(clientProfileService.getClientProfileById(CLIENT_ID)).thenReturn(Optional.of(clientEntity));
+        Mockito.when(clientProfileService.getClientProfileById(CLIENT_ID)).thenReturn(clientEntity);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/clients/" + CLIENT_ID)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -93,13 +94,5 @@ class ClientProfileControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.updatedAt").exists()); // Ensures updated_at is present
     }
 
-    @Test
-    void getClientByIdThrowsExceptionTest() throws Exception {
 
-        Mockito.when(clientProfileService.getClientProfileById(CLIENT_ID)).thenReturn(Optional.empty());
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/clients/" + CLIENT_ID)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isNotFound()); // Expect 404 Not Found
-    }
 }

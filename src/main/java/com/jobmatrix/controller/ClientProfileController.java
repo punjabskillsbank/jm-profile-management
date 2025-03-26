@@ -27,8 +27,7 @@ public class ClientProfileController {
 
     @GetMapping("/{clientId}")
     public ResponseEntity<Client> getClientProfileById(@PathVariable UUID clientId){
-        Client client = clientProfileService.getClientProfileById(clientId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Client not found at given clientId"));
+        Client client = clientProfileService.getClientProfileById(clientId);
         return ResponseEntity.ok(client);
     }
 

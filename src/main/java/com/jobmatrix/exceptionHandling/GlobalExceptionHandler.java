@@ -1,5 +1,6 @@
 package com.jobmatrix.exceptionHandling;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -18,7 +19,11 @@ public class GlobalExceptionHandler {
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
             errors.put(error.getField(), error.getDefaultMessage());
         }
-
         return ResponseEntity.badRequest().body(errors); // Returns HTTP 400 Bad Request
+    }
+
+    @ExceptionHandler(ClientNotFoundException.class)
+    public ResponseEntity<String> handleClientNotFoundException(ClientNotFoundException ex){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 }
