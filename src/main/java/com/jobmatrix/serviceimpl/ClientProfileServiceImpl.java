@@ -1,10 +1,12 @@
 package com.jobmatrix.serviceimpl;
 
 import com.jobmatrix.dto.ClientDTO;
+import com.jobmatrix.dto.ClientUpdateRequest;
 import com.jobmatrix.entity.Client;
 import com.jobmatrix.exceptionHandling.ClientNotFoundException;
 import com.jobmatrix.repository.ClientProfileRepository;
 import com.jobmatrix.service.ClientProfileService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -31,6 +33,19 @@ public class ClientProfileServiceImpl implements ClientProfileService {
 
         return clientProfileRepository.findById(clientId)
                 .orElseThrow(() -> new ClientNotFoundException(clientId));
+    }
+
+    @Transactional
+    @Override
+    public Client updateClientProfile(UUID client_id, ClientUpdateRequest clientUpdateRequest){
+
+        Client tempClient = clientProfileRepository.findById(client_id)
+                .orElseThrow(() -> new ClientNotFoundException(client_id));
+
+        modelMapper.getConfiguration().setSkipNullEnabled(true);
+        modelMapper.map(clientUpdateRequest, tempClient);
+
+        return clientProfileRepository.save(tempClient);
     }
 
 }
