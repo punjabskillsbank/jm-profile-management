@@ -23,7 +23,7 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
     @Transactional
     public FreelancerDTO createFreelancerProfile(FreelancerDTO freelancerDTO) {
         Freelancer freelancer = freelancerRepository.save(modelMapper.map(freelancerDTO, Freelancer.class));
-        logger.info("Freelancer profile created successfully with id: " + freelancer.getUserID());
+        logger.info("Freelancer profile created successfully with id: " + freelancer.getFreelancerId());
         return modelMapper.map(freelancer, FreelancerDTO.class);
     }
 }

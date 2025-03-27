@@ -2,13 +2,13 @@ package com.jobmatrix.dto;
 
 import com.common.enums.ProfileStatus;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.Positive;
+import lombok.*;
 
+import java.security.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,17 +16,19 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder(toBuilder = true)
 public class FreelancerDTO {
-    @NotNull(message = "userID cannot be null.")
-    private UUID userID;
+    @NotNull(message = "freelancerId cannot be null.")
+    private UUID freelancerId;
 
-    @NotNull(message = "title cannot be null.")
+    @NotBlank(message = "title cannot be null.")
     private String title;
 
     @NotNull(message = "bio cannot be null.")
     private String bio;
 
     @NotNull(message = "hourlyRate cannot be null.")
+    @Positive(message = "hourlyRate must be greater than 0.")
     private Double hourlyRate;
     private String address;
     private String city;

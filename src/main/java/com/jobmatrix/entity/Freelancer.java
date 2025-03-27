@@ -22,7 +22,7 @@ public class Freelancer {
 
     @Id
     @Column(nullable = false, name = "user_id", updatable = false)
-    private UUID userID;
+    private UUID freelancerId;
 
     @Column(name = "title")
     private String title;
