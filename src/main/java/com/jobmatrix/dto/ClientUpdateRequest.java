@@ -2,11 +2,13 @@ package com.jobmatrix.dto;
 
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
 public class ClientUpdateRequest {
 
     @Pattern(regexp = "^(\\+91)?[6789]\\d{9}$", message= "Please enter a valid Phone Number")
