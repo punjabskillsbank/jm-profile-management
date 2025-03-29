@@ -32,4 +32,10 @@ public class ClientProfileController {
         return ResponseEntity.ok(client);
     }
 
+    @DeleteMapping("/{clientId}")
+    public ResponseEntity<String> deleteClientProfileById(@PathVariable UUID clientId){
+        clientProfileService.deleteClientProfileById(clientId);
+        return ResponseEntity.ok("Client profile deleted successfully");
+    }
+
 }

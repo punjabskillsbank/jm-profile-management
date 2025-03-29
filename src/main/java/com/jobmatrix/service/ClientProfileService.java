@@ -8,4 +8,5 @@ import java.util.UUID;
 public interface ClientProfileService {
     Client saveClientProfile(ClientDTO dto);
     Client getClientProfileById(UUID clientId);
+    void deleteClientProfileById(UUID clientId);
 }

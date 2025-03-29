@@ -109,4 +109,25 @@ class ClientProfileServiceImplTest {
         verify(clientProfileRepository, times(1)).findById(CLIENT_ID);
     }
 
+    @Test
+    void deleteClientProfileById_shouldDeleteClientEntity() {
+        when(clientProfileRepository.findById(CLIENT_ID)).thenReturn(Optional.of(clientEntity));
+
+        clientProfileService.deleteClientProfileById(CLIENT_ID);
+
+        verify(clientProfileRepository, times(1)).delete(clientEntity);
+    }
+
+    @Test
+    void deleteClientProfileById_shouldThrowClientNotFoundException() {
+        when(clientProfileRepository.findById(CLIENT_ID)).thenReturn(Optional.empty());
+
+        ClientNotFoundException exception = assertThrows(
+                ClientNotFoundException.class,
+                () -> clientProfileService.deleteClientProfileById(CLIENT_ID)
+        );
+
+        verify(clientProfileRepository, never()).deleteById(CLIENT_ID);
+    }
+
 }

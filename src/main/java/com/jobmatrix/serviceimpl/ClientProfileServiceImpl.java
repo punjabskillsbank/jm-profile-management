@@ -34,4 +34,13 @@ public class ClientProfileServiceImpl implements ClientProfileService {
                 .orElseThrow(() -> new ClientNotFoundException(clientId));
     }
 
+    @Override
+    public void deleteClientProfileById(UUID clientId) {
+
+        Client tempClient = clientProfileRepository.findById(clientId)
+                .orElseThrow(()-> new ClientNotFoundException(clientId));
+
+        clientProfileRepository.delete(tempClient);
+    }
+
 }

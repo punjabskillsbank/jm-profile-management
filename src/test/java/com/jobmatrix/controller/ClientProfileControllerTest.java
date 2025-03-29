@@ -21,6 +21,8 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.mockito.Mockito.*;
+
 @WebMvcTest(ClientProfileController.class)
 class ClientProfileControllerTest {
 
@@ -92,6 +94,19 @@ class ClientProfileControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.address").value("123, MG Road, Bangalore, Karnataka, India"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.createdAt").exists()) // Ensures created_at is present
                 .andExpect(MockMvcResultMatchers.jsonPath("$.updatedAt").exists()); // Ensures updated_at is present
+    }
+
+    @Test
+    void deleteClientProfileTest() throws Exception {
+
+        doNothing().when(clientProfileService).deleteClientProfileById(CLIENT_ID);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/clients/" + CLIENT_ID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(MockMvcResultMatchers.status().isOk());
+
+        verify(clientProfileService,times(1)).deleteClientProfileById(CLIENT_ID);
+
     }
 
 
