@@ -15,7 +15,11 @@ import java.util.UUID;
 public class Freelancer {
 
     @Id
+<<<<<<< HEAD
     @Column(nullable = false, name = "freelancer_id", updatable = false)
+=======
+    @Column(nullable = false, name = "user_id", updatable = false)
+>>>>>>> 4081ec6b1190e2aed7942a0e690182794161589b
     private UUID freelancerId;
 
     @Column(nullable = false)

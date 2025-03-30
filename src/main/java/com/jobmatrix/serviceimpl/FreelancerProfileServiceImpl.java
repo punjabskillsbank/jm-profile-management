@@ -18,9 +18,15 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
 
     @Override
     public FreelancerDTO createFreelancerProfile(FreelancerDTO freelancerDTO) {
+<<<<<<< HEAD
         Freelancer freelancer = convertToEntity(freelancerDTO);
         Freelancer savedFreelancer = freelancerProfileRepository.save(freelancer);
         return convertToDTO(savedFreelancer);
+=======
+        Freelancer freelancer = freelancerRepository.save(modelMapper.map(freelancerDTO, Freelancer.class));
+        logger.info("Freelancer profile created successfully with id: " + freelancer.getFreelancerId());
+        return modelMapper.map(freelancer, FreelancerDTO.class);
+>>>>>>> 4081ec6b1190e2aed7942a0e690182794161589b
     }
 
     @Override

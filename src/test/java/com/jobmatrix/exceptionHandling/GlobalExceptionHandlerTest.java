@@ -28,6 +28,8 @@ class GlobalExceptionHandlerTest {
     @MockBean
     private ClientProfileService clientProfileService;
 
+    private final UUID CLIENT_ID = UUID.randomUUID();
+
     @Test
     void shouldReturnValidationErrors_whenInvalidInputGiven() throws Exception {
 
@@ -46,6 +48,18 @@ class GlobalExceptionHandlerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.companyName").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.companySize").exists());
 
+    }
+
+    @Test
+    void shouldReturnClientNotFoundException_whenClientNotFound() throws Exception {
+
+        Mockito.when(clientProfileService.getClientProfileById(CLIENT_ID))
+                .thenThrow(new ClientNotFoundException(CLIENT_ID));
+
+        //Send a GET request with invalid client ID
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/clients/" + CLIENT_ID))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().string("Client not found at given clientId: " + CLIENT_ID));
     }
 
 }
