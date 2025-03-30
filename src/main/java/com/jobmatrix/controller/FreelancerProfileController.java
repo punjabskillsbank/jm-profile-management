@@ -21,6 +21,7 @@ import java.util.UUID;
 @Tag(name = "Freelancer Profile Management", description = "Operations related to freelancer profile management")
 public class FreelancerProfileController {
 
+
     private final FreelancerProfileService freelancerProfileService;
 
     // POST mapping to save the freelancer profile data in database
