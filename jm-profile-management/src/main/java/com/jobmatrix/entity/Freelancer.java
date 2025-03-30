@@ -13,10 +13,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Freelancer {
-
     @Id
-    @Column(nullable = false, name = "freelancer_id", updatable = false)
-    private UUID freelancerId;
+    @Column(nullable = false, name = "user_id", updatable = false)
+    private UUID userId;
 
     @Column(nullable = false)
     private String title;
@@ -61,5 +60,4 @@ public class Freelancer {
 
     @Column(nullable = false)
     private Boolean isAbcMember;
-
-}
+}  

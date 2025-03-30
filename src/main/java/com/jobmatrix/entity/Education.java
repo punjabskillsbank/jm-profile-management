@@ -37,8 +37,8 @@ public class Education {
     @Column(name = "end_year")
     private Integer endYear;
 
-    @Column(name = "user_id")
-    private UUID userId;
+    @Column(name = "freelancer_id")
+    private UUID freelancerId;
 
     @Column(name = "created_at")
     private Timestamp createdAt;
@@ -47,6 +47,6 @@ public class Education {
     private Timestamp updatedAt;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "freelancer_id", referencedColumnName = "freelancer_id", insertable = false, updatable = false)
     private Freelancer freelancer;
 }

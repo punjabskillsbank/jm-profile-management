@@ -12,7 +12,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+
 import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -32,7 +34,6 @@ class ClientProfileServiceImplTest {
     private final UUID CLIENT_ID = UUID.randomUUID();
     private Client clientEntity;
     private ClientDTO clientDTO;
-    private IllegalArgumentException exception;
 
     @BeforeEach
     void setup(){
@@ -41,38 +42,43 @@ class ClientProfileServiceImplTest {
     }
 
     @Test
-    void saveClientProfile_shouldSaveAndReturnClientEntity(){
-
+    void saveClientProfile_shouldSaveAndReturnClientDTO() {
+        // Mock the mapping and repository behavior
         when(modelMapper.map(clientDTO, Client.class)).thenReturn(clientEntity);
         when(clientProfileRepository.save(any(Client.class))).thenReturn(clientEntity);
+        when(modelMapper.map(clientEntity, ClientDTO.class)).thenReturn(clientDTO);
 
-        Client savedClientEntity = clientProfileService.saveClientProfile(clientDTO);
+        // Use ClientDTO in the assertion
+        ClientDTO savedClientDTO = clientProfileService.saveClientProfile(clientDTO);
 
-        assertNotNull(savedClientEntity);
-        assertEquals(clientDTO.getClientId(), savedClientEntity.getClientId());
-        assertEquals(clientDTO.getPhoneNumber(), savedClientEntity.getPhoneNumber());
-        assertEquals(clientDTO.getBio(), savedClientEntity.getBio());
-        assertEquals(clientDTO.getCompanyName(), savedClientEntity.getCompanyName());
-        assertEquals(clientDTO.getState(), savedClientEntity.getState());
-        assertEquals(clientDTO.getPostalCode(), savedClientEntity.getPostalCode());
+        assertNotNull(savedClientDTO);
+        assertEquals(clientDTO.getClientId(), savedClientDTO.getClientId());
+        assertEquals(clientDTO.getPhoneNumber(), savedClientDTO.getPhoneNumber());
+        assertEquals(clientDTO.getBio(), savedClientDTO.getBio());
+        assertEquals(clientDTO.getCompanyName(), savedClientDTO.getCompanyName());
+        assertEquals(clientDTO.getState(), savedClientDTO.getState());
+        assertEquals(clientDTO.getPostalCode(), savedClientDTO.getPostalCode());
 
-        assertNotNull(savedClientEntity.getCreatedAt());
-        assertNotNull(savedClientEntity.getUpdatedAt());
+        assertNotNull(savedClientDTO.getCreatedAt());
+        assertNotNull(savedClientDTO.getUpdatedAt());
 
         verify(modelMapper, times(1)).map(clientDTO, Client.class);
         verify(clientProfileRepository, times(1)).save(any(Client.class));
+        verify(modelMapper, times(1)).map(clientEntity, ClientDTO.class);
     }
 
     @Test
-    void saveClientProfile_user_idShouldNotBeNull(){
+    void saveClientProfile_user_idShouldNotBeNull() {
         clientDTO.setClientId(null);
-        when(modelMapper.map(clientDTO, Client.class)).thenThrow(new IllegalArgumentException("client_id cannot be null."));
+        when(modelMapper.map(clientDTO, Client.class))
+                .thenThrow(new IllegalArgumentException("client_id cannot be null."));
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> clientProfileService.saveClientProfile(clientDTO),
                 "client_id cannot be null."
         );
+
         assertEquals("client_id cannot be null.", exception.getMessage());
         verify(clientProfileRepository, never()).save(any(Client.class));
     }

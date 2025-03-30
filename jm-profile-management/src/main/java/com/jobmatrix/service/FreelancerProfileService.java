@@ -2,12 +2,12 @@ package com.jobmatrix.service;
 
 import com.jobmatrix.dto.FreelancerDTO;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface FreelancerProfileService {
     FreelancerDTO createFreelancerProfile(FreelancerDTO freelancerDTO);
-    FreelancerDTO getFreelancerProfile(UUID freelancerId);
-    Optional<FreelancerDTO> getFreelancerProfileById(UUID id);
+    FreelancerDTO getFreelancerProfile(UUID userId);
     List<FreelancerDTO> getAllFreelancerProfiles();
-}
+    FreelancerDTO updateFreelancerProfile(UUID userId, FreelancerDTO freelancerDTO);
+    void deleteFreelancerProfile(UUID userId);
+} 

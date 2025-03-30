@@ -24,10 +24,10 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
     }
 
     @Override
-    public FreelancerDTO getFreelancerProfile(UUID freelancerId) {
-        return freelancerProfileRepository.findById(freelancerId)
+    public FreelancerDTO getFreelancerProfile(UUID userId) {
+        return freelancerProfileRepository.findById(userId)
                 .map(this::convertToDTO)
-                .orElseThrow(() -> new RuntimeException("Freelancer not found with ID: " + freelancerId));
+                .orElseThrow(() -> new RuntimeException("Freelancer not found with ID: " + userId));
     }
 
     @Override
@@ -38,9 +38,9 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
     }
 
     @Override
-    public FreelancerDTO updateFreelancerProfile(UUID freelancerId, FreelancerDTO freelancerDTO) {
-        Freelancer existingFreelancer = freelancerProfileRepository.findById(freelancerId)
-                .orElseThrow(() -> new RuntimeException("Freelancer not found with ID: " + freelancerId));
+    public FreelancerDTO updateFreelancerProfile(UUID userId, FreelancerDTO freelancerDTO) {
+        Freelancer existingFreelancer = freelancerProfileRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Freelancer not found with ID: " + userId));
         
         updateFreelancerFromDTO(existingFreelancer, freelancerDTO);
         Freelancer updatedFreelancer = freelancerProfileRepository.save(existingFreelancer);
@@ -48,16 +48,16 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
     }
 
     @Override
-    public void deleteFreelancerProfile(UUID freelancerId) {
-        if (!freelancerProfileRepository.existsById(freelancerId)) {
-            throw new RuntimeException("Freelancer not found with ID: " + freelancerId);
+    public void deleteFreelancerProfile(UUID userId) {
+        if (!freelancerProfileRepository.existsById(userId)) {
+            throw new RuntimeException("Freelancer not found with ID: " + userId);
         }
-        freelancerProfileRepository.deleteById(freelancerId);
+        freelancerProfileRepository.deleteById(userId);
     }
 
     private Freelancer convertToEntity(FreelancerDTO dto) {
         Freelancer freelancer = new Freelancer();
-        freelancer.setFreelancerId(dto.getFreelancerId());
+        freelancer.setUserId(dto.getUserId());
         freelancer.setTitle(dto.getTitle());
         freelancer.setBio(dto.getBio());
         freelancer.setHourlyRate(dto.getHourlyRate());
@@ -75,7 +75,7 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
 
     private FreelancerDTO convertToDTO(Freelancer freelancer) {
         FreelancerDTO dto = new FreelancerDTO();
-        dto.setFreelancerId(freelancer.getFreelancerId());
+        dto.setUserId(freelancer.getUserId());
         dto.setTitle(freelancer.getTitle());
         dto.setBio(freelancer.getBio());
         dto.setHourlyRate(freelancer.getHourlyRate());
@@ -105,4 +105,4 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
         freelancer.setProfileStatus(dto.getProfileStatus());
         freelancer.setIsAbcMember(dto.getIsAbcMember());
     }
-}  
+} 

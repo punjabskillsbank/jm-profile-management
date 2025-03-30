@@ -3,7 +3,6 @@ package com.jobmatrix.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -11,7 +10,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FreelancerDTO {
-    private UUID freelancerId;
+    private UUID userId;
     private String title;
     private String bio;
     private Double hourlyRate;
@@ -27,4 +26,4 @@ public class FreelancerDTO {
     private List<CertificateDTO> certificates;
     private String profileStatus;
     private Boolean isAbcMember;
-}
+} 
