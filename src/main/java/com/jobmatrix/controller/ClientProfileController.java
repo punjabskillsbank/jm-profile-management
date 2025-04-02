@@ -1,5 +1,6 @@
 package com.jobmatrix.controller;
 
+import com.jobmatrix.dto.ClientUpdateRequest;
 import com.jobmatrix.entity.Client;
 import com.jobmatrix.dto.ClientDTO;
 import com.jobmatrix.service.ClientProfileService;
@@ -31,5 +32,15 @@ public class ClientProfileController {
         Client client = clientProfileService.getClientProfileById(clientId);
         return ResponseEntity.ok(client);
     }
+
+    @PatchMapping("/{client_id}")
+    public ResponseEntity<Client> updateClientProfile(
+            @PathVariable UUID client_id,
+            @Valid @RequestBody ClientUpdateRequest clientUpdateRequest
+    ){
+        Client updatedClient = clientProfileService.updateClientProfile(client_id, clientUpdateRequest);
+        return ResponseEntity.ok(updatedClient);
+    }
+
 
 }
