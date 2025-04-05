@@ -27,18 +27,18 @@ public class UserProfileControllerTest {
     private final UUID USER_ID = UUID.randomUUID();
 
     @Test
-    public void testSoftDeleteUserProfile() throws Exception {
+    public void testSoftDeleteUserAccount() throws Exception {
 
         User updatedUserEntity = UserTestDataFactory.createUserEntity(USER_ID);
         updatedUserEntity.setAccountStatus(AccountStatus.TO_BE_DELETED);
 
-        Mockito.when(userAccountService.updateUserProfile(USER_ID)).thenReturn(updatedUserEntity);
+        Mockito.when(userAccountService.updateUserAccount(USER_ID)).thenReturn(updatedUserEntity);
         mockMvc.perform(MockMvcRequestBuilders.patch("/api/users/soft_delete/{userId}", USER_ID))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.userId").value(USER_ID.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.accountStatus").value(AccountStatus.TO_BE_DELETED.toString()));
 
-        Mockito.verify(userAccountService, Mockito.times(1)).updateUserProfile(USER_ID);
+        Mockito.verify(userAccountService, Mockito.times(1)).updateUserAccount(USER_ID);
     }
 
 

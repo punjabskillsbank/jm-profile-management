@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class UserProfileServiceImplTest {
+public class UserAccountServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
@@ -36,7 +36,7 @@ public class UserProfileServiceImplTest {
     }
 
     @Test
-    void updateUserProfile_shouldSoftDeleteAndReturnUser() {
+    void updateUserAccount_shouldSoftDeleteAndReturnUser() {
 
         User existingUser = userEntity;
 
@@ -54,7 +54,7 @@ public class UserProfileServiceImplTest {
         when(userRepository.findById(USER_ID)).thenReturn(Optional.of(existingUser));
 
         when(userRepository.save(existingUser)).thenReturn(updatedUser);
-        User result = userAccountService.updateUserProfile(USER_ID);
+        User result = userAccountService.updateUserAccount(USER_ID);
 
         assertNotNull(result);
         assertEquals(AccountStatus.TO_BE_DELETED, result.getAccountStatus());
@@ -64,12 +64,12 @@ public class UserProfileServiceImplTest {
     }
 
     @Test
-    void updateUserProfile_userNotFound(){
+    void updateUserAccount_userNotFound(){
 
         when(userRepository.findById(USER_ID)).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class,
-                () -> userAccountService.updateUserProfile(USER_ID) );
+                () -> userAccountService.updateUserAccount(USER_ID) );
 
         verify(userRepository, times(1)).findById(USER_ID);
         verify(userRepository, never()).save(any(User.class));

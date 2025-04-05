@@ -19,10 +19,10 @@ public class UserAccountController {
     private final UserAccountServiceImpl userAccountService;
 
     @PatchMapping("/soft_delete/{userId}")
-    public ResponseEntity<User> softDeleteUserProfile(
+    public ResponseEntity<User> softDeleteUserAccount(
             @PathVariable UUID userId) {
 
-        User user = userAccountService.updateUserProfile(userId);
+        User user = userAccountService.updateUserAccount(userId);
         return ResponseEntity.ok(user);
     }
 }

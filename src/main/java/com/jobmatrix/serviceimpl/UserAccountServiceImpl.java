@@ -19,7 +19,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 
     @Transactional
     @Override
-    public User updateUserProfile(UUID userId) {
+    public User updateUserAccount(UUID userId) {
 
         User tempUser = userRepository.findById(userId)
                 .orElseThrow( ()-> new UserNotFoundException(userId));

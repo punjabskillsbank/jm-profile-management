@@ -6,5 +6,5 @@ import java.util.UUID;
 
 public interface UserAccountService {
 
-    User updateUserProfile(UUID userId);
+    User updateUserAccount(UUID userId);
 }
