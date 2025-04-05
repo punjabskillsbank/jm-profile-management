@@ -1,7 +1,7 @@
 package com.jobmatrix.controller;
 
 import com.jobmatrix.entity.User;
-import com.jobmatrix.serviceimpl.UserProfileServiceImpl;
+import com.jobmatrix.serviceimpl.UserAccountServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -14,15 +14,15 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/users/")
 @RequiredArgsConstructor
-public class UserProfileController {
+public class UserAccountController {
 
-    private final UserProfileServiceImpl userProfileService;
+    private final UserAccountServiceImpl userAccountService;
 
     @PatchMapping("/soft_delete/{userId}")
     public ResponseEntity<User> softDeleteUserProfile(
             @PathVariable UUID userId) {
 
-        User user = userProfileService.updateUserProfile(userId);
+        User user = userAccountService.updateUserProfile(userId);
         return ResponseEntity.ok(user);
     }
 }

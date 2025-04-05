@@ -4,7 +4,7 @@ import com.common.enums.AccountStatus;
 import com.jobmatrix.entity.User;
 import com.jobmatrix.exceptionHandling.UserNotFoundException;
 import com.jobmatrix.repository.UserRepository;
-import com.jobmatrix.service.UserProfileService;
+import com.jobmatrix.service.UserAccountService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class UserProfileServiceImpl implements UserProfileService {
+public class UserAccountServiceImpl implements UserAccountService {
 
     private final UserRepository userRepository;
 

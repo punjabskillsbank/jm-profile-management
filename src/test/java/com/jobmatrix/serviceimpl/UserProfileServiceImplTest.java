@@ -25,7 +25,7 @@ public class UserProfileServiceImplTest {
     private UserRepository userRepository;
 
     @InjectMocks
-    private UserProfileServiceImpl userProfileServiceImpl;
+    private UserAccountServiceImpl userAccountService;
 
     private final UUID USER_ID = UUID.randomUUID();
     private User userEntity;
@@ -54,7 +54,7 @@ public class UserProfileServiceImplTest {
         when(userRepository.findById(USER_ID)).thenReturn(Optional.of(existingUser));
 
         when(userRepository.save(existingUser)).thenReturn(updatedUser);
-        User result = userProfileServiceImpl.updateUserProfile(USER_ID);
+        User result = userAccountService.updateUserProfile(USER_ID);
 
         assertNotNull(result);
         assertEquals(AccountStatus.TO_BE_DELETED, result.getAccountStatus());
@@ -69,7 +69,7 @@ public class UserProfileServiceImplTest {
         when(userRepository.findById(USER_ID)).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class,
-                () -> userProfileServiceImpl.updateUserProfile(USER_ID) );
+                () -> userAccountService.updateUserProfile(USER_ID) );
 
         verify(userRepository, times(1)).findById(USER_ID);
         verify(userRepository, never()).save(any(User.class));
