@@ -2,6 +2,9 @@ package com.jobmatrix.serviceimpl;
 
 import com.common.enums.ProfileStatus;
 import com.jobmatrix.dto.FreelancerDTO;
+import com.jobmatrix.entity.Freelancer;
+import com.jobmatrix.exception.UserNotFoundException;
+import com.jobmatrix.repository.FreelancerRepository;
 import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -9,13 +12,31 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class FreelancerProfileServiceImplTest {
+
+    @Mock
+    private FreelancerRepository freelancerRepository;
+
+    @Mock
+    private ModelMapper modelMapper;
+
+    @InjectMocks
+    private FreelancerProfileServiceImpl freelancerProfileService;
 
     private Validator validator;
 
@@ -85,5 +106,42 @@ class FreelancerProfileServiceImplTest {
         Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
         assertFalse(violations.isEmpty());
         assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Please enter a valid Phone Number")));
+    }
+
+    @Test
+    void getFreelancerProfile_WhenFreelancerExists_ShouldReturnFreelancerDTO() {
+        // Arrange
+        UUID freelancerId = UUID.randomUUID();
+        Freelancer freelancer = new Freelancer();
+        FreelancerDTO expectedDTO = FreelancerTestDataFactory.createFreelancerDTO(freelancerId);
+
+        when(freelancerRepository.findById(freelancerId)).thenReturn(Optional.of(freelancer));
+        when(modelMapper.map(freelancer, FreelancerDTO.class)).thenReturn(expectedDTO);
+
+        // Act
+        FreelancerDTO result = freelancerProfileService.getFreelancerProfile(freelancerId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(expectedDTO, result);
+        verify(freelancerRepository).findById(freelancerId);
+        verify(modelMapper).map(freelancer, FreelancerDTO.class);
+    }
+
+    @Test
+    void getFreelancerProfile_WhenFreelancerDoesNotExist_ShouldThrowUserNotFoundException() {
+        // Arrange
+        UUID freelancerId = UUID.randomUUID();
+        when(freelancerRepository.findById(freelancerId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        UserNotFoundException exception = assertThrows(
+            UserNotFoundException.class,
+            () -> freelancerProfileService.getFreelancerProfile(freelancerId)
+        );
+
+        assertEquals("Freelancer not found with ID: " + freelancerId, exception.getMessage());
+        verify(freelancerRepository).findById(freelancerId);
+        verify(modelMapper, never()).map(any(), any());
     }
 }
