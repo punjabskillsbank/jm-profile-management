@@ -3,7 +3,7 @@ package com.jobmatrix.serviceimpl;
 import com.common.enums.AccountStatus;
 import com.jobmatrix.entity.User;
 import com.jobmatrix.exceptionHandling.UserNotFoundException;
-import com.jobmatrix.repository.UserRepository;
+import com.jobmatrix.repository.UserAccountRepository;
 import com.jobmatrix.test_utils.factory.UserTestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 public class UserAccountServiceImplTest {
 
     @Mock
-    private UserRepository userRepository;
+    private UserAccountRepository userAccountRepository;
 
     @InjectMocks
     private UserAccountServiceImpl userAccountService;
@@ -51,27 +51,27 @@ public class UserAccountServiceImplTest {
                 .updatedAt(java.time.LocalDateTime.now())
                 .build();
 
-        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(existingUser));
+        when(userAccountRepository.findById(USER_ID)).thenReturn(Optional.of(existingUser));
 
-        when(userRepository.save(existingUser)).thenReturn(updatedUser);
+        when(userAccountRepository.save(existingUser)).thenReturn(updatedUser);
         User result = userAccountService.updateUserAccount(USER_ID);
 
         assertNotNull(result);
         assertEquals(AccountStatus.TO_BE_DELETED, result.getAccountStatus());
 
-        verify(userRepository, times(1)).findById(USER_ID);
-        verify(userRepository, times(1)).save(any(User.class));
+        verify(userAccountRepository, times(1)).findById(USER_ID);
+        verify(userAccountRepository, times(1)).save(any(User.class));
     }
 
     @Test
     void updateUserAccount_userNotFound(){
 
-        when(userRepository.findById(USER_ID)).thenReturn(Optional.empty());
+        when(userAccountRepository.findById(USER_ID)).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class,
                 () -> userAccountService.updateUserAccount(USER_ID) );
 
-        verify(userRepository, times(1)).findById(USER_ID);
-        verify(userRepository, never()).save(any(User.class));
+        verify(userAccountRepository, times(1)).findById(USER_ID);
+        verify(userAccountRepository, never()).save(any(User.class));
     }
 }
