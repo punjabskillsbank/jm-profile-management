@@ -47,6 +47,6 @@ public class Certificate {
     private Timestamp updatedAt;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "freelancer_id", referencedColumnName = "freelancer_id", insertable = false, updatable = false)
     private Freelancer freelancer;
 }

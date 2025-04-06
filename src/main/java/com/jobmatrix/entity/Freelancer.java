@@ -20,7 +20,7 @@ import java.util.UUID;
 public class Freelancer {
 
     @Id
-    @Column(nullable = false, name = "user_id", updatable = false)
+    @Column(nullable = false, name = "freelancer_id", updatable = false)
     private UUID freelancerId;
 
     @Column(name = "title")
