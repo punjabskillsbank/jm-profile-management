@@ -29,7 +29,7 @@ class CertificateDTOTest {
         assertNull(dto.getIssueDate());
         assertNull(dto.getExpiryDate());
         assertNull(dto.getCredentialUrl());
-        assertNull(dto.getUserId());
+        assertNull(dto.getFreelancerId());
     }
 
     @Test
@@ -50,7 +50,7 @@ class CertificateDTOTest {
         assertEquals(issueDate, dto.getIssueDate());
         assertEquals(expiryDate, dto.getExpiryDate());
         assertEquals(credentialUrl, dto.getCredentialUrl());
-        assertEquals(userId, dto.getUserId());
+        assertEquals(userId, dto.getFreelancerId());
     }
 
     @Test
@@ -69,7 +69,7 @@ class CertificateDTOTest {
         certificateDTO.setIssueDate(issueDate);
         certificateDTO.setExpiryDate(expiryDate);
         certificateDTO.setCredentialUrl(credentialUrl);
-        certificateDTO.setUserId(userId);
+        certificateDTO.setFreelancerId(userId);
 
         assertEquals(certificateId, certificateDTO.getCertificateId());
         assertEquals(certificateName, certificateDTO.getCertificateName());
@@ -77,7 +77,7 @@ class CertificateDTOTest {
         assertEquals(issueDate, certificateDTO.getIssueDate());
         assertEquals(expiryDate, certificateDTO.getExpiryDate());
         assertEquals(credentialUrl, certificateDTO.getCredentialUrl());
-        assertEquals(userId, certificateDTO.getUserId());
+        assertEquals(userId, certificateDTO.getFreelancerId());
     }
 
     @Test
@@ -108,8 +108,8 @@ class CertificateDTOTest {
     void testUUIDHandling() {
         UUID uuid1 = UUID.randomUUID();
 
-        certificateDTO.setUserId(uuid1);
-        assertEquals(uuid1, certificateDTO.getUserId());
+        certificateDTO.setFreelancerId(uuid1);
+        assertEquals(uuid1, certificateDTO.getFreelancerId());
     }
 
     @Test
