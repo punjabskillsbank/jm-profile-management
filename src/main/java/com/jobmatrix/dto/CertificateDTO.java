@@ -19,5 +19,5 @@ public class CertificateDTO {
     private Date issueDate;
     private Date expiryDate;
     private String credentialUrl;
-    private UUID userId;
+    private UUID freelancerId;
 }
