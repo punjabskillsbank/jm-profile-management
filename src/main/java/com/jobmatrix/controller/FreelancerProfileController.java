@@ -38,19 +38,10 @@ public class FreelancerProfileController {
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/{freelancerId}")
-    public ResponseEntity<FreelancerDTO> getFreelancerProfile(@PathVariable UUID freelancerId) {
-        FreelancerDTO freelancer = freelancerProfileService.getFreelancerProfile(freelancerId);
-        return ResponseEntity.ok(freelancer);
+    public ResponseEntity<FreelancerDTO> getFreelancerProfileById(@PathVariable UUID freelancerId) {
+        FreelancerDTO freelancerDTO = freelancerProfileService.getFreelancerProfileById(freelancerId);
+        return ResponseEntity.ok(freelancerDTO);
     }
 
-    @Operation(summary = "Get all freelancer profiles", description = "Retrieve all freelancer profiles from the database")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Freelancer profiles retrieved successfully"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    @GetMapping
-    public ResponseEntity<List<FreelancerDTO>> getAllFreelancerProfiles() {
-        List<FreelancerDTO> freelancers = freelancerProfileService.getAllFreelancerProfiles();
-        return ResponseEntity.ok(freelancers);
-    }
+   
 }

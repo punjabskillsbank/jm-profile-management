@@ -26,4 +26,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleClientNotFoundException(ClientNotFoundException ex){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
+
+    @ExceptionHandler(FreelancerNotFoundException.class)
+    public ResponseEntity<String> handleFreelancerNotFoundRExcption(FreelancerNotFoundException ex){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
 }

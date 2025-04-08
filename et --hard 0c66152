@@ -1,0 +1,27 @@
+[33mb1db807[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/JMK_32[m[33m, [m[1;31morigin/feature/JMK_32[m[33m)[m JMK_32: Fully reverted changes in Job.java
+[33m516b0a0[m JMK_32: Fully reverted changes in Education.java
+[33m6073850[m JMK_32: Fully reverted changes in Certificate entity
+[33m0c66152[m JMK_32: Added GET mapping for freelancer retrieval by freelancer_id
+[33m48fe72b[m JMK_33: Added GET mapping for freelancer retrieval by freelancer_id
+[33m4081ec6[m[33m ([m[1;31morigin/develop[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge pull request #8 from punjabskillsbank/feature/JMK_31
+[33m534cb09[m Merge pull request #9 from punjabskillsbank/feature/JMK_35
+[33md43c5eb[m JMK_31: Update FreelancerProfileServiceImpl to use test data from FreelancerTestDataFactory
+[33m97ba32c[m JMK_35: changes for Client not found exception handling
+[33m2bef680[m JMK_31: Changes done as per suggestions
+[33m3ac03cd[m JMK_35: added JUnit tests for GET mapping for Client
+[33m2888812[m JMK_35: added GET mapping code for client
+[33m5407a8e[m[33m ([m[1;31morigin/feature/JMK_31[m[33m, [m[1;32mfeature/JMK_31[m[33m)[m JMK_31: test cases changes update of post mapping
+[33mf884152[m JMK_31: Adding unit test cases for the post mapping
+[33m5874d18[m Merge pull request #6 from punjabskillsbank/feature/JMK_20
+[33m8e5901b[m JMK_20: POST mapping for client profile with JUnit tests
+[33m8754f34[m Merge pull request #5 from punjabskillsbank/feature/JMK_26
+[33m9255937[m JMK_26: update file name swaggerConfig to SwaggerConfig
+[33m27199e7[m JMK_26: setting up swagger in jm_profile_management
+[33mcca6902[m Merge pull request #2 from punjabskillsbank/feature/JMK_16
+[33m8c74696[m JMK_16: add validation
+[33m0969206[m JMK_16: add log4j dependency
+[33mcf007c1[m JMK_16: rewrite create freelancer profile logic
+[33m067ad49[m feature/JMK_16: Create a POST mapping of Profile Management service
+[33m1e14b87[m Merge pull request #1 from punjabskillsbank/master
+[33m806166a[m initial commit for the repo
+[33m33dde3e[m Initial commit
