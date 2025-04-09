@@ -26,4 +26,6 @@ public class FreelancerProfileController {
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
+
+    // Demo comment to test the Jenkins
 }
