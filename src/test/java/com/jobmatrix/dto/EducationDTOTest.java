@@ -1,5 +1,6 @@
 package com.jobmatrix.dto;
 
+import com.common.dto.EducationDTO;
 import com.jobmatrix.service.EducationService;
 import com.jobmatrix.serviceimpl.EducationServiceImpl;
 import jakarta.validation.ConstraintViolation;

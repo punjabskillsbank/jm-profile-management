@@ -1,18 +1,15 @@
 package com.jobmatrix.dto;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+import com.common.dto.JobDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class JobDTOTest {

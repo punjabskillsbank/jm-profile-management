@@ -1,6 +1,6 @@
 package com.jobmatrix.controller;
 
-import com.jobmatrix.dto.FreelancerDTO;
+import com.common.dto.FreelancerDTO;
 import com.jobmatrix.service.FreelancerProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

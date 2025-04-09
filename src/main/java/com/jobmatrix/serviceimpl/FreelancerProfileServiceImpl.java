@@ -1,7 +1,7 @@
 package com.jobmatrix.serviceimpl;
 
-import com.jobmatrix.dto.FreelancerDTO;
-import com.jobmatrix.entity.Freelancer;
+import com.common.dto.FreelancerDTO;
+import com.common.entity.Freelancer;
 import com.jobmatrix.repository.FreelancerRepository;
 import com.jobmatrix.service.FreelancerProfileService;
 import jakarta.transaction.Transactional;

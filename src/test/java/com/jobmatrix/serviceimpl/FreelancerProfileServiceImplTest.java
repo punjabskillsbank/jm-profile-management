@@ -1,7 +1,6 @@
 package com.jobmatrix.serviceimpl;
 
-import com.common.enums.ProfileStatus;
-import com.jobmatrix.dto.FreelancerDTO;
+import com.common.dto.FreelancerDTO;
 import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;

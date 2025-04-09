@@ -1,6 +1,6 @@
 package com.jobmatrix.service;
 
-import com.jobmatrix.dto.EducationDTO;
+import com.common.dto.EducationDTO;
 
 public interface EducationService {
     EducationDTO createEducation(EducationDTO educationDTO);
