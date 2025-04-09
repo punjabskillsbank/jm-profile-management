@@ -1,6 +1,7 @@
 package com.jobmatrix.test_utils.factory;
 
 import com.jobmatrix.dto.ClientDTO;
+import com.jobmatrix.dto.ClientUpdateRequest;
 import com.jobmatrix.entity.Client;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -56,5 +57,24 @@ public class ClientTestDataFactory {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
+    }
+
+    public static ClientUpdateRequest createClientUpdateRequest(UUID clientId){
+        return ClientUpdateRequest.builder()
+                .phoneNumber(PHONE_NUMBER)
+                .bio(BIO)
+                .profilePhotoURL(PROFILE_PHOTO_URL)
+                .companyName(COMPANY_NAME)
+                .companySize(COMPANY_SIZE)
+                .industry(INDUSTRY)
+                .timeZone(TIME_ZONE)
+                .city(CITY)
+                .state(STATE)
+                .country(COUNTRY)
+                .postalCode(POSTAL_CODE)
+                .address(ADDRESS)
+                .build();
+
+
     }
 }

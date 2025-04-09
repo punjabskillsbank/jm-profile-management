@@ -19,5 +19,5 @@ public class JobDTO {
     private Date startDate;
     private Date endDate;
     private String jobResponsibilities;
-    private UUID userId;
+    private UUID freelancerId;
 }

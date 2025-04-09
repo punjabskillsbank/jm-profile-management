@@ -50,7 +50,7 @@ class JobDTOTest {
         assertNull(emptyJobDTO.getStartDate());
         assertNull(emptyJobDTO.getEndDate());
         assertNull(emptyJobDTO.getJobResponsibilities());
-        assertNull(emptyJobDTO.getUserId());
+        assertNull(emptyJobDTO.getFreelancerId());
     }
 
     @Test
@@ -74,7 +74,7 @@ class JobDTOTest {
         assertEquals(TEST_START_DATE, jobDTO.getStartDate());
         assertEquals(TEST_END_DATE, jobDTO.getEndDate());
         assertEquals(TEST_JOB_RESPONSIBILITIES, jobDTO.getJobResponsibilities());
-        assertEquals(TEST_USER_ID, jobDTO.getUserId());
+        assertEquals(TEST_USER_ID, jobDTO.getFreelancerId());
     }
 
     @Test
@@ -141,20 +141,20 @@ class JobDTOTest {
     @DisplayName("Test UserId Getter and Setter")
     void testUserIdGetterAndSetter() {
         // Act
-        jobDTO.setUserId(TEST_USER_ID);
+        jobDTO.setFreelancerId(TEST_USER_ID);
 
         // Assert
-        assertEquals(TEST_USER_ID, jobDTO.getUserId());
+        assertEquals(TEST_USER_ID, jobDTO.getFreelancerId());
     }
 
     @Test
     @DisplayName("Test UserId with Mocked UUID")
     void testUserIdWithMockedUUID() {
         // Act
-        jobDTO.setUserId(mockUserId);
+        jobDTO.setFreelancerId(mockUserId);
 
         // Assert
-        assertEquals(mockUserId, jobDTO.getUserId());
+        assertEquals(mockUserId, jobDTO.getFreelancerId());
         verifyNoInteractions(mockUserId); // Verify the mock was not interacted with
     }
 

@@ -2,11 +2,10 @@ package com.jobmatrix.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jobmatrix.dto.ClientDTO;
+import com.jobmatrix.dto.ClientUpdateRequest;
 import com.jobmatrix.entity.Client;
-import com.jobmatrix.exceptionHandling.ClientNotFoundException;
 import com.jobmatrix.service.ClientProfileService;
 import com.jobmatrix.test_utils.factory.ClientTestDataFactory;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +16,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 
 @WebMvcTest(ClientProfileController.class)
@@ -93,6 +90,55 @@ class ClientProfileControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.createdAt").exists()) // Ensures created_at is present
                 .andExpect(MockMvcResultMatchers.jsonPath("$.updatedAt").exists()); // Ensures updated_at is present
     }
+
+    @Test
+    void updateClientProfileTest() throws Exception {
+
+        Client updatedClientEntity = ClientTestDataFactory.createClientEntity(CLIENT_ID);
+
+        updatedClientEntity = updatedClientEntity.toBuilder()
+                .phoneNumber("+919876543210")
+                .bio("Updated bio")
+                .companyName("Updated Company Name Ltd")
+                .build();
+
+        ClientUpdateRequest clientUpdateRequest = ClientTestDataFactory.createClientUpdateRequest(CLIENT_ID);
+
+        clientUpdateRequest = clientUpdateRequest.toBuilder()
+                .phoneNumber("+919876543210")
+                .bio("Updated bio")
+                .companyName("Updated Company Name Ltd")
+                .build();
+
+        Mockito.when(clientProfileService.updateClientProfile(Mockito.eq(CLIENT_ID), Mockito.any(ClientUpdateRequest.class)))
+                .thenReturn(updatedClientEntity);
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/api/clients/" + CLIENT_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(clientUpdateRequest)))
+                .andExpect(MockMvcResultMatchers.status().isOk()) // Expect 200 OK
+                .andExpect(MockMvcResultMatchers.jsonPath("$.clientId").value(CLIENT_ID.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.phoneNumber").value("+919876543210"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.bio").value("Updated bio"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.companyName").value("Updated Company Name Ltd"))
+                //verify other fields remain unchanged
+                .andExpect(MockMvcResultMatchers.jsonPath("$.companySize").value(updatedClientEntity.getCompanySize()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.industry").value(updatedClientEntity.getIndustry()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.timeZone").value(updatedClientEntity.getTimeZone()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.city").value(updatedClientEntity.getCity()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.state").value(updatedClientEntity.getState()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.country").value(updatedClientEntity.getCountry()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.postalCode").value(updatedClientEntity.getPostalCode()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.address").value(updatedClientEntity.getAddress()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.createdAt").exists()) // Ensures created_at is present
+                .andExpect(MockMvcResultMatchers.jsonPath("$.updatedAt").exists()); // Ensures updated_at is present
+
+                Mockito.verify(clientProfileService).updateClientProfile(Mockito.eq(CLIENT_ID), Mockito.any(ClientUpdateRequest.class));
+
+    }
+
+
+
 
 
 }
