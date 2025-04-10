@@ -19,6 +19,7 @@ import java.util.UUID;
 @Table(name = "freelancers")
 public class Freelancer {
 
+
     @Id
     @Column(nullable = false, name = "freelancer_id", updatable = false)
     private UUID freelancerId;
