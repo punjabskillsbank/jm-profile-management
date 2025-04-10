@@ -80,7 +80,7 @@ class FreelancerProfileServiceImplTest {
             () -> freelancerProfileService.getFreelancerProfileById(freelancerId)
         );
 
-        assertEquals("Freelancer not found with ID: " + freelancerId, exception.getMessage());
+        assertEquals("Freelancer not found at given freelancerId: " + freelancerId, exception.getMessage());
         verify(freelancerRepository).findById(freelancerId);
         verify(modelMapper, never()).map(any(), any());
     }
