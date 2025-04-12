@@ -1,9 +1,9 @@
 package com.jobmatrix.test_utils.factory;
 
-import com.jobmatrix.dto.CertificateDTO;
-import com.jobmatrix.dto.EducationDTO;
-import com.jobmatrix.dto.FreelancerDTO;
-import com.jobmatrix.dto.JobDTO;
+import com.common.dto.CertificateDTO;
+import com.common.dto.EducationDTO;
+import com.common.dto.FreelancerDTO;
+import com.common.dto.JobDTO;
 import com.common.enums.ProfileStatus;
 
 import java.sql.Date;

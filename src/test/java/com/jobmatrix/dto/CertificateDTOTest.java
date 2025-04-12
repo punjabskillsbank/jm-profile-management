@@ -1,5 +1,6 @@
 package com.jobmatrix.dto;
 
+import com.common.dto.CertificateDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;

@@ -1,6 +1,6 @@
 package com.jobmatrix.serviceimpl;
 
-import com.jobmatrix.dto.EducationDTO;
+import com.common.dto.EducationDTO;
 import com.jobmatrix.service.EducationService;
 
 public class EducationServiceImpl implements EducationService {
