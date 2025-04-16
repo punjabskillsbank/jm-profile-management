@@ -26,4 +26,6 @@ public class FreelancerProfileController {
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
+    //Demo commit
+
 }
