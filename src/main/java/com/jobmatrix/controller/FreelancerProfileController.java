@@ -25,5 +25,5 @@ public class FreelancerProfileController {
         FreelancerDTO dto = freelancerProfileService.createFreelancerProfile(freelancerDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
-
+    //Demo comment
 }
