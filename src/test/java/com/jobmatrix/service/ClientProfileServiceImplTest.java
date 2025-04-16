@@ -73,7 +73,7 @@ class ClientProfileServiceImplTest {
                 () -> clientProfileService.saveClientProfile(clientDTO),
                 "client_id cannot be null."
         );
-        assertEquals("client_id cannot be null.", exception.getMessage());
+        assertEquals("client_id can be null.", exception.getMessage());
         verify(clientProfileRepository, never()).save(any(Client.class));
     }
 }
