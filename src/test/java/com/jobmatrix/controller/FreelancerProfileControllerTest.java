@@ -1,11 +1,15 @@
 package com.jobmatrix.controller;
 
 import com.common.dto.FreelancerDTO;
+import com.common.entity.Freelancer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jobmatrix.service.FreelancerProfileService;
 import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -15,8 +19,13 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.UUID;
 
+import static org.mockito.Mockito.when;
+
 @WebMvcTest(FreelancerProfileController.class)
 class FreelancerProfileControllerTest {
+
+    @MockitoBean
+    private ModelMapper modelMapper;
 
     @Autowired
     private MockMvc mockMvc;
@@ -28,18 +37,31 @@ class FreelancerProfileControllerTest {
     private FreelancerProfileService freelancerProfileService; // Mock the service layer
 
     private final UUID FREELANCER_ID = UUID.randomUUID();
+    private FreelancerDTO inputFreelancerDTO;
+    private Freelancer savedFreelancer;
+    private FreelancerDTO mappedResponseDTO;
+
+    @BeforeEach
+    void setUp() {
+
+        inputFreelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
+        savedFreelancer = FreelancerTestDataFactory.createFreelancerEntity(FREELANCER_ID);
+        mappedResponseDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
+    }
 
     @Test
     void createFreelancerProfileTest() throws Exception {
-        FreelancerDTO freelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
 
         // Mock service behavior (assuming create returns the created profile)
-        Mockito.when(freelancerProfileService.createFreelancerProfile(Mockito.any(FreelancerDTO.class)))
-                .thenReturn(freelancerDTO);
+        when(freelancerProfileService.createFreelancerProfile(Mockito.any(FreelancerDTO.class)))
+                .thenReturn(savedFreelancer);
+
+        when(modelMapper.map(savedFreelancer, FreelancerDTO.class))
+                .thenReturn(mappedResponseDTO);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/freelancer/create_profile")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(freelancerDTO)))
+                        .content(objectMapper.writeValueAsString(inputFreelancerDTO)))
                 .andExpect(MockMvcResultMatchers.status().isCreated()) // Expect 201 Created
                 .andExpect(MockMvcResultMatchers.jsonPath("$.freelancerId").value(FREELANCER_ID.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("Senior Software Engineer"))

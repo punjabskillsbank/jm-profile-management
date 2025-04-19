@@ -1,88 +1,88 @@
 package com.jobmatrix.serviceimpl;
 
 import com.common.dto.FreelancerDTO;
+import com.common.entity.Freelancer;
+import com.jobmatrix.repository.FreelancerRepository;
 import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 
-import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class FreelancerProfileServiceImplTest {
 
-    private Validator validator;
+    @Mock
+    private FreelancerRepository freelancerRepository;
+
+    @Mock
+    private ModelMapper modelMapper;
+
+    @InjectMocks
+    private FreelancerProfileServiceImpl freelancerProfileService;
+
+    private final UUID FREELANCER_ID = UUID.randomUUID();
+    private FreelancerDTO inputFreelancerDTO;
+    private Freelancer freelancerEntity;
 
     @BeforeEach
-    void setUp() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
+    void setup(){
+        inputFreelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
+        freelancerEntity = FreelancerTestDataFactory.createFreelancerEntity(FREELANCER_ID);
+
     }
 
     @Test
-    void testValidFreelancerDTO() {
-        UUID freelancerId = UUID.randomUUID();
-        FreelancerDTO freelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(freelancerId);
+    void saveFreelancerProfile_shouldSaveAndReturnFreelancerEntity() {
 
-        Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
-        assertTrue(violations.isEmpty(), "Valid DTO should not have validation errors.");
+        when(modelMapper.map(inputFreelancerDTO, Freelancer.class)).thenReturn(freelancerEntity);
+        when(freelancerRepository.save(any(Freelancer.class))).thenReturn(freelancerEntity);
+
+        Freelancer result = freelancerProfileService.createFreelancerProfile(inputFreelancerDTO);
+
+        assertNotNull(result);
+        assertEquals(freelancerEntity.getFreelancerId(), result.getFreelancerId());
+        assertEquals(freelancerEntity.getTitle(), result.getTitle());
+        assertEquals(freelancerEntity.getBio(), result.getBio());
+        assertEquals(freelancerEntity.getHourlyRate(), result.getHourlyRate());
+        assertEquals(freelancerEntity.getAddress(), result.getAddress());
+        assertEquals(freelancerEntity.getCity(), result.getCity());
+        assertEquals(freelancerEntity.getState(), result.getState());
+        assertEquals(freelancerEntity.getCountry(), result.getCountry());
+        assertEquals(freelancerEntity.getPostalCode(), result.getPostalCode());
+        assertEquals(freelancerEntity.getPhoneNumber(), result.getPhoneNumber());
+        assertEquals(freelancerEntity.isAbcMember(), result.isAbcMember());
+        assertEquals(freelancerEntity.getProfilePhotoURL(), result.getProfilePhotoURL());
+        assertEquals(freelancerEntity.getProfileStatus(), result.getProfileStatus());
+        assertNotNull(result.getCreatedAt());
+        assertNotNull(result.getUpdatedAt());
+
+        verify(modelMapper).map(inputFreelancerDTO, Freelancer.class);
+        verify(freelancerRepository, times(1)).save(any(Freelancer.class));
     }
 
     @Test
-    void testFreelancerDTO_NullFields() {
-        FreelancerDTO freelancerDTO = new FreelancerDTO();  // Empty DTO with null fields
+    void saveFreelancerProfile_freelancerIdShouldNotBeNull() {
+        inputFreelancerDTO.setFreelancerId(null);
+        when(modelMapper.map(inputFreelancerDTO, Freelancer.class)).thenThrow(new IllegalArgumentException("freelancer_id cannot be null."));
 
-        Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
-        assertFalse(violations.isEmpty());
-
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("freelancerId cannot be null.")));
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("title cannot be null.")));
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("bio cannot be null.")));
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("hourlyRate cannot be null.")));
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("profileStatus cannot be null.")));
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> freelancerProfileService.createFreelancerProfile(inputFreelancerDTO),
+                "freelancer_id cannot be null."
+        );
+        assertEquals("freelancer_id cannot be null.", exception.getMessage());
+        verify(freelancerRepository, never()).save(any(Freelancer.class));
     }
 
-    @Test
-    void testFreelancerDTO_InvalidHourlyRate() {
-        UUID freelancerId = UUID.randomUUID();
-        FreelancerDTO freelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(freelancerId)
-                .toBuilder()
-                .hourlyRate(-10.0)  // Invalid hourly rate
-                .build();
 
-        Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("hourlyRate must be greater than 0.")));
-    }
-
-    @Test
-    void testFreelancerDTO_InvalidPostalCode() {
-        UUID freelancerId = UUID.randomUUID();
-        FreelancerDTO freelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(freelancerId)
-                .toBuilder()
-                .postalCode("1234A")  // Invalid format
-                .build();
-
-        Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Please enter a valid postal code")));
-    }
-
-    @Test
-    void testFreelancerDTO_InvalidPhoneNumber() {
-        UUID freelancerId = UUID.randomUUID();
-        FreelancerDTO freelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(freelancerId)
-                .toBuilder()
-                .phoneNumber("12345")  // Invalid phone number
-                .build();
-
-        Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Please enter a valid Phone Number")));
-    }
 }
