@@ -160,6 +160,7 @@ class ClientProfileServiceImplTest {
         Client result = clientProfileService.updateClientProfile(CLIENT_ID, clientUpdateRequest);
 
         assertNotNull(result);
+        assertNotNull(result.getUpdatedAt());
         assertEquals("9876543210", result.getPhoneNumber());
         assertEquals("Updated bio", result.getBio());
         assertEquals("Updated Company", result.getCompanyName());

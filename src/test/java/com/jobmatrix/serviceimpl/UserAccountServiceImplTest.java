@@ -57,6 +57,7 @@ public class UserAccountServiceImplTest {
         User result = userAccountService.updateUserAccount(USER_ID);
 
         assertNotNull(result);
+        assertNotNull(result.getUpdatedAt());
         assertEquals(AccountStatus.TO_BE_DELETED, result.getAccountStatus());
 
         verify(userAccountRepository, times(1)).findById(USER_ID);
