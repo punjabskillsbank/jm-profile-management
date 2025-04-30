@@ -5,7 +5,10 @@ import com.common.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -31,11 +34,13 @@ public class User {
     @Column(name = "last_name")
     private String lastName;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     @Column(name = "role")
     private UserRole userRole;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     @Column(name = "account_status")
     private AccountStatus accountStatus;
 

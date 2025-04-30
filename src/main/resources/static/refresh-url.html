@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Matrix - Refresh Profile Photo URL</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .preview {
+            margin-top: 20px;
+            text-align: center;
+        }
+        img {
+            max-width: 300px;
+            max-height: 300px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px;
+        }
+        .success-message {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+            border-radius: 4px;
+            display: none;
+        }
+        .error-message {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+            border-radius: 4px;
+            display: none;
+        }
+        .url-display {
+            word-break: break-all;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Refresh Profile Photo URL</h1>
+        
+        <div class="form-group">
+            <label for="photoUrl">Current Pre-signed URL:</label>
+            <textarea id="photoUrl" placeholder="Paste the pre-signed URL here" required></textarea>
+        </div>
+        
+        <div class="preview">
+            <h3>Preview:</h3>
+            <img id="imagePreview" src="#" alt="Image preview will appear here" style="display: none;">
+        </div>
+        
+        <button id="refreshButton">Refresh URL</button>
+        
+        <div id="newUrlContainer" style="display: none;">
+            <h3>New URL:</h3>
+            <div id="newUrl" class="url-display"></div>
+        </div>
+        
+        <div id="successMessage" class="success-message"></div>
+        <div id="errorMessage" class="error-message"></div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const photoUrl = document.getElementById('photoUrl');
+            const imagePreview = document.getElementById('imagePreview');
+            const refreshButton = document.getElementById('refreshButton');
+            const newUrlContainer = document.getElementById('newUrlContainer');
+            const newUrl = document.getElementById('newUrl');
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Show preview when URL is pasted
+            photoUrl.addEventListener('input', function() {
+                if (this.value.trim()) {
+                    imagePreview.setAttribute('src', this.value);
+                    imagePreview.style.display = 'block';
+                } else {
+                    imagePreview.style.display = 'none';
+                }
+            });
+            
+            // Refresh URL
+            refreshButton.addEventListener('click', function() {
+                // Validate input
+                if (!photoUrl.value.trim()) {
+                    showError('Please enter a pre-signed URL');
+                    return;
+                }
+                
+                // Create request body
+                const requestBody = {
+                    photoUrl: photoUrl.value.trim()
+                };
+                
+                // Send refresh request
+                fetch('/api/profile-photos/refresh', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Update the preview with the new URL
+                    imagePreview.setAttribute('src', data.url);
+                    
+                    // Display the new URL
+                    newUrl.textContent = data.url;
+                    newUrlContainer.style.display = 'block';
+                    
+                    showSuccess('URL refreshed successfully');
+                })
+                .catch(error => {
+                    showError(`Error refreshing URL: ${error.message}`);
+                });
+            });
+            
+            function showSuccess(message) {
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+            }
+            
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html> 

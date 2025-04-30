@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Matrix - Profile Photo Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .preview {
+            margin-top: 20px;
+            text-align: center;
+        }
+        img {
+            max-width: 300px;
+            max-height: 300px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px;
+        }
+        .success-message {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+            border-radius: 4px;
+            display: none;
+        }
+        .error-message {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+            border-radius: 4px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Profile Photo Upload</h1>
+        
+        <div class="form-group">
+            <label for="userType">User Type:</label>
+            <select id="userType">
+                <option value="client">Client</option>
+                <option value="freelancer">Freelancer</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="userId">User ID:</label>
+            <input type="text" id="userId" placeholder="Enter your user ID" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="profilePhoto">Profile Photo:</label>
+            <input type="file" id="profilePhoto" accept="image/*" required>
+        </div>
+        
+        <div class="preview">
+            <h3>Preview:</h3>
+            <img id="imagePreview" src="#" alt="Preview will appear here" style="display: none;">
+        </div>
+        
+        <button id="uploadButton">Upload Photo</button>
+        
+        <div id="successMessage" class="success-message"></div>
+        <div id="errorMessage" class="error-message"></div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Image preview
+            const profilePhoto = document.getElementById('profilePhoto');
+            const imagePreview = document.getElementById('imagePreview');
+            
+            profilePhoto.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    
+                    reader.addEventListener('load', function() {
+                        imagePreview.setAttribute('src', this.result);
+                        imagePreview.style.display = 'block';
+                    });
+                    
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Upload functionality
+            const uploadButton = document.getElementById('uploadButton');
+            const userType = document.getElementById('userType');
+            const userId = document.getElementById('userId');
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            uploadButton.addEventListener('click', function() {
+                // Validate input
+                if (!userId.value.trim()) {
+                    showError('Please enter a User ID');
+                    return;
+                }
+                
+                if (!profilePhoto.files || !profilePhoto.files[0]) {
+                    showError('Please select a profile photo');
+                    return;
+                }
+                
+                // Create FormData object
+                const formData = new FormData();
+                formData.append('file', profilePhoto.files[0]);
+                
+                // Determine endpoint URL based on user type
+                const endpoint = `/api/${userType.value === 'client' ? 'clients' : 'freelancer'}/${userId.value}/profile-photo`;
+                
+                // Upload the file
+                fetch(endpoint, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    showSuccess(`Profile photo uploaded successfully. URL: ${data.url}`);
+                })
+                .catch(error => {
+                    showError(`Error uploading profile photo: ${error.message}`);
+                });
+            });
+            
+            function showSuccess(message) {
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+            }
+            
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html> 
