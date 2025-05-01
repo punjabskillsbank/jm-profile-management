@@ -90,19 +90,11 @@ public class FreelancerDTOTest {
     // Negative Case: Negative hourly rate
     @Test
     public void testFreelancerDTO_HourlyRate_Negative() {
-        freelancerDTO.setHourlyRate(-10.0);
+        freelancerDTO.setHourlyRate(-10);
         Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
         assertEquals(1, violations.size(), "Expected 1 validation error for negative hourly rate");
     }
 
-    // Negative Case: Hourly rate is null
-    @Test
-    public void testFreelancerDTO_HourlyRate_Null() {
-        freelancerDTO.setHourlyRate(null);
-        Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
-        assertEquals(1, violations.size(), "Expected 1 validation error for null hourlyRate");
-        assertEquals("hourlyRate cannot be null.", violations.iterator().next().getMessage());
-    }
 
     // Negative Case: Invalid postal code (more than 6 digits)
     @Test

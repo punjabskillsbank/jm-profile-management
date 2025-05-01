@@ -34,14 +34,14 @@ public class User {
     @Column(name = "last_name")
     private String lastName;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType.class)
-    @Column(name = "role")
+    @Column(name = "role", columnDefinition = "user_role")
     private UserRole userRole;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType.class)
-    @Column(name = "account_status")
+    @Column(name = "account_status", columnDefinition = "account_status")
     private AccountStatus accountStatus;
 
     @CreationTimestamp
