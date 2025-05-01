@@ -8,11 +8,8 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.math.BigDecimal;
 import java.util.Set;
 import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class FreelancerDTOTest {
@@ -91,19 +88,11 @@ public class FreelancerDTOTest {
     // Negative Case: Negative hourly rate
     @Test
     public void testFreelancerDTO_HourlyRate_Negative() {
-        freelancerDTO.setHourlyRate(BigDecimal.valueOf(-10.0));
+        freelancerDTO.setHourlyRate(-10);
         Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
         assertEquals(1, violations.size(), "Expected 1 validation error for negative hourly rate");
     }
 
-    // Negative Case: Hourly rate is null
-    @Test
-    public void testFreelancerDTO_HourlyRate_Null() {
-        freelancerDTO.setHourlyRate(null);
-        Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
-        assertEquals(1, violations.size(), "Expected 1 validation error for null hourlyRate");
-        assertEquals("hourlyRate cannot be null.", violations.iterator().next().getMessage());
-    }
 
     // Negative Case: Invalid postal code (more than 6 digits)
     @Test

@@ -10,7 +10,6 @@ import com.common.entity.Freelancer;
 import com.common.entity.Job;
 import com.common.enums.ProfileStatus;
 
-import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -25,7 +24,7 @@ public class FreelancerTestDataFactory {
                 .freelancerId(freelancerId)
                 .title("Senior Software Engineer")
                 .bio("Experienced Java and Spring Boot developer")
-                .hourlyRate(BigDecimal.valueOf(50.0))
+                .hourlyRate(50)
                 .address("123, MG Road")
                 .city("Bangalore")
                 .state("Karnataka")
@@ -48,7 +47,7 @@ public class FreelancerTestDataFactory {
                 .freelancerId(freelancerId)
                 .title("Senior Software Engineer")
                 .bio("Experienced Java and Spring Boot developer")
-                .hourlyRate(BigDecimal.valueOf(50.0))
+                .hourlyRate(50)
                 .address("123, MG Road")
                 .city("Bangalore")
                 .state("Karnataka")
