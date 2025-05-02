@@ -1,5 +1,6 @@
 package com.jobmatrix.exceptionHandling;
 
+import com.common.exceptionHandeling.ClientNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jobmatrix.controller.ClientProfileController;
 import com.jobmatrix.dto.ClientDTO;
@@ -15,6 +16,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.UUID;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ClientProfileController.class)
 class GlobalExceptionHandlerTest {
@@ -59,7 +64,8 @@ class GlobalExceptionHandlerTest {
         //Send a GET request with invalid client ID
         mockMvc.perform(MockMvcRequestBuilders.get("/api/clients/" + CLIENT_ID))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.content().string("Client not found at given clientId: " + CLIENT_ID));
+                .andExpect(MockMvcResultMatchers.content().string("Client not found with ID: " + CLIENT_ID));
     }
+
 
 }

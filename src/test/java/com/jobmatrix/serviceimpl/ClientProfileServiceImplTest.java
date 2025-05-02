@@ -1,9 +1,9 @@
 package com.jobmatrix.serviceimpl;
 
+import com.common.exceptionHandeling.ClientNotFoundException;
 import com.jobmatrix.dto.ClientDTO;
 import com.jobmatrix.dto.ClientUpdateRequest;
 import com.jobmatrix.entity.Client;
-import com.jobmatrix.exceptionHandling.ClientNotFoundException;
 import com.jobmatrix.repository.ClientProfileRepository;
 import com.jobmatrix.test_utils.factory.ClientTestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -108,7 +108,7 @@ class ClientProfileServiceImplTest {
                 () -> clientProfileService.getClientProfileById(CLIENT_ID),
                 "Client not found at given clientId"
         );
-        assertEquals("Client not found at given clientId: " + CLIENT_ID, exception.getMessage());
+        assertEquals("Client not found with ID: " + CLIENT_ID, exception.getMessage());
         verify(clientProfileRepository, times(1)).findById(CLIENT_ID);
     }
 
