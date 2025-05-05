@@ -1,5 +1,6 @@
 package com.jobmatrix.exceptionHandling;
 
+import com.common.exceptionHandling.ClientNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jobmatrix.controller.ClientProfileController;
 import com.jobmatrix.dto.ClientDTO;
@@ -59,7 +60,7 @@ class GlobalExceptionHandlerTest {
         //Send a GET request with invalid client ID
         mockMvc.perform(MockMvcRequestBuilders.get("/api/clients/" + CLIENT_ID))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.content().string("Client not found at given clientId: " + CLIENT_ID));
+                .andExpect(MockMvcResultMatchers.content().string("Client not found with ID: " + CLIENT_ID));
     }
 
 }
