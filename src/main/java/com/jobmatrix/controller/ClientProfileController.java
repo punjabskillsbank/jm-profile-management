@@ -2,7 +2,7 @@ package com.jobmatrix.controller;
 
 import com.jobmatrix.dto.ClientUpdateRequest;
 import com.jobmatrix.dto.ClientDTO;
-import com.jobmatrix.entity.Client;
+import com.common.entity.Client;
 import com.jobmatrix.service.ClientProfileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

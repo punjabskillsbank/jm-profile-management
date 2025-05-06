@@ -1,8 +1,9 @@
 package com.jobmatrix.test_utils.factory;
 
+import com.common.entity.Client;
 import com.jobmatrix.dto.ClientDTO;
 import com.jobmatrix.dto.ClientUpdateRequest;
-import com.jobmatrix.entity.Client;
+import com.common.entity.Client;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
