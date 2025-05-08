@@ -20,12 +20,28 @@ public class ClientProfileServiceImpl implements ClientProfileService {
 
     private final ClientProfileRepository clientProfileRepository;
     private final ModelMapper modelMapper;
+    private final S3Service s3Service;
 
 
     @Transactional
     @Override
     public Client saveClientProfile(ClientDTO dto){
         Client client = modelMapper.map(dto, Client.class);
+        return clientProfileRepository.save(client);
+    }
+
+    @Transactional
+    //@Override
+    public Client createProfile(ClientDTO clientDTO, MultipartFile photo) {
+        UUID clientId = clientDTO.getClientId();
+
+        if (photo != null && !photo.isEmpty()) {
+            String s3Key = "clients/" + clientId + "/profile.jpg";
+            String photoUrl = s3Service.uploadFile(s3Key, photo);
+            clientDTO.setProfilePhotoURL(photoUrl);
+        }
+
+        Client client = modelMapper.map(clientDTO, Client.class);
         return clientProfileRepository.save(client);
     }
 

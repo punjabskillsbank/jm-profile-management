@@ -21,7 +21,7 @@ public interface S3Service {
      * @param fileUrl the URL of the file to delete
      * @return true if deletion was successful, false otherwise
      */
-    boolean deleteFile(String fileUrl);
+   // boolean deleteFile(String fileUrl);
 
     /**
      * Refreshes a pre-signed URL for an existing S3 object
@@ -30,5 +30,5 @@ public interface S3Service {
      * @param objectKey the S3 object key
      * @return a new pre-signed URL for the object
      */
-    String refreshPresignedUrl(String objectKey);
+    //String refreshPresignedUrl(String objectKey);
 }

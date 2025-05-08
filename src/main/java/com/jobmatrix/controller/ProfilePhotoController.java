@@ -22,30 +22,4 @@ public class ProfilePhotoController {
         String fileUrl = fileService.uploadProfilePhoto(file, userId, userType);
         return ResponseEntity.ok(fileUrl);
     }
-
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteProfilePhoto(
-            @RequestParam("fileUrl") String fileUrl
-    ) {
-        boolean deleted = fileService.deleteProfilePhoto(fileUrl);
-        return deleted
-                ? ResponseEntity.ok("File deleted successfully.")
-                : ResponseEntity.badRequest().body("Invalid file URL or deletion failed.");
-    }
-
-    @GetMapping("/object-key")
-    public ResponseEntity<String> getObjectKeyFromUrl(
-            @RequestParam("fileUrl") String fileUrl
-    ) {
-        String objectKey = fileService.getObjectKeyFromUrl(fileUrl);
-        return ResponseEntity.ok(objectKey);
-    }
-
-    @GetMapping("/refresh-url")
-    public ResponseEntity<String> refreshProfilePhotoUrl(
-            @RequestParam("objectKey") String objectKey
-    ) {
-        String refreshedUrl = fileService.refreshProfilePhotoUrl(objectKey);
-        return ResponseEntity.ok(refreshedUrl);
-    }
 }

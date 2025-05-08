@@ -29,10 +29,19 @@ public class ClientProfileController {
     private final ClientProfileService clientProfileService;
     private final FileService fileService;
 
-    @PostMapping("/create_profile")
-    public ResponseEntity<Client> createClientProfile(@Valid @RequestBody ClientDTO dto){
-        Client savedClient = clientProfileService.saveClientProfile(dto);
-        return new ResponseEntity<>(savedClient, HttpStatus.CREATED);
+//     @PostMapping("/create_profile")
+//     public ResponseEntity<Client> createClientProfile(@Valid @RequestBody ClientDTO dto){
+//         Client savedClient = clientProfileService.saveClientProfile(dto);
+//         return new ResponseEntity<>(savedClient, HttpStatus.CREATED);
+//     }
+
+@PostMapping("/create_profile")
+    public ResponseEntity<?> createProfile(
+        @RequestPart("profile") ClientDTO clientDTO,
+        @RequestPart(value = "photo", required = false) MultipartFile photo
+    ) {
+        String result = clientProfileService.createProfile(clientDTO, photo);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{clientId}")

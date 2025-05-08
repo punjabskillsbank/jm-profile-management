@@ -33,6 +33,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public String uploadProfilePhoto(MultipartFile file, String userId, String userType) {
+
         validateFile(file);
 
         try {
@@ -49,76 +50,14 @@ public class FileServiceImpl implements FileService {
                 user.setProfilePhotoURL(fileUrl);
                 clientProfileRepository.save(user);
             });
-
             return fileUrl;
+
         } catch (IOException e) {
             logger.error("Error reading file: " + e.getMessage(), e);
             throw new RuntimeException("Failed to read uploaded file", e);
         }
     }
 
-    @Override
-    public boolean deleteProfilePhoto(String fileUrl) {
-        if (fileUrl == null || fileUrl.trim().isEmpty()) {
-            return false;
-        }
-
-        return s3Service.deleteFile(fileUrl);
-    }
-
-    @Override
-    public String getObjectKeyFromUrl(String fileUrl) {
-        if (fileUrl == null || fileUrl.trim().isEmpty()) {
-            throw new IllegalArgumentException("File URL cannot be empty");
-        }
-
-        try {
-            // Extract only the path part of the URL (before any query parameters)
-            String urlPath = fileUrl.split("\\?")[0];
-
-            // Extract the object key from the URL path
-            // The URL format is typically: https://bucket-name.s3.region.amazonaws.com/object-key
-            // or https://s3.region.amazonaws.com/bucket-name/object-key
-            String[] urlParts = urlPath.split("/");
-            StringBuilder objectKey = new StringBuilder();
-
-            boolean bucketFound = false;
-            for (String part : urlParts) {
-                if (bucketFound) {
-                    if (objectKey.length() > 0) {
-                        objectKey.append("/");
-                    }
-                    objectKey.append(part);
-                }
-                if (part.equals(bucketName)) {
-                    bucketFound = true;
-                }
-            }
-
-            if (objectKey.length() == 0) {
-                throw new IllegalArgumentException("Could not extract object key from URL: " + fileUrl);
-            }
-
-            return objectKey.toString();
-        } catch (Exception e) {
-            logger.error("Error extracting object key from URL: " + e.getMessage(), e);
-            throw new RuntimeException("Failed to extract object key from URL: " + fileUrl, e);
-        }
-    }
-
-    @Override
-    public String refreshProfilePhotoUrl(String objectKey) {
-        if (objectKey == null || objectKey.trim().isEmpty()) {
-            throw new IllegalArgumentException("Object key cannot be empty");
-        }
-
-        try {
-            return s3Service.refreshPresignedUrl(objectKey);
-        } catch (Exception e) {
-            logger.error("Error refreshing profile photo URL: " + e.getMessage(), e);
-            throw new RuntimeException("Failed to refresh profile photo URL", e);
-        }
-    }
 
     /**
      * Validates if the file is a valid image and within size limits

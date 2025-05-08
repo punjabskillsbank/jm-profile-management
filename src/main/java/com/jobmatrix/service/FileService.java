@@ -20,7 +20,7 @@ public interface FileService {
      * @param fileUrl the URL of the file to delete
      * @return true if deletion was successful, false otherwise
      */
-    boolean deleteProfilePhoto(String fileUrl);
+    //boolean deleteProfilePhoto(String fileUrl);
 
     /**
      * Extracts the S3 object key from a URL
@@ -28,7 +28,7 @@ public interface FileService {
      * @param fileUrl the URL to extract the key from
      * @return the S3 object key
      */
-    String getObjectKeyFromUrl(String fileUrl);
+    //String getObjectKeyFromUrl(String fileUrl);
 
     /**
      * Refreshes a pre-signed URL for a profile photo
@@ -36,5 +36,5 @@ public interface FileService {
      * @param objectKey the S3 object key
      * @return a new pre-signed URL for the object
      */
-    String refreshProfilePhotoUrl(String objectKey);
+    //String refreshProfilePhotoUrl(String objectKey);
 }
