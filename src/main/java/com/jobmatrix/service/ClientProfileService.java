@@ -2,7 +2,7 @@ package com.jobmatrix.service;
 
 import com.jobmatrix.dto.ClientDTO;
 import com.jobmatrix.dto.ClientUpdateRequest;
-import com.jobmatrix.entity.Client;
+import com.common.entity.Client;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
