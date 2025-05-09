@@ -1,8 +1,9 @@
 package com.jobmatrix.service;
 
+import com.common.entity.Client;
 import com.jobmatrix.dto.ClientDTO;
 import com.jobmatrix.dto.ClientUpdateRequest;
-import com.common.entity.Client;
+
 
 import java.util.UUID;
 
