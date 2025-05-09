@@ -2,6 +2,7 @@ package com.jobmatrix.serviceimpl;
 
 import com.common.dto.FreelancerDTO;
 import com.common.entity.Freelancer;
+import com.jobmatrix.exceptionHandling.UserNotFoundException;
 import com.jobmatrix.repository.FreelancerRepository;
 import com.jobmatrix.service.FreelancerProfileService;
 import jakarta.transaction.Transactional;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 
 @Service
@@ -26,4 +29,13 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
         logger.info("Freelancer profile created successfully with id: " + freelancer.getFreelancerId());
         return freelancer;
     }
+
+    @Override
+    public FreelancerDTO getFreelancerProfile(UUID freelancerId) {
+        logger.info("Fetching freelancer profile with id: " + freelancerId);
+        Freelancer freelancer = freelancerRepository.findById(freelancerId)
+                .orElseThrow(() -> new UserNotFoundException("Freelancer not found with ID: " + freelancerId));
+        return modelMapper.map(freelancer, FreelancerDTO.class);
+    }
+
 }
