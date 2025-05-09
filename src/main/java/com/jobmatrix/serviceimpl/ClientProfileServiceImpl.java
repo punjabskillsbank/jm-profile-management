@@ -8,7 +8,6 @@ import com.jobmatrix.repository.ClientProfileRepository;
 import com.jobmatrix.service.ClientProfileService;
 import com.jobmatrix.service.FileService;
 import com.jobmatrix.service.S3Service;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

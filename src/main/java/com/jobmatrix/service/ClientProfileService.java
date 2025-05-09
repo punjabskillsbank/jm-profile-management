@@ -4,7 +4,6 @@ import com.jobmatrix.dto.ClientDTO;
 import com.jobmatrix.dto.ClientUpdateRequest;
 import com.common.entity.Client;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.UUID;
 
 public interface ClientProfileService {
