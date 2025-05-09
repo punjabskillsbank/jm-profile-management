@@ -1,6 +1,6 @@
 package com.jobmatrix.repository;
 
-import com.jobmatrix.entity.Client;
+import com.common.entity.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

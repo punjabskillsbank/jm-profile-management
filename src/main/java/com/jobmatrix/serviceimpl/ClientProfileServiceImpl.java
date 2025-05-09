@@ -1,9 +1,9 @@
 package com.jobmatrix.serviceimpl;
 
+import com.common.exceptionHandling.ClientNotFoundException;
 import com.jobmatrix.dto.ClientDTO;
 import com.jobmatrix.dto.ClientUpdateRequest;
-import com.jobmatrix.entity.Client;
-import com.jobmatrix.exceptionHandling.ClientNotFoundException;
+import com.common.entity.Client;
 import com.jobmatrix.repository.ClientProfileRepository;
 import com.jobmatrix.service.ClientProfileService;
 import com.jobmatrix.service.FileService;
