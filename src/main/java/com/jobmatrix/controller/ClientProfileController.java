@@ -1,5 +1,7 @@
 package com.jobmatrix.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jobmatrix.dto.ClientUpdateRequest;
 import com.jobmatrix.entity.Client;
 import com.jobmatrix.dto.ClientDTO;
@@ -35,12 +37,12 @@ public class ClientProfileController {
 //         return new ResponseEntity<>(savedClient, HttpStatus.CREATED);
 //     }
 
-@PostMapping("/create_profile")
-    public ResponseEntity<?> createProfile(
-        @RequestPart("profile") ClientDTO clientDTO,
+@PostMapping(value = "/create_profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Client> createProfile(
+        @RequestPart("profile") @Valid ClientDTO clientDTO,
         @RequestPart(value = "photo", required = false) MultipartFile photo
     ) {
-        String result = clientProfileService.createProfile(clientDTO, photo);
+        Client result = clientProfileService.createProfile(clientDTO, photo);
         return ResponseEntity.ok(result);
     }
 

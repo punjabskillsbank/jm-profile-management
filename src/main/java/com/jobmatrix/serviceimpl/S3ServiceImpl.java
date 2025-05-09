@@ -62,37 +62,6 @@ public class S3ServiceImpl implements S3Service {
         }
     }
 
-//    @Override
-//    public boolean deleteFile(String fileUrl) {
-//        try {
-//            // Extract the file key from the URL
-//            String fileKey = extractFileKeyFromUrl(fileUrl);
-//
-//            // Delete the file from S3
-//            amazonS3Client.deleteObject(bucketName, fileKey);
-//            logger.info("File deleted successfully from S3: " + fileKey);
-//
-//            return true;
-//        } catch (Exception e) {
-//            logger.error("Error deleting file from S3: " + e.getMessage(), e);
-//            return false;
-//        }
-//    }
-
-//    @Override
-//    public String refreshPresignedUrl(String objectKey) {
-//        // Verify the object exists
-//        if (!amazonS3Client.doesObjectExist(bucketName, objectKey)) {
-//            logger.error("Object does not exist: " + objectKey);
-//            throw new RuntimeException("Failed to refresh URL for non-existent object: " + objectKey);
-//        }
-//
-//        // Generate a new pre-signed URL
-//        String presignedUrl = generatePresignedUrl(objectKey);
-//        logger.info("Pre-signed URL refreshed for: " + objectKey);
-//
-//        return presignedUrl;
-//    }
 
     /**
      * Generates a pre-signed URL for the given object key
@@ -125,31 +94,5 @@ public class S3ServiceImpl implements S3Service {
         return originalFileName + "-" + UUID.randomUUID() + extension;
     }
 
-    /**
-     * Extracts the file key from the S3 URL
-     *
-     * @param fileUrl the S3 URL
-     * @return the file key
-     */
-//    private String extractFileKeyFromUrl(String fileUrl) {
-//        // For pre-signed URLs, extraction is more complex
-//        // Extract the path after the bucket name
-//        String[] urlParts = fileUrl.split("\\?")[0].split("/");
-//        StringBuilder key = new StringBuilder();
-//
-//        boolean bucketFound = false;
-//        for (String part : urlParts) {
-//            if (bucketFound) {
-//                if (key.length() > 0) {
-//                    key.append("/");
-//                }
-//                key.append(part);
-//            }
-//            if (part.equals(bucketName)) {
-//                bucketFound = true;
-//            }
-//        }
-//
-//        return key.toString();
-//    }
+
 }

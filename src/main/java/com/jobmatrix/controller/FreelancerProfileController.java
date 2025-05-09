@@ -41,38 +41,4 @@ public class FreelancerProfileController {
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
-    @Operation(
-            summary = "Upload profile photo for a freelancer",
-            description = "Uploads a profile photo for a freelancer and returns the URL of the uploaded file",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Successfully uploaded profile photo",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = Map.class)
-                            )
-                    )
-            }
-    )
-    @PostMapping(value = "/{freelancerId}/profile-photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Map<String, String>> uploadProfilePhoto(
-            @PathVariable UUID freelancerId,
-            @RequestParam("file") MultipartFile file
-    ) {
-        // Upload the file and get the URL
-        String fileUrl = fileService.uploadProfilePhoto(file, freelancerId.toString(), "freelancer");
-
-        // Get the freelancer from the database
-        Freelancer freelancer = freelancerProfileService.getFreelancerProfileById(freelancerId);
-
-        // Update the profile photo URL
-        freelancer.setProfilePhotoURL(fileUrl);
-        freelancerProfileService.updateFreelancerProfile(freelancer);
-
-        // Return the URL in the response
-        Map<String, String> response = new HashMap<>();
-        response.put("url", fileUrl);
-        return ResponseEntity.ok(response);
-    }
 }

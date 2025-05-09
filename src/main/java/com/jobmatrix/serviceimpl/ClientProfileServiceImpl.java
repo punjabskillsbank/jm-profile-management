@@ -6,11 +6,14 @@ import com.jobmatrix.entity.Client;
 import com.jobmatrix.exceptionHandling.ClientNotFoundException;
 import com.jobmatrix.repository.ClientProfileRepository;
 import com.jobmatrix.service.ClientProfileService;
+import com.jobmatrix.service.FileService;
+import com.jobmatrix.service.S3Service;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -21,6 +24,7 @@ public class ClientProfileServiceImpl implements ClientProfileService {
     private final ClientProfileRepository clientProfileRepository;
     private final ModelMapper modelMapper;
     private final S3Service s3Service;
+    private final FileService fileService;
 
 
     @Transactional
@@ -31,15 +35,12 @@ public class ClientProfileServiceImpl implements ClientProfileService {
     }
 
     @Transactional
-    //@Override
+    @Override
     public Client createProfile(ClientDTO clientDTO, MultipartFile photo) {
         UUID clientId = clientDTO.getClientId();
 
-        if (photo != null && !photo.isEmpty()) {
-            String s3Key = "clients/" + clientId + "/profile.jpg";
-            String photoUrl = s3Service.uploadFile(s3Key, photo);
-            clientDTO.setProfilePhotoURL(photoUrl);
-        }
+        String profilePhotoURL = fileService.uploadProfilePhoto(photo, clientId.toString(), "client");
+        clientDTO.setProfilePhotoURL(profilePhotoURL);
 
         Client client = modelMapper.map(clientDTO, Client.class);
         return clientProfileRepository.save(client);
