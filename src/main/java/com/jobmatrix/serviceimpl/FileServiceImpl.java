@@ -1,5 +1,6 @@
 package com.jobmatrix.serviceimpl;
 
+import com.jobmatrix.dto.PresignedUrlResponse;
 import com.jobmatrix.repository.ClientProfileRepository;
 import com.jobmatrix.service.FileService;
 import com.jobmatrix.service.S3Service;
@@ -7,13 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +18,9 @@ public class FileServiceImpl implements FileService {
 
     private static final Logger logger = Logger.getLogger(FileServiceImpl.class);
     private static final List<String> ALLOWED_IMAGE_TYPES = Arrays.asList(
-            "image/jpeg", "image/png", "image/gif", "image/bmp", "image/webp"
+            "image/jpeg", "image/jpg", "image/png", "image/gif", "image/bmp", "image/webp","text/plain"
     );
-    private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
     private final S3Service s3Service;
     private final ClientProfileRepository clientProfileRepository;
@@ -32,50 +29,41 @@ public class FileServiceImpl implements FileService {
     private String bucketName;
 
     @Override
-    public String uploadProfilePhoto(MultipartFile file, String userId, String userType) {
+    public PresignedUrlResponse generateProfilePhotoUrls(String userId, String contentType) {
+        validateContentType(contentType);
+        
+        // Generate a unique filename for the profile photo
+        String s3Key = "profile_photos/" + userId + getFileExtension(contentType);
+        
+        // Generate presigned URLs
+        URL uploadUrl = s3Service.generatePresignedUploadUrl(s3Key, contentType);
+        
+        return new PresignedUrlResponse(uploadUrl, s3Key);
+    }
 
-        validateFile(file);
-
-        try {
-            String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
-            String filename = userType + "/profiles/" + userId + "/" + originalFilename;
-
-            String fileUrl =  s3Service.uploadFile(
-                    filename,
-                    file.getInputStream(),
-                    file.getContentType()
-            );
-
-            clientProfileRepository.findById(UUID.fromString(userId)).ifPresent(user -> {
-                user.setProfilePhotoURL(fileUrl);
-                clientProfileRepository.save(user);
-            });
-            return fileUrl;
-
-        } catch (IOException e) {
-            logger.error("Error reading file: " + e.getMessage(), e);
-            throw new RuntimeException("Failed to read uploaded file", e);
+    private void validateContentType(String contentType) {
+        if (contentType == null || !ALLOWED_IMAGE_TYPES.contains(contentType.toLowerCase())) {
+            throw new IllegalArgumentException("Only image files (JPEG, JPG, PNG, GIF, BMP, WEBP) are allowed");
         }
     }
 
-
-    /**
-     * Validates if the file is a valid image and within size limits
-     *
-     * @param file the file to validate
-     */
-    private void validateFile(MultipartFile file) {
-        if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("File cannot be empty");
-        }
-
-        if (file.getSize() > MAX_FILE_SIZE) {
-            throw new IllegalArgumentException("File size exceeds maximum allowed size of 5MB");
-        }
-
-        String contentType = file.getContentType();
-        if (contentType == null || !ALLOWED_IMAGE_TYPES.contains(contentType)) {
-            throw new IllegalArgumentException("Only image files (JPEG, PNG, GIF, BMP, WEBP) are allowed");
+    private String getFileExtension(String contentType) {
+        switch (contentType.toLowerCase()) {
+            case "image/jpeg":
+            case "image/jpg":
+                return ".jpg";
+            case "image/png":
+                return ".png";
+            case "image/gif":
+                return ".gif";
+            case "image/bmp":
+                return ".bmp";
+            case "image/webp":
+                return ".webp";
+            case "text/plain":
+                return ".txt";
+            default:
+                throw new IllegalArgumentException("Unsupported image type: " + contentType);
         }
     }
 }

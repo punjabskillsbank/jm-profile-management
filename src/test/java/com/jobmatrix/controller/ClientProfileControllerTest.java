@@ -133,7 +133,7 @@ class ClientProfileControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.createdAt").exists()) // Ensures created_at is present
                 .andExpect(MockMvcResultMatchers.jsonPath("$.updatedAt").exists()); // Ensures updated_at is present
 
-                Mockito.verify(clientProfileService).updateClientProfile(Mockito.eq(CLIENT_ID), Mockito.any(ClientUpdateRequest.class));
+        Mockito.verify(clientProfileService).updateClientProfile(Mockito.eq(CLIENT_ID), Mockito.any(ClientUpdateRequest.class));
 
     }
 
