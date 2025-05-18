@@ -80,6 +80,9 @@ class GlobalExceptionHandlerTest {
         Mockito.when(freelancerProfileService.getFreelancerProfileById(FREELANCER_ID))
                 .thenThrow(new FreelancerNotFoundException(FREELANCER_ID));
 
+
+
+
         mockMvc.perform(MockMvcRequestBuilders.get("/api/freelancer/" + FREELANCER_ID))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().string("Freelancer not found with ID: " + FREELANCER_ID));
