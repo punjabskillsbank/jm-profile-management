@@ -1,4 +1,5 @@
 package com.jobmatrix.controller;
+import com.common.entity.Client;
 import com.jobmatrix.serviceimpl.FreelancerProfileServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,19 +47,16 @@ public class FreelancerProfileController {
             @ApiResponse(responseCode = "404", description = "User not found with the provided ID"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+
     //GET mapping for the freelancer
     @GetMapping("/{freelancerId}")
-    public ResponseEntity<FreelancerDTO> getFreelancerProfile(@PathVariable UUID freelancerId) {
+    public ResponseEntity<FreelancerDTO> getFreelancerProfileById(@PathVariable UUID freelancerId) {
         logger.info("Received request to get freelancer profile with ID: " + freelancerId);
-        try {
-            FreelancerDTO freelancer = freelancerProfileService.getFreelancerProfile(freelancerId);
-            logger.info("Successfully retrieved freelancer profile: " + freelancer);
-            return ResponseEntity.ok(freelancer);
-        } catch (Exception e) {
-            logger.error("Error processing request: " + e.getMessage(), e);
-            throw e;
-        }
+        FreelancerDTO freelancer = freelancerProfileService.getFreelancerProfileById(freelancerId);
+        logger.info("Successfully retrieved freelancer profile: " + freelancer);
+        return ResponseEntity.ok(freelancer);
     }
+
 
 
 
