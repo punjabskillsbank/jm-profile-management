@@ -8,11 +8,6 @@ public class UserNotFoundException extends RuntimeException {
     }
 
 
-    public class FreelancerNotFoundException extends RuntimeException {
 
-        public FreelancerNotFoundException(UUID freelancerId) {
-            super("Freelancer not found with id: " + freelancerId);
-        }
-    }
 
 }
