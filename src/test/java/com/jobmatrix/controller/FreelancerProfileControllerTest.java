@@ -7,7 +7,6 @@ import com.jobmatrix.service.FreelancerProfileService;
 import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
