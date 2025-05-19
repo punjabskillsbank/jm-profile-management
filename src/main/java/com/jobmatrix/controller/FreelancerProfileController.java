@@ -29,7 +29,7 @@ public class FreelancerProfileController {
 
     private final FreelancerProfileService freelancerProfileService;
     private final ModelMapper modelMapper;
-    private static final Logger logger = Logger.getLogger(FreelancerProfileServiceImpl.class);
+
 
     // POST mapping to save the freelancer profile data in database
     @Operation(summary = "Create a new freelancer profile", description = "Save the freelancer profile data in the database")
@@ -41,12 +41,6 @@ public class FreelancerProfileController {
 
 
     }
-    @Operation(summary = "Get freelancer profile by ID", description = "Retrieve freelancer profile information using freelancer ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Freelancer profile retrieved successfully"),
-            @ApiResponse(responseCode = "404", description = "User not found with the provided ID"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
 
     //GET mapping for the freelancer
     @GetMapping("/{freelancerId}")
