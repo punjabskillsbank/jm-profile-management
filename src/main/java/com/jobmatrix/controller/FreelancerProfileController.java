@@ -2,7 +2,6 @@ package com.jobmatrix.controller;
 import com.common.entity.Client;
 import com.jobmatrix.serviceimpl.FreelancerProfileServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-
 import com.common.dto.FreelancerDTO;
 import com.common.entity.Freelancer;
 import com.jobmatrix.service.FreelancerProfileService;
@@ -17,7 +16,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.UUID;
 
 @RestController
@@ -26,10 +24,8 @@ import java.util.UUID;
 @Tag(name = "Freelancer Profile Management", description = "Operations related to freelancer profile management")
 @Slf4j
 public class FreelancerProfileController {
-
     private final FreelancerProfileService freelancerProfileService;
     private final ModelMapper modelMapper;
-
 
     // POST mapping to save the freelancer profile data in database
     @Operation(summary = "Create a new freelancer profile", description = "Save the freelancer profile data in the database")
@@ -38,8 +34,6 @@ public class FreelancerProfileController {
         Freelancer freelancer = freelancerProfileService.createFreelancerProfile(freelancerDTO);
         FreelancerDTO dto  = modelMapper.map(freelancer, FreelancerDTO.class);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
-
-
     }
 
     //GET mapping for the freelancer
@@ -48,5 +42,4 @@ public class FreelancerProfileController {
         FreelancerDTO freelancer = freelancerProfileService.getFreelancerProfileById(freelancerId);
         return ResponseEntity.ok(freelancer);
     }
-
 }

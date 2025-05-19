@@ -1,5 +1,4 @@
 package com.jobmatrix.serviceimpl;
-
 import com.common.dto.FreelancerDTO;
 import com.common.entity.Freelancer;
 import com.common.exceptionHandling.FreelancerNotFoundException;
@@ -12,10 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-
 import java.util.Optional;
 import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -25,14 +22,11 @@ class FreelancerProfileServiceImplTest {
 
     @Mock
     private FreelancerRepository freelancerRepository;
-
-
     @Mock
     private ModelMapper modelMapper;
-
     @InjectMocks
-    private FreelancerProfileServiceImpl freelancerProfileServiceById;
 
+    private FreelancerProfileServiceImpl freelancerProfileService;
     private final UUID FREELANCER_ID = UUID.randomUUID();
     private FreelancerDTO inputFreelancerDTO;
     private Freelancer freelancerEntity;
@@ -51,7 +45,7 @@ class FreelancerProfileServiceImplTest {
         when(modelMapper.map(inputFreelancerDTO, Freelancer.class)).thenReturn(freelancerEntity);
         when(freelancerRepository.save(any(Freelancer.class))).thenReturn(freelancerEntity);
 
-        Freelancer result = freelancerProfileServiceById.createFreelancerProfile(inputFreelancerDTO);
+        Freelancer result = freelancerProfileService.createFreelancerProfile(inputFreelancerDTO);
 
         assertNotNull(result);
         assertEquals(freelancerEntity.getFreelancerId(), result.getFreelancerId());
@@ -81,7 +75,7 @@ class FreelancerProfileServiceImplTest {
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> freelancerProfileServiceById.createFreelancerProfile(inputFreelancerDTO),
+                () -> freelancerProfileService.createFreelancerProfile(inputFreelancerDTO),
                 "freelancer_id cannot be null."
         );
         assertEquals("freelancer_id cannot be null.", exception.getMessage());
@@ -94,12 +88,9 @@ class FreelancerProfileServiceImplTest {
         UUID freelancerId = UUID.randomUUID();
         Freelancer freelancer = new Freelancer();
         FreelancerDTO expectedDTO = FreelancerTestDataFactory.createFreelancerDTO(freelancerId);
-
         when(freelancerRepository.findById(freelancerId)).thenReturn(Optional.of(freelancer));
         when(modelMapper.map(freelancer, FreelancerDTO.class)).thenReturn(expectedDTO);
-
-        FreelancerDTO result = freelancerProfileServiceById.getFreelancerProfileById(freelancerId);
-
+        FreelancerDTO result = freelancerProfileService.getFreelancerProfileById(freelancerId);
         assertNotNull(result);
         assertEquals(expectedDTO, result);
         verify(freelancerRepository).findById(freelancerId);
@@ -112,7 +103,7 @@ class FreelancerProfileServiceImplTest {
         when(freelancerRepository.findById(freelancerId)).thenReturn(Optional.empty());
         FreelancerNotFoundException exception = assertThrows(
                 FreelancerNotFoundException.class,
-                () -> freelancerProfileServiceById.getFreelancerProfileById(freelancerId)
+                () -> freelancerProfileService.getFreelancerProfileById(freelancerId)
         );
         assertEquals("Freelancer not found with ID: " + freelancerId, exception.getMessage());
         verify(freelancerRepository).findById(freelancerId);
