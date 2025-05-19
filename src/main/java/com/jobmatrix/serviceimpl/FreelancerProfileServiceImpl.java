@@ -2,7 +2,7 @@ package com.jobmatrix.serviceimpl;
 
 import com.common.dto.FreelancerDTO;
 import com.common.entity.Freelancer;
-import com.jobmatrix.exceptionHandling.FreelancerNotFoundException;
+import com.common.exceptionHandling.FreelancerNotFoundException;
 import com.jobmatrix.repository.FreelancerRepository;
 import com.jobmatrix.service.FreelancerProfileService;
 import jakarta.transaction.Transactional;

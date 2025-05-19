@@ -1,5 +1,5 @@
 package com.jobmatrix.exceptionHandling;
-
+import com.common.exceptionHandling.FreelancerNotFoundException;
 import com.common.exceptionHandling.ClientNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jobmatrix.controller.ClientProfileController;
