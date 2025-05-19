@@ -35,10 +35,10 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
     @Override
 
     public FreelancerDTO getFreelancerProfileById(UUID freelancerId) {
-        logger.info("Fetching freelancer profile with id: " + freelancerId);
         Freelancer freelancer = freelancerRepository.findById(freelancerId)
                 .orElseThrow(() -> new FreelancerNotFoundException(freelancerId));
         return modelMapper.map(freelancer, FreelancerDTO.class);
     }
+
 
 }

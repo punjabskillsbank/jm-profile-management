@@ -51,13 +51,8 @@ public class FreelancerProfileController {
     //GET mapping for the freelancer
     @GetMapping("/{freelancerId}")
     public ResponseEntity<FreelancerDTO> getFreelancerProfileById(@PathVariable UUID freelancerId) {
-        logger.info("Received request to get freelancer profile with ID: " + freelancerId);
         FreelancerDTO freelancer = freelancerProfileService.getFreelancerProfileById(freelancerId);
-        logger.info("Successfully retrieved freelancer profile: " + freelancer);
         return ResponseEntity.ok(freelancer);
     }
-
-
-
 
 }
