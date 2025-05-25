@@ -3,6 +3,11 @@ package com.jobmatrix.exceptionHandling;
 import com.common.dto.FreelancerDTO;
 import com.common.exceptionHandling.ClientNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.common.exceptionHandling.FreelancerNotFoundException;
+import com.common.exceptionHandling.ClientNotFoundException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jobmatrix.controller.ClientProfileController;
+import com.jobmatrix.controller.FreelancerProfileController;
 import com.jobmatrix.dto.ClientDTO;
 import com.jobmatrix.service.ClientProfileService;
 import com.jobmatrix.service.FreelancerProfileService;
@@ -13,9 +18,14 @@ import org.modelmapper.ModelMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mockito;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -26,6 +36,9 @@ import java.util.UUID;
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+
+@WebMvcTest(controllers = {FreelancerProfileController.class, ClientProfileController.class})
+
 class GlobalExceptionHandlerTest {
 
     @Autowired
@@ -34,14 +47,22 @@ class GlobalExceptionHandlerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Mock
+
+    @MockitoBean
     private ModelMapper modelMapper;
-    @Mock
+
+
+    @MockitoBean
+
     private ClientProfileService clientProfileService;
     @Mock
     private FreelancerProfileService freelancerProfileService;
 
+    @MockitoBean
+    private FreelancerProfileService freelancerProfileService;
+
     private final UUID CLIENT_ID = UUID.randomUUID();
+    private final UUID FREELANCER_ID= UUID.randomUUID();
 
 
 
@@ -78,6 +99,7 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+
     void shouldReturnServiceLimitExceeded_whenTooManyServicesProvided() throws Exception {
         // Create a valid DTO using factory and add too many services
         FreelancerDTO freelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(UUID.randomUUID());
@@ -94,4 +116,19 @@ class GlobalExceptionHandlerTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.content().string("Cannot assign more than 10 services."));
     }
+
+    void shouldReturnFreelancerNotFoundException_whenFreelancerNotFound() throws Exception {
+        Mockito.when(freelancerProfileService.getFreelancerProfileById(FREELANCER_ID))
+                .thenThrow(new FreelancerNotFoundException(FREELANCER_ID));
+
+
+
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/freelancer/" + FREELANCER_ID))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().string("Freelancer not found with ID: " + FREELANCER_ID));
+    }
+
+
+
 }

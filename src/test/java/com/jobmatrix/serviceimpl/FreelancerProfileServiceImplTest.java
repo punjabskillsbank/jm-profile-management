@@ -1,9 +1,9 @@
 package com.jobmatrix.serviceimpl;
-
 import com.common.dto.FreelancerDTO;
 import com.common.entity.Freelancer;
 import com.jobmatrix.entity.FreelancerService;
 import com.jobmatrix.exceptionHandling.ServiceLimitExceededException;
+import com.common.exceptionHandling.FreelancerNotFoundException;
 import com.jobmatrix.repository.FreelancerRepository;
 import com.jobmatrix.repository.FreelancerServicesRepository;
 import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
@@ -16,8 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -27,21 +27,22 @@ class FreelancerProfileServiceImplTest {
 
     @Mock
     private FreelancerRepository freelancerRepository;
-
     @Mock
     private ModelMapper modelMapper;
     @Mock
     private FreelancerServicesRepository freelancerServiceRepository;
 
-    @InjectMocks
-    private FreelancerProfileServiceImpl freelancerProfileService;
 
+    @InjectMocks
+
+    private FreelancerProfileServiceImpl freelancerProfileService;
     private final UUID FREELANCER_ID = UUID.randomUUID();
     private FreelancerDTO inputFreelancerDTO;
     private Freelancer freelancerEntity;
+    private FreelancerDTO freelancerDTO;
 
     @BeforeEach
-    void setup(){
+    void setup() {
         inputFreelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
         freelancerEntity = FreelancerTestDataFactory.createFreelancerEntity(FREELANCER_ID);
 
@@ -133,4 +134,31 @@ class FreelancerProfileServiceImplTest {
     }
 
 
+    @Test
+    void getFreelancerProfileById_shouldReturnFreelancerEntity() {
+        UUID freelancerId = UUID.randomUUID();
+        Freelancer freelancer = new Freelancer();
+        FreelancerDTO expectedDTO = FreelancerTestDataFactory.createFreelancerDTO(freelancerId);
+        when(freelancerRepository.findById(freelancerId)).thenReturn(Optional.of(freelancer));
+        when(modelMapper.map(freelancer, FreelancerDTO.class)).thenReturn(expectedDTO);
+        FreelancerDTO result = freelancerProfileService.getFreelancerProfileById(freelancerId);
+        assertNotNull(result);
+        assertEquals(expectedDTO, result);
+        verify(freelancerRepository).findById(freelancerId);
+        verify(modelMapper).map(freelancer, FreelancerDTO.class);
+
+    }
+    @Test
+    void getFreelancerProfileById_shouldThrowFreelancerNotFoundException() {
+        UUID freelancerId = UUID.randomUUID();
+        when(freelancerRepository.findById(freelancerId)).thenReturn(Optional.empty());
+        FreelancerNotFoundException exception = assertThrows(
+                FreelancerNotFoundException.class,
+                () -> freelancerProfileService.getFreelancerProfileById(freelancerId)
+        );
+        assertEquals("Freelancer not found with ID: " + freelancerId, exception.getMessage());
+        verify(freelancerRepository).findById(freelancerId);
+
+    }
 }
+

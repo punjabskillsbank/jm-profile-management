@@ -7,7 +7,6 @@ import com.jobmatrix.service.FreelancerProfileService;
 import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +21,7 @@ import java.util.UUID;
 import static org.mockito.Mockito.when;
 
 @WebMvcTest(FreelancerProfileController.class)
+
 class FreelancerProfileControllerTest {
 
     @MockitoBean
@@ -40,10 +40,11 @@ class FreelancerProfileControllerTest {
     private FreelancerDTO inputFreelancerDTO;
     private Freelancer savedFreelancer;
     private FreelancerDTO mappedResponseDTO;
+    private UUID freelancerId;
+    private FreelancerDTO freelancerDTO;
 
     @BeforeEach
-    void setUp() {
-
+    void initializeFreelancerTestData() {
         inputFreelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
         savedFreelancer = FreelancerTestDataFactory.createFreelancerEntity(FREELANCER_ID);
         mappedResponseDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
@@ -79,5 +80,36 @@ class FreelancerProfileControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.educations").isArray())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.jobs").isArray())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.certificates").isArray());
+    }
+
+    private final UUID TEST_ID = UUID.randomUUID();
+
+    @BeforeEach
+    void setUp() {
+        freelancerId = TEST_ID;
+        freelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(freelancerId);
+    }
+
+    @Test
+    void getFreelancerByIdTest() throws Exception {
+
+        Mockito.when(freelancerProfileService.getFreelancerProfileById(freelancerId))
+                .thenReturn(freelancerDTO);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/freelancer/" + freelancerId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.freelancerId").value(freelancerId.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("Senior Software Engineer"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.bio").value("Experienced Java and Spring Boot developer"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hourlyRate").value(50.0))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.address").value("123, MG Road"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.city").value("Bangalore"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.state").value("Karnataka"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.country").value("India"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.postalCode").value("560001"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.phoneNumber").value("+919876543210"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.isAbcMember").value(true))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.profilePhotoURL").value("https://example.com/profile.jpg"));
     }
 }
