@@ -9,6 +9,7 @@ import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
 
@@ -58,6 +59,7 @@ public class FreelancerDTOTest {
         freelancerDTO.setTitle("");
         Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
         assertEquals(1, violations.size(), "Expected 1 validation error for empty title");
+        assertEquals("title cannot be empty.", violations.iterator().next().getMessage());
     }
 
     // Negative Case: Invalid postal code (less than 6 digits)
@@ -96,12 +98,42 @@ public class FreelancerDTOTest {
     }
 
 
+    // Service-related test cases
+    @Test
+    public void testFreelancerDTO_Services_Empty() {
+        freelancerDTO.setServices(Arrays.asList());
+        Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
+        assertTrue(violations.isEmpty(), "Services can be empty, validation should pass");
+    }
+
+    @Test
+    public void testFreelancerDTO_Services_InvalidId() {
+        freelancerDTO.setServices(Arrays.asList(-1L, 0L));
+        Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
+        assertTrue(violations.isEmpty(), "Service IDs validation not implemented, validation should pass");
+    }
+
+    @Test
+    public void testFreelancerDTO_Services_Unsorted() {
+        freelancerDTO.setServices(Arrays.asList(5L, 2L, 8L, 1L, 3L));
+        Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
+        assertTrue(violations.isEmpty(), "Services sorting validation not implemented, validation should pass");
+    }
+
+    @Test
+    public void testFreelancerDTO_Services_Valid() {
+        freelancerDTO.setServices(Arrays.asList(1L, 2L, 3L, 4L, 5L));
+        Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
+        assertTrue(violations.isEmpty(), "Validation should pass for valid services");
+    }
+
     // Negative Case: Invalid postal code (more than 6 digits)
     @Test
     public void testFreelancerDTO_PostalCode_TooLong() {
         freelancerDTO.setPostalCode("1234567");
         Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
         assertEquals(1, violations.size(), "Expected 1 validation error for invalid postal code (too long)");
+        assertEquals("Please enter a valid postal code", violations.iterator().next().getMessage());
     }
 
     // Negative Case: Invalid phone number (not starting with 6-9)

@@ -26,7 +26,6 @@ class EducationDTOTest {
         validator = factory.getValidator();
 
         educationDTO = new EducationDTO(
-                1L,
                 "B.Tech",
                 "Computer Science",
                 "Thapar University",
@@ -43,15 +42,7 @@ class EducationDTOTest {
         assertTrue(violations.isEmpty(), "No validation errors expected for valid EducationDTO.");
     }
 
-    //  educationId should not be null
-    @Test
-    void testEducationId_Null() {
-        educationDTO.setEducationId(null);
-        Set<ConstraintViolation<EducationDTO>> violations = validator.validate(educationDTO);
 
-        assertEquals(1, violations.size(), "Expected 1 validation error for null educationId.");
-        assertEquals("educationId cannot be null.", violations.iterator().next().getMessage());
-    }
 
     //  degree should not be blank
     @Test
