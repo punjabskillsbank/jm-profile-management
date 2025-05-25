@@ -4,6 +4,7 @@ import com.common.dto.FreelancerDTO;
 import com.common.entity.Freelancer;
 import com.jobmatrix.entity.FreelancerService;
 import com.jobmatrix.entity.FreelancerServiceKey;
+import com.jobmatrix.exceptionHandling.ServiceLimitExceededException;
 import com.jobmatrix.repository.FreelancerRepository;
 import com.jobmatrix.repository.FreelancerServicesRepository;
 import com.jobmatrix.service.FreelancerProfileService;
@@ -17,7 +18,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.UUID;
-
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +36,14 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
             throw new IllegalArgumentException("FreelancerDTO cannot be null");
         }
         
+        // Check service limit BEFORE saving the freelancer
+        if (freelancerDTO.getServices() != null && !freelancerDTO.getServices().isEmpty()) {
+            // Check if services exceed allowed limit
+            if (freelancerDTO.getServices().size() > 10) {
+                throw new ServiceLimitExceededException();
+            }
+        }
+
         // Save freelancer first to get the generated ID
         Freelancer freelancer = freelancerRepository.save(modelMapper.map(freelancerDTO, Freelancer.class));
         UUID freelancerId = freelancer.getFreelancerId();

@@ -3,6 +3,7 @@ package com.jobmatrix.serviceimpl;
 import com.common.dto.FreelancerDTO;
 import com.common.entity.Freelancer;
 import com.jobmatrix.entity.FreelancerService;
+import com.jobmatrix.exceptionHandling.ServiceLimitExceededException;
 import com.jobmatrix.repository.FreelancerRepository;
 import com.jobmatrix.repository.FreelancerServicesRepository;
 import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
@@ -116,6 +117,18 @@ class FreelancerProfileServiceImplTest {
                 "freelancer_id cannot be null."
         );
         assertEquals("freelancer_id cannot be null.", exception.getMessage());
+        verify(freelancerRepository, never()).save(any(Freelancer.class));
+    }
+
+    @Test
+    void saveFreelancerProfile_shouldThrowServiceLimitExceededException() {
+        // Setup input with more than 10 services
+        List<Long> services = List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L);
+        inputFreelancerDTO.setServices(services);
+
+        // Execute and verify exception
+        assertThrows(ServiceLimitExceededException.class, () -> freelancerProfileService.createFreelancerProfile(inputFreelancerDTO));
+
         verify(freelancerRepository, never()).save(any(Freelancer.class));
     }
 
