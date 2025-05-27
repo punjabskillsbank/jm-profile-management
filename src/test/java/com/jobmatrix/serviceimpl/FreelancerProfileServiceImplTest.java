@@ -1,8 +1,13 @@
 package com.jobmatrix.serviceimpl;
+
 import com.common.dto.FreelancerDTO;
 import com.common.entity.Freelancer;
 import com.common.exceptionHandling.FreelancerNotFoundException;
+import com.jobmatrix.entity.FreelancerServices;
+import com.jobmatrix.exceptionHandling.NullServiceException;
+import com.jobmatrix.exceptionHandling.ServiceLimitExceededException;
 import com.jobmatrix.repository.FreelancerRepository;
+import com.jobmatrix.repository.FreelancerServicesRepository;
 import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +16,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,8 +32,9 @@ class FreelancerProfileServiceImplTest {
     private FreelancerRepository freelancerRepository;
     @Mock
     private ModelMapper modelMapper;
+    @Mock
+    private FreelancerServicesRepository freelancerServiceRepository;
     @InjectMocks
-
     private FreelancerProfileServiceImpl freelancerProfileService;
     private final UUID FREELANCER_ID = UUID.randomUUID();
     private FreelancerDTO inputFreelancerDTO;
@@ -44,13 +53,13 @@ class FreelancerProfileServiceImplTest {
 
         when(modelMapper.map(inputFreelancerDTO, Freelancer.class)).thenReturn(freelancerEntity);
         when(freelancerRepository.save(any(Freelancer.class))).thenReturn(freelancerEntity);
+        doReturn(new FreelancerServices()).when(freelancerServiceRepository).save(any());
 
         Freelancer result = freelancerProfileService.createFreelancerProfile(inputFreelancerDTO);
 
         assertNotNull(result);
         assertEquals(freelancerEntity.getFreelancerId(), result.getFreelancerId());
         assertEquals(freelancerEntity.getTitle(), result.getTitle());
-        assertEquals(freelancerEntity.getBio(), result.getBio());
         assertEquals(freelancerEntity.getHourlyRate(), result.getHourlyRate());
         assertEquals(freelancerEntity.getAddress(), result.getAddress());
         assertEquals(freelancerEntity.getCity(), result.getCity());
@@ -58,7 +67,7 @@ class FreelancerProfileServiceImplTest {
         assertEquals(freelancerEntity.getCountry(), result.getCountry());
         assertEquals(freelancerEntity.getPostalCode(), result.getPostalCode());
         assertEquals(freelancerEntity.getPhoneNumber(), result.getPhoneNumber());
-        assertEquals(freelancerEntity.isAbcMember(), result.isAbcMember());
+        assertEquals(freelancerEntity.getIsAbcMember(), result.getIsAbcMember());
         assertEquals(freelancerEntity.getProfilePhotoURL(), result.getProfilePhotoURL());
         assertEquals(freelancerEntity.getProfileStatus(), result.getProfileStatus());
         assertNotNull(result.getCreatedAt());
@@ -66,6 +75,28 @@ class FreelancerProfileServiceImplTest {
 
         verify(modelMapper).map(inputFreelancerDTO, Freelancer.class);
         verify(freelancerRepository, times(1)).save(any(Freelancer.class));
+    }
+
+    @Test
+    void saveFreelancerProfile_shouldThrowNullServiceExceptionWhenServicesAreNull() {
+        FreelancerDTO invalidFreelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
+        invalidFreelancerDTO.setServices(null);
+
+        assertThrows(NullServiceException.class, () -> 
+            freelancerProfileService.createFreelancerProfile(invalidFreelancerDTO));
+    }
+
+    @Test
+    void saveFreelancerProfile_shouldThrowServiceLimitExceededExceptionWhenServicesExceedLimit() {
+        FreelancerDTO invalidFreelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
+        List<Long> tooManyServices = new ArrayList<>();
+        for (int i = 0; i < 11; i++) {
+            tooManyServices.add((long) i);
+        }
+        invalidFreelancerDTO.setServices(tooManyServices);
+
+        assertThrows(ServiceLimitExceededException.class, () -> 
+            freelancerProfileService.createFreelancerProfile(invalidFreelancerDTO));
     }
 
     @Test

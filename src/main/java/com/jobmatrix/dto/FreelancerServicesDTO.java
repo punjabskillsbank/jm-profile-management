@@ -12,8 +12,6 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 public class FreelancerServicesDTO {
 
-    private Long freelancerServiceId;
-
     @NotNull(message = "freelancer_id cannot be null.")
     private UUID freelancerId;
 

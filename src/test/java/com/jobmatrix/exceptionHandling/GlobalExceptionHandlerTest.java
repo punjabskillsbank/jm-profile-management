@@ -1,13 +1,14 @@
 package com.jobmatrix.exceptionHandling;
+
+import com.common.dto.FreelancerDTO;
 import com.common.exceptionHandling.FreelancerNotFoundException;
 import com.common.exceptionHandling.ClientNotFoundException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jobmatrix.controller.ClientProfileController;
-import com.jobmatrix.controller.FreelancerProfileController;
 import com.jobmatrix.dto.ClientDTO;
 import com.jobmatrix.service.ClientProfileService;
 import com.jobmatrix.service.FreelancerProfileService;
 import com.jobmatrix.test_utils.factory.ClientTestDataFactory;
+import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
@@ -19,9 +20,13 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-@WebMvcTest(controllers = {FreelancerProfileController.class, ClientProfileController.class})
+@WebMvcTest(controllers = {com.jobmatrix.controller.FreelancerProfileController.class, com.jobmatrix.controller.ClientProfileController.class})
 class GlobalExceptionHandlerTest {
 
     @Autowired
@@ -79,14 +84,43 @@ class GlobalExceptionHandlerTest {
     void shouldReturnFreelancerNotFoundException_whenFreelancerNotFound() throws Exception {
         Mockito.when(freelancerProfileService.getFreelancerProfileById(FREELANCER_ID))
                 .thenThrow(new FreelancerNotFoundException(FREELANCER_ID));
-
-
-
-
         mockMvc.perform(MockMvcRequestBuilders.get("/api/freelancer/" + FREELANCER_ID))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().string("Freelancer not found with ID: " + FREELANCER_ID));
     }
 
+    @Test
+    void shouldReturnBadRequest_whenNullServicesProvided() throws Exception {
+        Mockito.when(freelancerProfileService.createFreelancerProfile(Mockito.any()))
+                .thenThrow(new NullServiceException());
+
+        FreelancerDTO invalidFreelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
+        invalidFreelancerDTO.setServices(null);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/freelancer/create_profile")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidFreelancerDTO)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.services").value("services cannot be null."));
+    }
+
+    @Test
+    void shouldReturnBadRequest_whenServiceLimitExceeded() throws Exception {
+        Mockito.when(freelancerProfileService.createFreelancerProfile(Mockito.any()))
+                .thenThrow(new ServiceLimitExceededException());
+
+        FreelancerDTO invalidFreelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
+        List<Long> tooManyServices = new ArrayList<>();
+        for (int i = 0; i < 11; i++) {
+            tooManyServices.add((long) i);
+        }
+        invalidFreelancerDTO.setServices(tooManyServices);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/freelancer/create_profile")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidFreelancerDTO)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.services").value("Cannot assign more than 10 services."));
+    }
 
 }

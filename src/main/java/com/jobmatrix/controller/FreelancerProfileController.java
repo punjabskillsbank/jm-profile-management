@@ -28,8 +28,12 @@ public class FreelancerProfileController {
     @Operation(summary = "Create a new freelancer profile", description = "Save the freelancer profile data in the database")
     @PostMapping("/create_profile")
     public ResponseEntity<FreelancerDTO> createProfile(@Valid @RequestBody FreelancerDTO freelancerDTO) {
+        // Create the freelancer profile
         Freelancer freelancer = freelancerProfileService.createFreelancerProfile(freelancerDTO);
-        FreelancerDTO dto  = modelMapper.map(freelancer, FreelancerDTO.class);
+        
+        // Get the profile with services
+        FreelancerDTO dto = freelancerProfileService.getFreelancerProfileById(freelancer.getFreelancerId());
+        
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 

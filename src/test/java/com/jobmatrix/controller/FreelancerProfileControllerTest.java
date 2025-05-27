@@ -2,6 +2,10 @@ package com.jobmatrix.controller;
 
 import com.common.dto.FreelancerDTO;
 import com.common.entity.Freelancer;
+import com.common.enums.ProfileStatus;
+import com.common.dto.EducationDTO;
+import com.common.dto.JobDTO;
+import com.common.dto.CertificateDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jobmatrix.service.FreelancerProfileService;
 import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
@@ -11,11 +15,14 @@ import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.util.Arrays;
 import java.util.UUID;
 
 import static org.mockito.Mockito.when;
@@ -52,14 +59,15 @@ class FreelancerProfileControllerTest {
 
     @Test
     void createFreelancerProfileTest() throws Exception {
-
-        // Mock service behavior (assuming create returns the created profile)
+        // Mock the service to create freelancer profile
         when(freelancerProfileService.createFreelancerProfile(Mockito.any(FreelancerDTO.class)))
                 .thenReturn(savedFreelancer);
 
-        when(modelMapper.map(savedFreelancer, FreelancerDTO.class))
-                .thenReturn(mappedResponseDTO);
+        // Mock the service to return the complete DTO with services
+        when(freelancerProfileService.getFreelancerProfileById(FREELANCER_ID))
+                .thenReturn(FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID));
 
+        // Perform the request
         mockMvc.perform(MockMvcRequestBuilders.post("/api/freelancer/create_profile")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(inputFreelancerDTO)))
@@ -67,6 +75,7 @@ class FreelancerProfileControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.freelancerId").value(FREELANCER_ID.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("Senior Software Engineer"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.bio").value("Experienced Java and Spring Boot developer"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.services").isArray())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hourlyRate").value(50.0))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.address").value("123, MG Road"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.city").value("Bangalore"))

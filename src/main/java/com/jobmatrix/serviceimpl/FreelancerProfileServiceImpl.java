@@ -15,10 +15,14 @@ import lombok.RequiredArgsConstructor;
 import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-
+/**
+ * Implementation of FreelancerProfileService interface.
+ * Provides methods for creating and retrieving freelancer profiles.
+ */
 @Service
 @RequiredArgsConstructor
 
@@ -52,7 +56,6 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
             // Create FreelancerServicesDTO for each category
             for (Long categoryId : freelancerDTO.getServices()) {
                 FreelancerServicesDTO serviceDTO = new FreelancerServicesDTO();
-                serviceDTO.setFreelancerServiceId(null);
                 serviceDTO.setFreelancerId(freelancerId);
                 serviceDTO.setCategoryId(categoryId);
 
@@ -72,7 +75,20 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
     public FreelancerDTO getFreelancerProfileById(UUID freelancerId) {
         Freelancer freelancer = freelancerRepository.findById(freelancerId)
                 .orElseThrow(() -> new FreelancerNotFoundException(freelancerId));
-        return modelMapper.map(freelancer, FreelancerDTO.class);
+        
+        // Get services for this freelancer
+        List<FreelancerServices> services = freelancerServiceRepository.findByFreelancerId(freelancerId);
+        
+        // Convert services to List<Long> of category IDs
+        List<Long> serviceIds = services.stream()
+            .map(FreelancerServices::getCategoryId)
+            .toList();
+        
+        // Create DTO and set services
+        FreelancerDTO dto = modelMapper.map(freelancer, FreelancerDTO.class);
+        dto.setServices(serviceIds);
+        
+        return dto;
     }
 
 

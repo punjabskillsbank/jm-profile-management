@@ -45,6 +45,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NullServiceException.class)
     public ResponseEntity<String> handleNullServiceException(NullServiceException ex) {
-        return new ResponseEntity<>("Services are required for freelancer profile", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

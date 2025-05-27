@@ -59,6 +59,7 @@ public class FreelancerTestDataFactory {
                 .educations(createEducationListDTO(freelancerId))
                 .jobs(createJobListDTO(freelancerId))
                 .certificates(createCertificateListDTO(freelancerId))
+                .services(Arrays.asList(1L, 2L, 3L))
                 .profileStatus(ProfileStatus.APPROVED)
                 .build();
     }
@@ -72,7 +73,7 @@ public class FreelancerTestDataFactory {
 
     private static List<EducationDTO> createEducationListDTO(UUID freelancerId) {
         return Arrays.asList(
-                new EducationDTO(1L, "B.Tech", "Computer Science", "IIT Delhi", 2015, 2019, freelancerId)
+                new EducationDTO("B.Tech", "Computer Science", "IIT Delhi", 2015, 2019, freelancerId)
         );
     }
 
@@ -85,7 +86,7 @@ public class FreelancerTestDataFactory {
 
     private static List<JobDTO> createJobListDTO(UUID freelancerId) {
         return Arrays.asList(
-                new JobDTO(1L, "Software Engineer", "Google", Date.valueOf("2020-01-01"), Date.valueOf("2023-06-01"),
+                new JobDTO("Software Engineer", "Google", Date.valueOf("2020-01-01"), Date.valueOf("2023-06-01"),
                         "Developed scalable backend systems", freelancerId)
         );
     }
@@ -99,7 +100,7 @@ public class FreelancerTestDataFactory {
 
     private static List<CertificateDTO> createCertificateListDTO(UUID freelancerId) {
         return Arrays.asList(
-                new CertificateDTO(1L, "AWS Certified Developer", "AWS", Date.valueOf("2021-05-10"),
+                new CertificateDTO("AWS Certified Developer", "AWS", Date.valueOf("2021-05-10"),
                         Date.valueOf("2024-05-10"), "https://aws.com/cert/12345", freelancerId)
         );
     }

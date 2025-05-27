@@ -17,7 +17,7 @@ public class FreelancerServices {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "freelancer_services_id", updatable = false)
+    @Column(name = "freelancer_service_id", updatable = false, nullable = false)
     private Long freelancerServiceId;
 
     @Column(name = "freelancer_id", nullable = false)
