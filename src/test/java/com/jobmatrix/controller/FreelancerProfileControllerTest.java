@@ -2,10 +2,6 @@ package com.jobmatrix.controller;
 
 import com.common.dto.FreelancerDTO;
 import com.common.entity.Freelancer;
-import com.common.enums.ProfileStatus;
-import com.common.dto.EducationDTO;
-import com.common.dto.JobDTO;
-import com.common.dto.CertificateDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jobmatrix.service.FreelancerProfileService;
 import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
@@ -15,17 +11,16 @@ import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.Arrays;
 import java.util.UUID;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(FreelancerProfileController.class)
 
@@ -72,23 +67,22 @@ class FreelancerProfileControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(inputFreelancerDTO)))
                 .andExpect(MockMvcResultMatchers.status().isCreated()) // Expect 201 Created
-                .andExpect(MockMvcResultMatchers.jsonPath("$.freelancerId").value(FREELANCER_ID.toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("Senior Software Engineer"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.bio").value("Experienced Java and Spring Boot developer"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.services").isArray())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hourlyRate").value(50.0))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.address").value("123, MG Road"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.city").value("Bangalore"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.state").value("Karnataka"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.country").value("India"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.postalCode").value("560001"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.phoneNumber").value("+919876543210"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.isAbcMember").value(true))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.profilePhotoURL").value("https://example.com/profile.jpg"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.profileStatus").value("APPROVED"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.educations").isArray())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.jobs").isArray())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.certificates").isArray());
+                .andExpect(jsonPath("$.freelancerId").value(FREELANCER_ID.toString()))
+                .andExpect(jsonPath("$.title").value("Senior Software Engineer"))
+                .andExpect(jsonPath("$.bio").value("Experienced Java and Spring Boot developer"))
+                .andExpect(jsonPath("$.hourlyRate").value(50.0))
+                .andExpect(jsonPath("$.address").value("123, MG Road"))
+                .andExpect(jsonPath("$.city").value("Bangalore"))
+                .andExpect(jsonPath("$.state").value("Karnataka"))
+                .andExpect(jsonPath("$.country").value("India"))
+                .andExpect(jsonPath("$.postalCode").value("560001"))
+                .andExpect(jsonPath("$.phoneNumber").value("+919876543210"))
+                .andExpect(jsonPath("$.isAbcMember").value(true))
+                .andExpect(jsonPath("$.profilePhotoURL").value("https://example.com/profile.jpg"))
+                .andExpect(jsonPath("$.profileStatus").value("APPROVED"))
+                .andExpect(jsonPath("$.educations").isArray())
+                .andExpect(jsonPath("$.jobs").isArray())
+                .andExpect(jsonPath("$.certificates").isArray());
     }
 
     private final UUID TEST_ID = UUID.randomUUID();
@@ -108,17 +102,17 @@ class FreelancerProfileControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/freelancer/" + freelancerId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.freelancerId").value(freelancerId.toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("Senior Software Engineer"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.bio").value("Experienced Java and Spring Boot developer"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hourlyRate").value(50.0))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.address").value("123, MG Road"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.city").value("Bangalore"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.state").value("Karnataka"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.country").value("India"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.postalCode").value("560001"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.phoneNumber").value("+919876543210"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.isAbcMember").value(true))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.profilePhotoURL").value("https://example.com/profile.jpg"));
+                .andExpect(jsonPath("$.freelancerId").value(freelancerId.toString()))
+                .andExpect(jsonPath("$.title").value("Senior Software Engineer"))
+                .andExpect(jsonPath("$.bio").value("Experienced Java and Spring Boot developer"))
+                .andExpect(jsonPath("$.hourlyRate").value(50.0))
+                .andExpect(jsonPath("$.address").value("123, MG Road"))
+                .andExpect(jsonPath("$.city").value("Bangalore"))
+                .andExpect(jsonPath("$.state").value("Karnataka"))
+                .andExpect(jsonPath("$.country").value("India"))
+                .andExpect(jsonPath("$.postalCode").value("560001"))
+                .andExpect(jsonPath("$.phoneNumber").value("+919876543210"))
+                .andExpect(jsonPath("$.isAbcMember").value(true))
+                .andExpect(jsonPath("$.profilePhotoURL").value("https://example.com/profile.jpg"));
     }
 }
