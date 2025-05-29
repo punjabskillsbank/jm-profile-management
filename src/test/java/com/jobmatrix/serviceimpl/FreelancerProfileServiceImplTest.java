@@ -1,9 +1,9 @@
 package com.jobmatrix.serviceimpl;
-
 import com.common.dto.FreelancerDTO;
 import com.common.entity.Freelancer;
 import com.jobmatrix.dto.FreelancerProfileCreationResponse;
 import com.jobmatrix.dto.PresignedUrlResponse;
+import com.common.exceptionHandling.FreelancerNotFoundException;
 import com.jobmatrix.repository.FreelancerRepository;
 import com.jobmatrix.service.FileService;
 import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,7 +27,6 @@ class FreelancerProfileServiceImplTest {
 
     @Mock
     private FreelancerRepository freelancerRepository;
-
     @Mock
     private ModelMapper modelMapper;
 
@@ -35,15 +35,16 @@ class FreelancerProfileServiceImplTest {
 
     @InjectMocks
     private FreelancerProfileServiceImpl freelancerProfileService;
-
     private final UUID FREELANCER_ID = UUID.randomUUID();
     private FreelancerDTO freelancerDTO;
     private Freelancer freelancerEntity;
     private PresignedUrlResponse presignedUrlResponse;
+    private FreelancerDTO freelancerDTO;
 
     @BeforeEach
     void setup() {
         freelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
+        inputFreelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
         freelancerEntity = FreelancerTestDataFactory.createFreelancerEntity(FREELANCER_ID);
         try {
             URL uploadUrl = new URL("https://s3-upload-url");
@@ -76,4 +77,47 @@ class FreelancerProfileServiceImplTest {
         verify(modelMapper, times(1)).map(freelancerEntity, FreelancerDTO.class);
         verify(freelancerRepository, times(1)).save(freelancerEntity);
     }
+
+    @Test
+    void saveFreelancerProfile_freelancerIdShouldNotBeNull() {
+        inputFreelancerDTO.setFreelancerId(null);
+        when(modelMapper.map(inputFreelancerDTO, Freelancer.class)).thenThrow(new IllegalArgumentException("freelancer_id cannot be null."));
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> freelancerProfileService.createFreelancerProfile(inputFreelancerDTO),
+                "freelancer_id cannot be null."
+        );
+        assertEquals("freelancer_id cannot be null.", exception.getMessage());
+        verify(freelancerRepository, never()).save(any(Freelancer.class));
+    }
+
+
+    @Test
+    void getFreelancerProfileById_shouldReturnFreelancerEntity() {
+        UUID freelancerId = UUID.randomUUID();
+        Freelancer freelancer = new Freelancer();
+        FreelancerDTO expectedDTO = FreelancerTestDataFactory.createFreelancerDTO(freelancerId);
+        when(freelancerRepository.findById(freelancerId)).thenReturn(Optional.of(freelancer));
+        when(modelMapper.map(freelancer, FreelancerDTO.class)).thenReturn(expectedDTO);
+        FreelancerDTO result = freelancerProfileService.getFreelancerProfileById(freelancerId);
+        assertNotNull(result);
+        assertEquals(expectedDTO, result);
+        verify(freelancerRepository).findById(freelancerId);
+        verify(modelMapper).map(freelancer, FreelancerDTO.class);
+
+    }
+    @Test
+    void getFreelancerProfileById_shouldThrowFreelancerNotFoundException() {
+        UUID freelancerId = UUID.randomUUID();
+        when(freelancerRepository.findById(freelancerId)).thenReturn(Optional.empty());
+        FreelancerNotFoundException exception = assertThrows(
+                FreelancerNotFoundException.class,
+                () -> freelancerProfileService.getFreelancerProfileById(freelancerId)
+        );
+        assertEquals("Freelancer not found with ID: " + freelancerId, exception.getMessage());
+        verify(freelancerRepository).findById(freelancerId);
+
+    }
 }
+

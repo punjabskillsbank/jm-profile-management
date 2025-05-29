@@ -24,7 +24,6 @@ public class User {
     @Id
     @Column(name = "user_id", updatable = false, nullable = false)
     private UUID userId;
-
     @Column(name = "email")
     private String email;
 

@@ -4,6 +4,7 @@ import com.common.dto.FreelancerDTO;
 import com.common.entity.Freelancer;
 import com.jobmatrix.dto.FreelancerProfileCreationResponse;
 import com.jobmatrix.dto.PresignedUrlResponse;
+import com.common.exceptionHandling.FreelancerNotFoundException;
 import com.jobmatrix.repository.FreelancerRepository;
 import com.jobmatrix.service.FileService;
 import com.jobmatrix.service.FreelancerProfileService;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import java.util.UUID;
 
 
 @Service
@@ -40,5 +42,15 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
         // Log the successful profile creation
         return new FreelancerProfileCreationResponse(outputFreelancerDTO, presignedUrlResponse.getUploadUrl());
     }
+
+    @Override
+    public FreelancerDTO getFreelancerProfileById(UUID freelancerId) {
+        Freelancer freelancer = freelancerRepository.findById(freelancerId)
+                .orElseThrow(() -> new FreelancerNotFoundException(freelancerId));
+        return modelMapper.map(freelancer, FreelancerDTO.class);
+    }
+
+
+}
 
 }
