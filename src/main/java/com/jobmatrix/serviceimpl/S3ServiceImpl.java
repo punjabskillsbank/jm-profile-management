@@ -5,11 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
-
 import java.net.URL;
 import java.time.Duration;
 
@@ -23,14 +21,10 @@ public class S3ServiceImpl implements S3Service {
     @Value("${aws.s3.bucket-name}")
     private String bucketName;
 
-    @Value("${aws.region}")
-    private String region;
+    private final S3Presigner s3Presigner;
 
     @Override
     public URL generatePresignedUploadUrl(String fileName, String contentType) {
-        try (S3Presigner presigner = S3Presigner.builder()
-                .region(Region.of(region))
-                .build()) { // No credentialsProvider here
 
             PutObjectRequest objectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
@@ -43,9 +37,9 @@ public class S3ServiceImpl implements S3Service {
                     .putObjectRequest(objectRequest)
                     .build();
 
-            URL presignedUrl = presigner.presignPutObject(presignRequest).url();
+            URL presignedUrl = s3Presigner.presignPutObject(presignRequest).url();
             logger.info("Generated presigned upload URL for file: " + fileName);
             return presignedUrl;
-        }
+
     }
 }

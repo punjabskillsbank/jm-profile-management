@@ -2,6 +2,7 @@ package com.jobmatrix.serviceimpl;
 
 import com.common.dto.FreelancerDTO;
 import com.common.entity.Freelancer;
+import com.jobmatrix.dto.FreelancerProfileCreationResponse;
 import com.jobmatrix.dto.PresignedUrlResponse;
 import com.jobmatrix.repository.FreelancerRepository;
 import com.jobmatrix.service.FileService;
@@ -24,28 +25,20 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
 
     @Transactional
     @Override
-    public Object[] initiateProfileCreation(FreelancerDTO freelancerDTO, String contentType) {
+    public FreelancerProfileCreationResponse initiateProfileCreation(FreelancerDTO freelancerDTO, String contentType) {
         // Generate presigned URLs for the profile photo
-        PresignedUrlResponse presignedUrlResponse = fileService.generateProfilePhotoUrls(freelancerDTO.getFreelancerId().toString(), contentType);
+        PresignedUrlResponse presignedUrlResponse = fileService.generateProfilePhotoUrl(freelancerDTO.getFreelancerId().toString(), contentType);
 
-        // Set the download URL in the client DTO
+        // Set the S3 key in the FreelancerDTO
         freelancerDTO.setProfilePhotoS3Key(presignedUrlResponse.getS3Key());
 
-        // Save the client profile
+        // Save the freelancer entity to the database
         Freelancer freelancer = modelMapper.map(freelancerDTO, Freelancer.class);
         freelancer = freelancerRepository.save(freelancer);
+        FreelancerDTO outputFreelancerDTO = modelMapper.map(freelancer, FreelancerDTO.class);
 
-        // Return client and both URLs
-        return new Object[]{freelancer, presignedUrlResponse.getUploadUrl()};
+        // Log the successful profile creation
+        return new FreelancerProfileCreationResponse(outputFreelancerDTO, presignedUrlResponse.getUploadUrl());
     }
 
-
-
-    @Override
-    @Transactional
-    public Freelancer createFreelancerProfile(FreelancerDTO freelancerDTO) {
-        Freelancer freelancer = freelancerRepository.save(modelMapper.map(freelancerDTO, Freelancer.class));
-        logger.info("Freelancer profile created successfully with id: " + freelancer.getFreelancerId());
-        return freelancer;
-    }
 }

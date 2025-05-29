@@ -1,10 +1,8 @@
 package com.jobmatrix.service;
 
 import com.common.dto.FreelancerDTO;
-import com.common.entity.Freelancer;
-import com.jobmatrix.dto.ClientDTO;
+import com.jobmatrix.dto.FreelancerProfileCreationResponse;
 
 public interface FreelancerProfileService {
-    Freelancer createFreelancerProfile(FreelancerDTO freelancerDTO);
-    Object[] initiateProfileCreation(FreelancerDTO freelancerDTO, String contentType);
+    FreelancerProfileCreationResponse initiateProfileCreation(FreelancerDTO freelancerDTO, String contentType);
 }

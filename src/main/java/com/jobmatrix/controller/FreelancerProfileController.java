@@ -2,6 +2,7 @@ package com.jobmatrix.controller;
 
 import com.common.dto.FreelancerDTO;
 import com.common.entity.Freelancer;
+import com.jobmatrix.dto.FreelancerProfileCreationResponse;
 import com.jobmatrix.service.FreelancerProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,22 +22,13 @@ public class FreelancerProfileController {
     private final FreelancerProfileService freelancerProfileService;
     private final ModelMapper modelMapper;
 
-    @PostMapping("/initiate-profile")
-    public ResponseEntity<?> initiateProfileCreation(
+    @PostMapping("/create_profile")
+    public ResponseEntity<FreelancerProfileCreationResponse> initiateProfileCreation(
             @Valid @RequestBody FreelancerDTO freelancerDTO,
             @RequestParam String contentType
     ) {
-        Object[] result = freelancerProfileService.initiateProfileCreation(freelancerDTO, contentType);
+        FreelancerProfileCreationResponse result = freelancerProfileService.initiateProfileCreation(freelancerDTO, contentType);
         return ResponseEntity.ok(result);
-    }
-
-    // POST mapping to save the freelancer profile data in database
-    @Operation(summary = "Create a new freelancer profile", description = "Save the freelancer profile data in the database")
-    @PostMapping("/create_profile")
-    public ResponseEntity<FreelancerDTO> createProfile(@Valid @RequestBody FreelancerDTO freelancerDTO) {
-        Freelancer freelancer = freelancerProfileService.createFreelancerProfile(freelancerDTO);
-        FreelancerDTO dto  = modelMapper.map(freelancer, FreelancerDTO.class);
-        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
 }

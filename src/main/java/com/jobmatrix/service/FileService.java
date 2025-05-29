@@ -4,8 +4,6 @@ import com.jobmatrix.dto.PresignedUrlResponse;
 
 public interface FileService {
 
-
-
     /**
      * Generates presigned URLs for uploading and downloading a profile photo
      *
@@ -13,6 +11,6 @@ public interface FileService {
      * @param contentType the MIME type of the file
      * @return an array containing [uploadUrl, downloadUrl]
      */
-    PresignedUrlResponse generateProfilePhotoUrls(String userId, String contentType);
+    PresignedUrlResponse generateProfilePhotoUrl(String userId, String contentType);
 
 }

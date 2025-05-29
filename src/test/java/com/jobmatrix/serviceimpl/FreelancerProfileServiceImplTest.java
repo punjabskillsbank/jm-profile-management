@@ -1,88 +1,79 @@
-//package com.jobmatrix.serviceimpl;
-//
-//import com.common.dto.FreelancerDTO;
-//import com.common.entity.Freelancer;
-//import com.jobmatrix.repository.FreelancerRepository;
-//import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.extension.ExtendWith;
-//import org.mockito.InjectMocks;
-//import org.mockito.Mock;
-//import org.mockito.junit.jupiter.MockitoExtension;
-//import org.modelmapper.ModelMapper;
-//
-//import java.util.UUID;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//import static org.mockito.ArgumentMatchers.any;
-//import static org.mockito.Mockito.*;
-//
-//@ExtendWith(MockitoExtension.class)
-//class FreelancerProfileServiceImplTest {
-//
-//    @Mock
-//    private FreelancerRepository freelancerRepository;
-//
-//    @Mock
-//    private ModelMapper modelMapper;
-//
-//    @InjectMocks
-//    private FreelancerProfileServiceImpl freelancerProfileService;
-//
-//    private final UUID FREELANCER_ID = UUID.randomUUID();
-//    private FreelancerDTO inputFreelancerDTO;
-//    private Freelancer freelancerEntity;
-//
-//    @BeforeEach
-//    void setup(){
-//        inputFreelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
-//        freelancerEntity = FreelancerTestDataFactory.createFreelancerEntity(FREELANCER_ID);
-//
-//    }
-//
-//    @Test
-//    void saveFreelancerProfile_shouldSaveAndReturnFreelancerEntity() {
-//
-//        when(modelMapper.map(inputFreelancerDTO, Freelancer.class)).thenReturn(freelancerEntity);
-//        when(freelancerRepository.save(any(Freelancer.class))).thenReturn(freelancerEntity);
-//
-//        Freelancer result = freelancerProfileService.createFreelancerProfile(inputFreelancerDTO);
-//
-//        assertNotNull(result);
-//        assertEquals(freelancerEntity.getFreelancerId(), result.getFreelancerId());
-//        assertEquals(freelancerEntity.getTitle(), result.getTitle());
-//        assertEquals(freelancerEntity.getBio(), result.getBio());
-//        assertEquals(freelancerEntity.getHourlyRate(), result.getHourlyRate());
-//        assertEquals(freelancerEntity.getAddress(), result.getAddress());
-//        assertEquals(freelancerEntity.getCity(), result.getCity());
-//        assertEquals(freelancerEntity.getState(), result.getState());
-//        assertEquals(freelancerEntity.getCountry(), result.getCountry());
-//        assertEquals(freelancerEntity.getPostalCode(), result.getPostalCode());
-//        assertEquals(freelancerEntity.getPhoneNumber(), result.getPhoneNumber());
-//        assertEquals(freelancerEntity.isAbcMember(), result.isAbcMember());
-//        assertEquals(freelancerEntity.getProfilePhotoURL(), result.getProfilePhotoURL());
-//        assertEquals(freelancerEntity.getProfileStatus(), result.getProfileStatus());
-//        assertNotNull(result.getCreatedAt());
-//        assertNotNull(result.getUpdatedAt());
-//
-//        verify(modelMapper).map(inputFreelancerDTO, Freelancer.class);
-//        verify(freelancerRepository, times(1)).save(any(Freelancer.class));
-//    }
-//
-//    @Test
-//    void saveFreelancerProfile_freelancerIdShouldNotBeNull() {
-//        inputFreelancerDTO.setFreelancerId(null);
-//        when(modelMapper.map(inputFreelancerDTO, Freelancer.class)).thenThrow(new IllegalArgumentException("freelancer_id cannot be null."));
-//
-//        IllegalArgumentException exception = assertThrows(
-//                IllegalArgumentException.class,
-//                () -> freelancerProfileService.createFreelancerProfile(inputFreelancerDTO),
-//                "freelancer_id cannot be null."
-//        );
-//        assertEquals("freelancer_id cannot be null.", exception.getMessage());
-//        verify(freelancerRepository, never()).save(any(Freelancer.class));
-//    }
-//
-//
-//}
+package com.jobmatrix.serviceimpl;
+
+import com.common.dto.FreelancerDTO;
+import com.common.entity.Freelancer;
+import com.jobmatrix.dto.FreelancerProfileCreationResponse;
+import com.jobmatrix.dto.PresignedUrlResponse;
+import com.jobmatrix.repository.FreelancerRepository;
+import com.jobmatrix.service.FileService;
+import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.UUID;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class FreelancerProfileServiceImplTest {
+
+    @Mock
+    private FreelancerRepository freelancerRepository;
+
+    @Mock
+    private ModelMapper modelMapper;
+
+    @Mock
+    private FileService fileService;
+
+    @InjectMocks
+    private FreelancerProfileServiceImpl freelancerProfileService;
+
+    private final UUID FREELANCER_ID = UUID.randomUUID();
+    private FreelancerDTO freelancerDTO;
+    private Freelancer freelancerEntity;
+    private PresignedUrlResponse presignedUrlResponse;
+
+    @BeforeEach
+    void setup() {
+        freelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
+        freelancerEntity = FreelancerTestDataFactory.createFreelancerEntity(FREELANCER_ID);
+        try {
+            URL uploadUrl = new URL("https://s3-upload-url");
+            presignedUrlResponse = new PresignedUrlResponse();
+            presignedUrlResponse.setS3Key("profile-photos/" + FREELANCER_ID + ".jpg");
+            presignedUrlResponse.setUploadUrl(uploadUrl);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Failed to construct upload URL", e);
+        }
+    }
+
+
+    @Test
+    void initiateProfileCreation_shouldStoreS3KeyAndReturnFreelancerAndUploadUrl() throws MalformedURLException {
+        when(fileService.generateProfilePhotoUrl(any(), any())).thenReturn(presignedUrlResponse);
+        when(modelMapper.map(freelancerDTO, Freelancer.class)).thenReturn(freelancerEntity);
+        when(modelMapper.map(freelancerEntity, FreelancerDTO.class)).thenReturn(freelancerDTO);
+        when(freelancerRepository.save(any(Freelancer.class))).thenReturn(freelancerEntity);
+
+        FreelancerProfileCreationResponse result = freelancerProfileService.initiateProfileCreation(freelancerDTO, "image/jpeg");
+
+        assertNotNull(result);
+        assertNotNull(result.getFreelancerDTO());
+        assertEquals(freelancerDTO, result.getFreelancerDTO());
+        assertEquals(new URL("https://s3-upload-url"), result.getPresignedUrl());
+        FreelancerDTO returnedDTO =  result.getFreelancerDTO();
+        assertEquals(presignedUrlResponse.getS3Key(), returnedDTO.getProfilePhotoS3Key());
+        verify(fileService, times(1)).generateProfilePhotoUrl(FREELANCER_ID.toString(), "image/jpeg");
+        verify(modelMapper, times(1)).map(freelancerDTO, Freelancer.class);
+        verify(modelMapper, times(1)).map(freelancerEntity, FreelancerDTO.class);
+        verify(freelancerRepository, times(1)).save(freelancerEntity);
+    }
+}
