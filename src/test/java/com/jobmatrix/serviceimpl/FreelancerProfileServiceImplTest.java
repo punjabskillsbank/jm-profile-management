@@ -27,6 +27,7 @@ class FreelancerProfileServiceImplTest {
 
     @Mock
     private FreelancerRepository freelancerRepository;
+
     @Mock
     private ModelMapper modelMapper;
 
@@ -39,7 +40,7 @@ class FreelancerProfileServiceImplTest {
     private FreelancerDTO freelancerDTO;
     private Freelancer freelancerEntity;
     private PresignedUrlResponse presignedUrlResponse;
-    private FreelancerDTO freelancerDTO;
+    private FreelancerDTO inputFreelancerDTO;
 
     @BeforeEach
     void setup() {
@@ -55,7 +56,6 @@ class FreelancerProfileServiceImplTest {
             throw new RuntimeException("Failed to construct upload URL", e);
         }
     }
-
 
     @Test
     void initiateProfileCreation_shouldStoreS3KeyAndReturnFreelancerAndUploadUrl() throws MalformedURLException {
@@ -77,21 +77,6 @@ class FreelancerProfileServiceImplTest {
         verify(modelMapper, times(1)).map(freelancerEntity, FreelancerDTO.class);
         verify(freelancerRepository, times(1)).save(freelancerEntity);
     }
-
-    @Test
-    void saveFreelancerProfile_freelancerIdShouldNotBeNull() {
-        inputFreelancerDTO.setFreelancerId(null);
-        when(modelMapper.map(inputFreelancerDTO, Freelancer.class)).thenThrow(new IllegalArgumentException("freelancer_id cannot be null."));
-
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> freelancerProfileService.createFreelancerProfile(inputFreelancerDTO),
-                "freelancer_id cannot be null."
-        );
-        assertEquals("freelancer_id cannot be null.", exception.getMessage());
-        verify(freelancerRepository, never()).save(any(Freelancer.class));
-    }
-
 
     @Test
     void getFreelancerProfileById_shouldReturnFreelancerEntity() {

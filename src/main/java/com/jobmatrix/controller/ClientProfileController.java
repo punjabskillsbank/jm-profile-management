@@ -18,7 +18,6 @@ public class ClientProfileController {
 
     private final ClientProfileService clientProfileService;
 
-
     @PostMapping("/create_profile")
     public ResponseEntity<Client> createClientProfile(@Valid @RequestBody ClientDTO dto){
         Client savedClient = clientProfileService.saveClientProfile(dto);

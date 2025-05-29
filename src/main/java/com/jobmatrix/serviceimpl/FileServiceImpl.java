@@ -28,10 +28,10 @@ public class FileServiceImpl implements FileService {
     public PresignedUrlResponse generateProfilePhotoUrl(String userId, String contentType) {
         validateContentType(contentType);
         
-        // Generate a unique filename for the profile photo
+        // creates the S3 key for the profile photo
         String s3Key = "profile_photos/" + userId + getFileExtension(contentType);
         
-        // Generate presigned URLs
+        // Generate presigned URL for uploading the profile photo
         URL uploadUrl = s3Service.generatePresignedUploadUrl(s3Key, contentType);
         
         return new PresignedUrlResponse(uploadUrl, s3Key);

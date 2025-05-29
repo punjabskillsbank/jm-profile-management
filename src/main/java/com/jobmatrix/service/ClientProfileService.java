@@ -3,8 +3,6 @@ package com.jobmatrix.service;
 import com.common.entity.Client;
 import com.jobmatrix.dto.ClientDTO;
 import com.jobmatrix.dto.ClientUpdateRequest;
-
-
 import java.util.UUID;
 
 public interface ClientProfileService {

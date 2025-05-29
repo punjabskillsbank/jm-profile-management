@@ -1,7 +1,6 @@
 package com.jobmatrix.exceptionHandling;
 
 import com.common.exceptionHandling.FreelancerNotFoundException;
-
 import com.common.exceptionHandling.ClientNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

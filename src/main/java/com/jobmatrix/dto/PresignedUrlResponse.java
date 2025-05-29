@@ -1,7 +1,6 @@
 package com.jobmatrix.dto;
 
 import lombok.*;
-
 import java.net.URL;
 
 @Getter
