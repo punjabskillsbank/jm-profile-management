@@ -64,7 +64,6 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
         if (responseDTO == null) {
             responseDTO = new FreelancerDTO();
         }
-        responseDTO.setFreelancerId(freelancer.getFreelancerId()); // Set freelancerId from entity
         responseDTO.setServices(freelancerDTO.getServices()); // Preserve the services from the input DTO
         
         return responseDTO;
