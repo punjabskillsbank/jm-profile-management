@@ -1,7 +1,6 @@
 package com.jobmatrix.exceptionHandling;
 
 import com.common.exceptionHandling.FreelancerNotFoundException;
-import com.jobmatrix.exceptionHandling.NullServiceException;
 import com.common.exceptionHandling.ClientNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,13 +37,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
-    @ExceptionHandler(ServiceLimitExceededException.class)
-    public ResponseEntity<String> handleServiceLimitExceeded(ServiceLimitExceededException ex) {
+    @ExceptionHandler(ServicesOfferedLimitExceededException.class)
+    public ResponseEntity<String> handleServiceLimitExceeded(ServicesOfferedLimitExceededException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(NullServiceException.class)
-    public ResponseEntity<String> handleNullServiceException(NullServiceException ex) {
+    @ExceptionHandler(NullServicesOfferedException.class)
+    public ResponseEntity<String> handleNullServicesOfferedException(NullServicesOfferedException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

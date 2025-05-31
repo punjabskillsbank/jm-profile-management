@@ -3,9 +3,10 @@ package com.jobmatrix.serviceimpl;
 import com.common.dto.FreelancerDTO;
 import com.common.entity.Freelancer;
 import com.common.exceptionHandling.FreelancerNotFoundException;
+import com.jobmatrix.dto.FreelancerServicesDTO;
 import com.jobmatrix.entity.FreelancerServices;
-import com.jobmatrix.exceptionHandling.NullServiceException;
-import com.jobmatrix.exceptionHandling.ServiceLimitExceededException;
+import com.jobmatrix.exceptionHandling.NullServicesOfferedException;
+import com.jobmatrix.exceptionHandling.ServicesOfferedLimitExceededException;
 import com.jobmatrix.repository.FreelancerRepository;
 import com.jobmatrix.repository.FreelancerServicesRepository;
 import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
@@ -45,7 +46,8 @@ class FreelancerProfileServiceImplTest {
     void setup() {
         inputFreelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
         freelancerEntity = FreelancerTestDataFactory.createFreelancerEntity(FREELANCER_ID);
-
+        inputFreelancerDTO.setFreelancerId(FREELANCER_ID); // Ensure freelancerId is set
+        freelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
     }
 
     @Test
@@ -53,9 +55,17 @@ class FreelancerProfileServiceImplTest {
 
         when(modelMapper.map(inputFreelancerDTO, Freelancer.class)).thenReturn(freelancerEntity);
         when(freelancerRepository.save(any(Freelancer.class))).thenReturn(freelancerEntity);
-        doReturn(new FreelancerServices()).when(freelancerServiceRepository).save(any());
+        when(modelMapper.map(freelancerEntity, FreelancerDTO.class)).thenReturn(freelancerDTO);
+        
+        // Mock FreelancerServices mapping
+        FreelancerServices mockService = new FreelancerServices();
+        mockService.setFreelancerId(FREELANCER_ID);
+        mockService.setCategoryId(1L);
+        when(modelMapper.map(any(FreelancerServicesDTO.class), eq(FreelancerServices.class))).thenReturn(mockService);
+        
+        doReturn(mockService).when(freelancerServiceRepository).save(any());
 
-        Freelancer result = freelancerProfileService.createFreelancerProfile(inputFreelancerDTO);
+        FreelancerDTO result = freelancerProfileService.saveFreelancerProfile(inputFreelancerDTO);
 
         assertNotNull(result);
         assertEquals(freelancerEntity.getFreelancerId(), result.getFreelancerId());
@@ -70,8 +80,7 @@ class FreelancerProfileServiceImplTest {
         assertEquals(freelancerEntity.getIsAbcMember(), result.getIsAbcMember());
         assertEquals(freelancerEntity.getProfilePhotoURL(), result.getProfilePhotoURL());
         assertEquals(freelancerEntity.getProfileStatus(), result.getProfileStatus());
-        assertNotNull(result.getCreatedAt());
-        assertNotNull(result.getUpdatedAt());
+        assertEquals(inputFreelancerDTO.getServices(), result.getServices());
 
         verify(modelMapper).map(inputFreelancerDTO, Freelancer.class);
         verify(freelancerRepository, times(1)).save(any(Freelancer.class));
@@ -82,8 +91,8 @@ class FreelancerProfileServiceImplTest {
         FreelancerDTO invalidFreelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
         invalidFreelancerDTO.setServices(null);
 
-        assertThrows(NullServiceException.class, () -> 
-            freelancerProfileService.createFreelancerProfile(invalidFreelancerDTO));
+        assertThrows(NullServicesOfferedException.class, () ->
+            freelancerProfileService.saveFreelancerProfile(invalidFreelancerDTO));
     }
 
     @Test
@@ -95,8 +104,26 @@ class FreelancerProfileServiceImplTest {
         }
         invalidFreelancerDTO.setServices(tooManyServices);
 
-        assertThrows(ServiceLimitExceededException.class, () -> 
-            freelancerProfileService.createFreelancerProfile(invalidFreelancerDTO));
+        assertThrows(ServicesOfferedLimitExceededException.class, () ->
+            freelancerProfileService.saveFreelancerProfile(invalidFreelancerDTO));
+    }
+
+    @Test
+    void saveFreelancerProfile_shouldSaveServicesSuccessfully() {
+        // Given
+        List<Long> expectedServices = inputFreelancerDTO.getServices(); // Use services from factory
+        
+        when(modelMapper.map(inputFreelancerDTO, Freelancer.class)).thenReturn(freelancerEntity);
+        when(freelancerRepository.save(any(Freelancer.class))).thenReturn(freelancerEntity);
+        doReturn(new FreelancerServices()).when(freelancerServiceRepository).save(any());
+
+        // When
+        FreelancerDTO result = freelancerProfileService.saveFreelancerProfile(inputFreelancerDTO);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(expectedServices, result.getServices());
+        verify(freelancerServiceRepository, times(expectedServices.size())).save(any());
     }
 
     @Test
@@ -106,7 +133,7 @@ class FreelancerProfileServiceImplTest {
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> freelancerProfileService.createFreelancerProfile(inputFreelancerDTO),
+                () -> freelancerProfileService.saveFreelancerProfile(inputFreelancerDTO),
                 "freelancer_id cannot be null."
         );
         assertEquals("freelancer_id cannot be null.", exception.getMessage());

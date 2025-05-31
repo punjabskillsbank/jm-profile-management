@@ -5,6 +5,6 @@ import com.common.entity.Freelancer;
 
 import java.util.UUID;
 public interface FreelancerProfileService {
-    Freelancer createFreelancerProfile(FreelancerDTO freelancerDTO);
+    FreelancerDTO saveFreelancerProfile(FreelancerDTO freelancerDTO);
     FreelancerDTO getFreelancerProfileById(UUID freelancerId);
 }

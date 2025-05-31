@@ -5,8 +5,8 @@ import com.common.entity.Freelancer;
 import com.common.exceptionHandling.FreelancerNotFoundException;
 import com.jobmatrix.dto.FreelancerServicesDTO;
 import com.jobmatrix.entity.FreelancerServices;
-import com.jobmatrix.exceptionHandling.NullServiceException;
-import com.jobmatrix.exceptionHandling.ServiceLimitExceededException;
+import com.jobmatrix.exceptionHandling.NullServicesOfferedException;
+import com.jobmatrix.exceptionHandling.ServicesOfferedLimitExceededException;
 import com.jobmatrix.repository.FreelancerRepository;
 import com.jobmatrix.repository.FreelancerServicesRepository;
 import com.jobmatrix.service.FreelancerProfileService;
@@ -15,9 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import java.util.List;
+
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of FreelancerProfileService interface.
@@ -37,37 +36,38 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
 
     @Override
     @Transactional
-    public Freelancer createFreelancerProfile(FreelancerDTO freelancerDTO) {
+    public FreelancerDTO saveFreelancerProfile(FreelancerDTO freelancerDTO) {
 
-        if (freelancerDTO.getServices() == null || freelancerDTO.getServices().isEmpty()) {
-            throw new NullServiceException();
+        if (freelancerDTO.getServices() == null || freelancerDTO.getServices().isEmpty()) { // Check if services are null or empty
+            throw new NullServicesOfferedException();
+        } else if (freelancerDTO.getServices().size() > 10) {  // Check if services exceed allowed limit
+            throw new ServicesOfferedLimitExceededException();
         }
 
         Freelancer freelancer = freelancerRepository.save(modelMapper.map(freelancerDTO, Freelancer.class));
 
-        if (freelancerDTO.getServices() != null && !freelancerDTO.getServices().isEmpty()) {
-            // Check if services exceed allowed limit
-            if (freelancerDTO.getServices().size() > 10) {
-                throw new ServiceLimitExceededException();
-            }
+        UUID freelancerId = freelancer.getFreelancerId();
 
-            UUID freelancerId = freelancer.getFreelancerId();
+        // Create FreelancerServicesDTO for each category
+        for (Long categoryId : freelancerDTO.getServices()) {
+            FreelancerServicesDTO serviceDTO = new FreelancerServicesDTO(freelancerId, categoryId);
 
-            // Create FreelancerServicesDTO for each category
-            for (Long categoryId : freelancerDTO.getServices()) {
-                FreelancerServicesDTO serviceDTO = new FreelancerServicesDTO();
-                serviceDTO.setFreelancerId(freelancerId);
-                serviceDTO.setCategoryId(categoryId);
-
-                // Convert DTO to entity and save
-                FreelancerServices mapping = modelMapper.map(serviceDTO, FreelancerServices.class);
-                freelancerServiceRepository.save(mapping);
-            }
-
-            logger.info("Freelancer profile created successfully with id: " + freelancerId);
+            // Convert DTO to entity and save
+            FreelancerServices record = modelMapper.map(serviceDTO, FreelancerServices.class);
+            freelancerServiceRepository.save(record);
         }
 
-        return freelancer;
+        logger.info("Freelancer profile created successfully with id: " + freelancerId);
+        
+        // Convert entity back to DTO before returning
+        FreelancerDTO responseDTO = modelMapper.map(freelancer, FreelancerDTO.class);
+        if (responseDTO == null) {
+            responseDTO = new FreelancerDTO();
+        }
+        responseDTO.setFreelancerId(freelancer.getFreelancerId()); // Set freelancerId from entity
+        responseDTO.setServices(freelancerDTO.getServices()); // Preserve the services from the input DTO
+        
+        return responseDTO;
     }
 
     @Override
@@ -75,20 +75,7 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
     public FreelancerDTO getFreelancerProfileById(UUID freelancerId) {
         Freelancer freelancer = freelancerRepository.findById(freelancerId)
                 .orElseThrow(() -> new FreelancerNotFoundException(freelancerId));
-        
-        // Get services for this freelancer
-        List<FreelancerServices> services = freelancerServiceRepository.findByFreelancerId(freelancerId);
-        
-        // Convert services to List<Long> of category IDs
-        List<Long> serviceIds = services.stream()
-            .map(FreelancerServices::getCategoryId)
-            .toList();
-        
-        // Create DTO and set services
-        FreelancerDTO dto = modelMapper.map(freelancer, FreelancerDTO.class);
-        dto.setServices(serviceIds);
-        
-        return dto;
+        return modelMapper.map(freelancer, FreelancerDTO.class);
     }
 
 

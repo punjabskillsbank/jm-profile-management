@@ -55,8 +55,8 @@ class FreelancerProfileControllerTest {
     @Test
     void createFreelancerProfileTest() throws Exception {
         // Mock the service to create freelancer profile
-        when(freelancerProfileService.createFreelancerProfile(Mockito.any(FreelancerDTO.class)))
-                .thenReturn(savedFreelancer);
+        when(freelancerProfileService.saveFreelancerProfile(Mockito.any(FreelancerDTO.class)))
+                .thenReturn(mappedResponseDTO);
 
         // Mock the service to return the complete DTO with services
         when(freelancerProfileService.getFreelancerProfileById(FREELANCER_ID))

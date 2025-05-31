@@ -14,7 +14,6 @@ import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -91,8 +90,8 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void shouldReturnBadRequest_whenNullServicesProvided() throws Exception {
-        Mockito.when(freelancerProfileService.createFreelancerProfile(Mockito.any()))
-                .thenThrow(new NullServiceException());
+        Mockito.when(freelancerProfileService.saveFreelancerProfile(Mockito.any()))
+                .thenThrow(new NullServicesOfferedException());
 
         FreelancerDTO invalidFreelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
         invalidFreelancerDTO.setServices(null);
@@ -106,8 +105,8 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void shouldReturnBadRequest_whenServiceLimitExceeded() throws Exception {
-        Mockito.when(freelancerProfileService.createFreelancerProfile(Mockito.any()))
-                .thenThrow(new ServiceLimitExceededException());
+        Mockito.when(freelancerProfileService.saveFreelancerProfile(Mockito.any()))
+                .thenThrow(new ServicesOfferedLimitExceededException());
 
         FreelancerDTO invalidFreelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
         List<Long> tooManyServices = new ArrayList<>();
