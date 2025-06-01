@@ -100,7 +100,7 @@ class GlobalExceptionHandlerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidFreelancerDTO)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.services").value("services cannot be null."));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.services").value("Must have at least one service."));
     }
 
     @Test

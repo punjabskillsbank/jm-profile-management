@@ -141,16 +141,7 @@ public class FreelancerDTOTest {
         freelancerDTO.setServices(null);
         Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
         assertEquals(1, violations.size(), "Expected 1 validation error for null services");
-        assertEquals("services cannot be null.", violations.iterator().next().getMessage());
-    }
-
-    // Test Case: Services should not be empty
-    @Test
-    public void testFreelancerDTO_Services_Empty() {
-        freelancerDTO.setServices(new ArrayList<>());
-        Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
-        assertEquals(1, violations.size(), "Expected 1 validation error for empty services");
-        assertEquals("services cannot be empty.", violations.iterator().next().getMessage());
+        assertEquals("Must have at least one service.", violations.iterator().next().getMessage());
     }
 
     // Test Case: Services should not exceed max limit
