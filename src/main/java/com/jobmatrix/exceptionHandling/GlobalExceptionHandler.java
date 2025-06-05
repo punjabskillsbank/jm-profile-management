@@ -37,4 +37,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleFreelancerNotFound(FreelancerNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
+    @ExceptionHandler(CategoryNotFound.class)
+    public ResponseEntity<String> handleCategoryNotFound(CategoryNotFound ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+    @ExceptionHandler(NullCategoriesOfferedException.class)
+    public ResponseEntity<String> handleNullServicesOffered(NullCategoriesOfferedException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+    @ExceptionHandler(CategoriesOfferedLimitExceededException.class)
+    public ResponseEntity<String> handleServicesOfferedLimitExceeded(CategoriesOfferedLimitExceededException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
 }

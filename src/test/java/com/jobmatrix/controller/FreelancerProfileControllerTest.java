@@ -3,6 +3,7 @@ package com.jobmatrix.controller;
 import com.common.dto.FreelancerDTO;
 import com.common.entity.Freelancer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import com.jobmatrix.service.FreelancerProfileService;
 import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +56,7 @@ class FreelancerProfileControllerTest {
 
         // Mock service behavior (assuming create returns the created profile)
         when(freelancerProfileService.createFreelancerProfile(Mockito.any(FreelancerDTO.class)))
-                .thenReturn(savedFreelancer);
+                .thenReturn(mappedResponseDTO);
 
         when(modelMapper.map(savedFreelancer, FreelancerDTO.class))
                 .thenReturn(mappedResponseDTO);
@@ -63,6 +64,7 @@ class FreelancerProfileControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/freelancer/create_profile")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(inputFreelancerDTO)))
+                .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isCreated()) // Expect 201 Created
                 .andExpect(MockMvcResultMatchers.jsonPath("$.freelancerId").value(FREELANCER_ID.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("Senior Software Engineer"))

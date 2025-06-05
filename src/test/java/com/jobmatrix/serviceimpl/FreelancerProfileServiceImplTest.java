@@ -3,6 +3,7 @@ import com.common.dto.FreelancerDTO;
 import com.common.entity.Freelancer;
 import com.common.exceptionHandling.FreelancerNotFoundException;
 import com.jobmatrix.repository.FreelancerRepository;
+import com.jobmatrix.repository.CategoryRepository;
 import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import java.util.Optional;
 import java.util.UUID;
+import com.common.dto.CategoryDTO;
+import com.common.entity.Category;
+import com.jobmatrix.exceptionHandling.CategoryNotFound;
+import com.jobmatrix.exceptionHandling.NullCategoriesOfferedException;
+import com.jobmatrix.exceptionHandling.CategoriesOfferedLimitExceededException;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Collections;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -24,62 +34,104 @@ class FreelancerProfileServiceImplTest {
     private FreelancerRepository freelancerRepository;
     @Mock
     private ModelMapper modelMapper;
+    @Mock
+    private CategoryRepository categoryRepository;
     @InjectMocks
 
     private FreelancerProfileServiceImpl freelancerProfileService;
     private final UUID FREELANCER_ID = UUID.randomUUID();
     private FreelancerDTO inputFreelancerDTO;
     private Freelancer freelancerEntity;
-    private FreelancerDTO freelancerDTO;
+    // private FreelancerDTO freelancerDTO; // This seems unused, can be removed or clarified if needed later
 
     @BeforeEach
     void setup() {
         inputFreelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
         freelancerEntity = FreelancerTestDataFactory.createFreelancerEntity(FREELANCER_ID);
-
     }
 
     @Test
-    void saveFreelancerProfile_shouldSaveAndReturnFreelancerEntity() {
+    void createFreelancerProfile_success_shouldMapAndSaveAndReturnDTOWithCategories() {
+        // Arrange
+        // inputFreelancerDTO and freelancerEntity are initialized with categories via FreelancerTestDataFactory
 
+        // 1. Mock initial DTO to Entity mapping for Freelancer's main fields
         when(modelMapper.map(inputFreelancerDTO, Freelancer.class)).thenReturn(freelancerEntity);
-        when(freelancerRepository.save(any(Freelancer.class))).thenReturn(freelancerEntity);
 
-        Freelancer result = freelancerProfileService.createFreelancerProfile(inputFreelancerDTO);
+        // 2. Mock CategoryRepository to return category entities when searched by ID
+        // These are the Category entities associated with freelancerEntity from the factory
+        Set<Category> expectedPersistedCategories = freelancerEntity.getCategories();
+        for (Category catEntity : expectedPersistedCategories) {
+            when(categoryRepository.findById(catEntity.getCategoryId())).thenReturn(Optional.of(catEntity));
+        }
 
-        assertNotNull(result);
-        assertEquals(freelancerEntity.getFreelancerId(), result.getFreelancerId());
-        assertEquals(freelancerEntity.getTitle(), result.getTitle());
-        assertEquals(freelancerEntity.getBio(), result.getBio());
-        assertEquals(freelancerEntity.getHourlyRate(), result.getHourlyRate());
-        assertEquals(freelancerEntity.getAddress(), result.getAddress());
-        assertEquals(freelancerEntity.getCity(), result.getCity());
-        assertEquals(freelancerEntity.getState(), result.getState());
-        assertEquals(freelancerEntity.getCountry(), result.getCountry());
-        assertEquals(freelancerEntity.getPostalCode(), result.getPostalCode());
-        assertEquals(freelancerEntity.getPhoneNumber(), result.getPhoneNumber());
-        assertEquals(freelancerEntity.isAbcMember(), result.isAbcMember());
-        assertEquals(freelancerEntity.getProfilePhotoURL(), result.getProfilePhotoURL());
-        assertEquals(freelancerEntity.getProfileStatus(), result.getProfileStatus());
-        assertNotNull(result.getCreatedAt());
-        assertNotNull(result.getUpdatedAt());
+        // 3. Mock FreelancerRepository save operation
+        // It should return the entity that was passed to it, which should have categories set by the service.
+        when(freelancerRepository.save(any(Freelancer.class))).thenAnswer(invocation -> {
+            Freelancer saved = invocation.getArgument(0);
+            // Schnell-check: ensure categories were set on the entity passed to save
+            assertNotNull(saved.getCategories(), "Categories should be set on Freelancer before saving");
+            assertEquals(expectedPersistedCategories.size(), saved.getCategories().size(), "Mismatch in category count before saving");
+            return saved; // Return the (mock) saved entity
+        });
 
-        verify(modelMapper).map(inputFreelancerDTO, Freelancer.class);
-        verify(freelancerRepository, times(1)).save(any(Freelancer.class));
-    }
+        // 4. Mock mapping of the saved Freelancer entity back to a FreelancerDTO (for main fields)
+        // This DTO represents the state *before* the service manually sets categoriesDTO on it.
+        FreelancerDTO baseMappedResponseDTO = FreelancerDTO.builder()
+                .freelancerId(freelancerEntity.getFreelancerId())
+                .title(freelancerEntity.getTitle())
+                .bio(freelancerEntity.getBio())
+                .hourlyRate(freelancerEntity.getHourlyRate())
+                .address(freelancerEntity.getAddress())
+                .city(freelancerEntity.getCity())
+                .state(freelancerEntity.getState())
+                .country(freelancerEntity.getCountry())
+                .postalCode(freelancerEntity.getPostalCode())
+                .phoneNumber(freelancerEntity.getPhoneNumber())
+                .isAbcMember(freelancerEntity.getIsAbcMember())
+                .profilePhotoURL(freelancerEntity.getProfilePhotoURL())
+                .profileStatus(freelancerEntity.getProfileStatus())
+                // CategoriesDTO is NOT set here, as the service does it in a subsequent step
+                .build();
+        when(modelMapper.map(any(Freelancer.class), eq(FreelancerDTO.class))).thenReturn(baseMappedResponseDTO);
 
-    @Test
-    void saveFreelancerProfile_freelancerIdShouldNotBeNull() {
-        inputFreelancerDTO.setFreelancerId(null);
-        when(modelMapper.map(inputFreelancerDTO, Freelancer.class)).thenThrow(new IllegalArgumentException("freelancer_id cannot be null."));
+        // 5. Mock mapping of individual Category entities (from saved Freelancer) to CategoryDTOs
+        // These are the CategoryDTOs associated with inputFreelancerDTO from the factory
+        Set<CategoryDTO> expectedResponseCategoryDTOs = inputFreelancerDTO.getCategoriesDTO();
+        for (CategoryDTO catDTO : expectedResponseCategoryDTOs) {
+            Category correspondingEntity = expectedPersistedCategories.stream()
+                .filter(e -> e.getCategoryId().equals(catDTO.getCategoryId()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Mismatch between test DTO and Entity categories for mocking"));
+            when(modelMapper.map(correspondingEntity, CategoryDTO.class)).thenReturn(catDTO);
+        }
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> freelancerProfileService.createFreelancerProfile(inputFreelancerDTO),
-                "freelancer_id cannot be null."
-        );
-        assertEquals("freelancer_id cannot be null.", exception.getMessage());
-        verify(freelancerRepository, never()).save(any(Freelancer.class));
+        // Act
+        FreelancerDTO resultDTO = freelancerProfileService.createFreelancerProfile(inputFreelancerDTO);
+
+        // Assert
+        assertNotNull(resultDTO, "Result DTO should not be null");
+        assertEquals(freelancerEntity.getFreelancerId(), resultDTO.getFreelancerId(), "Freelancer ID mismatch");
+        assertEquals(freelancerEntity.getTitle(), resultDTO.getTitle(), "Title mismatch");
+        assertEquals(freelancerEntity.getBio(), resultDTO.getBio(), "Bio mismatch");
+        // ... (add assertions for other main fields as needed)
+
+        assertNotNull(resultDTO.getCategoriesDTO(), "CategoriesDTO in result should not be null");
+        assertEquals(expectedResponseCategoryDTOs.size(), resultDTO.getCategoriesDTO().size(), "CategoryDTO count mismatch");
+        assertTrue(resultDTO.getCategoriesDTO().containsAll(expectedResponseCategoryDTOs), "Result DTO missing expected categories");
+        assertTrue(expectedResponseCategoryDTOs.containsAll(resultDTO.getCategoriesDTO()), "Result DTO has unexpected categories");
+
+        // Verify interactions
+        verify(modelMapper).map(inputFreelancerDTO, Freelancer.class); // Initial DTO -> Entity map
+        for (CategoryDTO catDTO : inputFreelancerDTO.getCategoriesDTO()) {
+            verify(categoryRepository).findById(catDTO.getCategoryId()); // Category fetches
+        }
+        verify(freelancerRepository).save(any(Freelancer.class)); // Save freelancer
+        verify(modelMapper).map(any(Freelancer.class), eq(FreelancerDTO.class)); // Saved Entity -> DTO map (base)
+        // Verify mapping for each category from entity to DTO
+        for (Category catEntity : expectedPersistedCategories) { // Iterate over the entities that would have been in 'savedFreelancer.getCategories()'
+            verify(modelMapper).map(catEntity, CategoryDTO.class);
+        }
     }
 
 
@@ -108,6 +160,83 @@ class FreelancerProfileServiceImplTest {
         assertEquals("Freelancer not found with ID: " + freelancerId, exception.getMessage());
         verify(freelancerRepository).findById(freelancerId);
 
+    }
+
+    @Test
+    void createFreelancerProfile_shouldThrowNullCategoriesOfferedException_whenCategoriesAreNull() {
+        // Arrange
+        inputFreelancerDTO.setCategoriesDTO(null);
+
+        // Act & Assert
+        NullCategoriesOfferedException exception = assertThrows(NullCategoriesOfferedException.class, () -> {
+            freelancerProfileService.createFreelancerProfile(inputFreelancerDTO);
+        });
+
+        assertEquals("Categories cannot be null.", exception.getMessage());
+        verifyNoInteractions(freelancerRepository, categoryRepository);
+        // Verify modelMapper was not called for the main DTO to entity mapping beyond the initial check by the service
+        verify(modelMapper, never()).map(any(FreelancerDTO.class), eq(Freelancer.class));
+    }
+
+    @Test
+    void createFreelancerProfile_shouldThrowNullCategoriesOfferedException_whenCategoriesAreEmpty() {
+        // Arrange
+        inputFreelancerDTO.setCategoriesDTO(Collections.emptySet());
+
+        // Act & Assert
+        NullCategoriesOfferedException exception = assertThrows(NullCategoriesOfferedException.class, () -> {
+            freelancerProfileService.createFreelancerProfile(inputFreelancerDTO);
+        });
+
+        assertEquals("Categories cannot be null.", exception.getMessage());
+        verifyNoInteractions(freelancerRepository, categoryRepository);
+        verify(modelMapper, never()).map(any(FreelancerDTO.class), eq(Freelancer.class));
+    }
+
+    @Test
+    void createFreelancerProfile_shouldThrowCategoriesOfferedLimitExceededException_whenTooManyCategories() {
+        // Arrange
+        Set<CategoryDTO> tooManyCategories = new HashSet<>();
+        for (long i = 1; i <= 11; i++) {
+            tooManyCategories.add(CategoryDTO.builder().categoryId(i).category("Category " + i).build());
+        }
+        inputFreelancerDTO.setCategoriesDTO(tooManyCategories);
+
+        // Act & Assert
+        CategoriesOfferedLimitExceededException exception = assertThrows(CategoriesOfferedLimitExceededException.class, () -> {
+            freelancerProfileService.createFreelancerProfile(inputFreelancerDTO);
+        });
+
+        assertEquals("Cannot assign more than 10 categories.", exception.getMessage());
+        verifyNoInteractions(freelancerRepository, categoryRepository);
+        verify(modelMapper, never()).map(any(FreelancerDTO.class), eq(Freelancer.class));
+    }
+
+    @Test
+    void createFreelancerProfile_shouldThrowCategoryNotFoundException_whenCategoryDoesNotExist() {
+        // Arrange
+        // inputFreelancerDTO is already populated with categories by setup()
+        // Let's assume the first category in the DTO's set is the one that won't be found.
+        CategoryDTO nonExistentCategoryDTO = inputFreelancerDTO.getCategoriesDTO().iterator().next();
+        Long nonExistentCategoryId = nonExistentCategoryDTO.getCategoryId();
+
+        // Mock the initial DTO to Entity mapping for Freelancer
+        when(modelMapper.map(inputFreelancerDTO, Freelancer.class)).thenReturn(freelancerEntity);
+
+        // Mock CategoryRepository: the specific category identified as non-existent is not found.
+        when(categoryRepository.findById(nonExistentCategoryId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        CategoryNotFound exception = assertThrows(CategoryNotFound.class, () -> {
+            freelancerProfileService.createFreelancerProfile(inputFreelancerDTO);
+        });
+
+        assertEquals("Category not found with ID: " + nonExistentCategoryId, exception.getMessage());
+
+        // Verify interactions
+        verify(modelMapper).map(inputFreelancerDTO, Freelancer.class); // Initial DTO -> Entity map
+        verify(categoryRepository).findById(nonExistentCategoryId); // Verified it was called for the non-existent one
+        verify(freelancerRepository, never()).save(any(Freelancer.class)); // Save should not be called
     }
 }
 

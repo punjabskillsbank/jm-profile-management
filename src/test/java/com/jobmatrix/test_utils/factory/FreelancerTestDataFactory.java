@@ -2,19 +2,23 @@ package com.jobmatrix.test_utils.factory;
 
 import com.common.dto.CertificateDTO;
 import com.common.dto.EducationDTO;
+import com.common.dto.CategoryDTO;
 import com.common.dto.FreelancerDTO;
 import com.common.dto.JobDTO;
 import com.common.entity.Certificate;
 import com.common.entity.Education;
 import com.common.entity.Freelancer;
 import com.common.entity.Job;
+import com.common.entity.Category; // Added for Category entity
 import com.common.enums.ProfileStatus;
 
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashSet; // Added for HashSet
 import java.util.List;
+import java.util.Set; // Added for Set
 import java.util.UUID;
 
 public class FreelancerTestDataFactory {
@@ -39,6 +43,7 @@ public class FreelancerTestDataFactory {
                 .profileStatus(ProfileStatus.APPROVED)
                 .createdAt(Timestamp.valueOf(LocalDateTime.now()))
                 .updatedAt(Timestamp.valueOf(LocalDateTime.now()))
+                .categories(createCategoryEntitySet()) // Add categories for entity
                 .build();
     }
 
@@ -60,7 +65,23 @@ public class FreelancerTestDataFactory {
                 .jobs(createJobListDTO(freelancerId))
                 .certificates(createCertificateListDTO(freelancerId))
                 .profileStatus(ProfileStatus.APPROVED)
+                .categoriesDTO(createCategoryDTOSet()) // Add categories, now a Set
                 .build();
+    }
+
+    private static Set<CategoryDTO> createCategoryDTOSet() {
+        // Using actual field names from CategoryDTO: categoryId and category
+        return new HashSet<>(Arrays.asList(
+                CategoryDTO.builder().categoryId(1L).category("Software Development").build(),
+                CategoryDTO.builder().categoryId(2L).category("Java Programming").build()
+        ));
+    }
+
+    private static Set<Category> createCategoryEntitySet() {
+        return new HashSet<>(Arrays.asList(
+                Category.builder().categoryId(1L).category("Software Development").build(),
+                Category.builder().categoryId(2L).category("Java Programming").build()
+        ));
     }
 
     private static List<Education> createEducationList(UUID freelancerId) {
@@ -72,7 +93,7 @@ public class FreelancerTestDataFactory {
 
     private static List<EducationDTO> createEducationListDTO(UUID freelancerId) {
         return Arrays.asList(
-                new EducationDTO(1L, "B.Tech", "Computer Science", "IIT Delhi", 2015, 2019, freelancerId)
+                new EducationDTO("B.Tech", "Computer Science", "IIT Delhi", 2015, 2019, freelancerId)
         );
     }
 
@@ -85,7 +106,7 @@ public class FreelancerTestDataFactory {
 
     private static List<JobDTO> createJobListDTO(UUID freelancerId) {
         return Arrays.asList(
-                new JobDTO(1L, "Software Engineer", "Google", Date.valueOf("2020-01-01"), Date.valueOf("2023-06-01"),
+                new JobDTO("Software Engineer", "Google", Date.valueOf("2020-01-01"), Date.valueOf("2023-06-01"),
                         "Developed scalable backend systems", freelancerId)
         );
     }
@@ -99,7 +120,7 @@ public class FreelancerTestDataFactory {
 
     private static List<CertificateDTO> createCertificateListDTO(UUID freelancerId) {
         return Arrays.asList(
-                new CertificateDTO(1L, "AWS Certified Developer", "AWS", Date.valueOf("2021-05-10"),
+                new CertificateDTO("AWS Certified Developer", "AWS", Date.valueOf("2021-05-10"),
                         Date.valueOf("2024-05-10"), "https://aws.com/cert/12345", freelancerId)
         );
     }
