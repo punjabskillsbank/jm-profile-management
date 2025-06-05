@@ -1,6 +1,7 @@
 package com.jobmatrix.controller;
 
 import com.common.dto.FreelancerDTO;
+import com.common.dto.ProfileVisibilityDTO;
 import com.common.entity.Freelancer;
 import com.jobmatrix.service.FreelancerProfileService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,4 +39,13 @@ public class FreelancerProfileController {
         FreelancerDTO freelancer = freelancerProfileService.getFreelancerProfileById(freelancerId);
         return ResponseEntity.ok(freelancer);
     }
+
+    //Patch mapping to update profile visibility
+    @PatchMapping("/update-visibility")
+    @Operation(summary = "Update profile visibility", description = "Update the visibility of a freelancer's profile")
+    public ResponseEntity<FreelancerDTO> updateProfileVisibility(@Valid @RequestBody ProfileVisibilityDTO dto ) {
+        FreelancerDTO updatedFreelancer = freelancerProfileService.updateProfileVisibility(dto);
+        return ResponseEntity.ok(updatedFreelancer);
+    }
+
 }

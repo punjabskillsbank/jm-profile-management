@@ -2,8 +2,8 @@ package com.jobmatrix.serviceimpl;
 
 import com.common.dto.CategoryDTO;
 import com.common.dto.FreelancerDTO;
+import com.common.dto.ProfileVisibilityDTO;
 import com.common.entity.Category;
-import com.common.entity.ProfileVisibilityDT0;
 import com.common.entity.Freelancer;
 import com.common.exceptionHandling.FreelancerNotFoundException;
 import com.jobmatrix.exceptionHandling.CategoryNotFound;
