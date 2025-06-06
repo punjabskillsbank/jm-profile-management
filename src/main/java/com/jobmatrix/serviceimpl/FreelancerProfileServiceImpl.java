@@ -53,7 +53,6 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
 
         Freelancer savedFreelancer = freelancerRepository.save(freelancer);
 
-        logger.info("Freelancer profile created with ID: " + savedFreelancer.getFreelancerId());
 
         // Manually mapping Category entities to CategoryDTOs for response
         Set<CategoryDTO> categoryDTOSet = savedFreelancer.getCategories().stream()
@@ -62,6 +61,7 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
 
         FreelancerDTO responseDTO = modelMapper.map(savedFreelancer, FreelancerDTO.class);
         responseDTO.setCategoriesDTO(categoryDTOSet);
+        logger.info("Freelancer profile created with ID: " + savedFreelancer.getFreelancerId());
 
         // Map saved entity back to DTO
         return responseDTO;
