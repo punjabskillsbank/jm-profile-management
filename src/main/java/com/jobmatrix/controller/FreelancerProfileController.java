@@ -41,11 +41,10 @@ public class FreelancerProfileController {
     }
 
     //Patch mapping to update profile visibility
-    @PatchMapping("/update-visibility")
+    @PatchMapping("/update_visibility")
     @Operation(summary = "Update profile visibility", description = "Update the visibility of a freelancer's profile")
-    public ResponseEntity<FreelancerDTO> updateProfileVisibility(@Valid @RequestBody ProfileVisibilityDTO dto ) {
-        FreelancerDTO updatedFreelancer = freelancerProfileService.updateProfileVisibility(dto);
-        return ResponseEntity.ok(updatedFreelancer);
+    public ResponseEntity<Void> updateProfileVisibility(@Valid @RequestBody ProfileVisibilityDTO dto ) {
+        freelancerProfileService.updateProfileVisibility(dto);
+        return ResponseEntity.noContent().build();
     }
-
 }

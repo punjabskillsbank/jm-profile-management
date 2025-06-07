@@ -1,7 +1,9 @@
 package com.jobmatrix.controller;
 
 import com.common.dto.FreelancerDTO;
+import com.common.dto.ProfileVisibilityDTO;
 import com.common.entity.Freelancer;
+import com.common.enums.ProfileVisibility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import com.jobmatrix.service.FreelancerProfileService;
@@ -114,4 +116,20 @@ class FreelancerProfileControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.isAbcMember").value(true))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.profilePhotoURL").value("https://example.com/profile.jpg"));
     }
+
+    @Test
+    void updateProfileVisibilityTest_shouldReturn204() throws Exception {
+        ProfileVisibilityDTO dto = new ProfileVisibilityDTO();
+        dto.setFreelancerId(FREELANCER_ID);
+        dto.setProfileVisibility(ProfileVisibility.PUBLIC);
+
+        // Mock service method
+        Mockito.doNothing().when(freelancerProfileService).updateProfileVisibility(Mockito.any(ProfileVisibilityDTO.class));
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/api/freelancer/update_visibility")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
 }
