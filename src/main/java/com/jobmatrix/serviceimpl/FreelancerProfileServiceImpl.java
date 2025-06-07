@@ -36,9 +36,9 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
     @Override
     @Transactional
     public FreelancerDTO createFreelancerProfile(FreelancerDTO freelancerDTO) {
-        if (freelancerDTO.getCategoriesDTO() == null || freelancerDTO.getCategoriesDTO().isEmpty()) { // Check if services are null or empty
+        if (freelancerDTO.getCategoriesDTO() == null || freelancerDTO.getCategoriesDTO().isEmpty()) {
             throw new NullCategoriesOfferedException();
-        } else if (freelancerDTO.getCategoriesDTO().size() > 10) {  // Check if services exceed allowed limit
+        } else if (freelancerDTO.getCategoriesDTO().size() > 10) {
             throw new CategoriesOfferedLimitExceededException();
         }
 
@@ -53,19 +53,21 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
 
         Freelancer savedFreelancer = freelancerRepository.save(freelancer);
 
-
-        // Manually mapping Category entities to CategoryDTOs for response
-        Set<CategoryDTO> categoryDTOSet = savedFreelancer.getCategories().stream()
-                .map(category -> modelMapper.map(category, CategoryDTO.class))
-                .collect(Collectors.toSet());
-
-        FreelancerDTO responseDTO = modelMapper.map(savedFreelancer, FreelancerDTO.class);
-        responseDTO.setCategoriesDTO(categoryDTOSet);
         logger.info("Freelancer profile created with ID: " + savedFreelancer.getFreelancerId());
 
-        // Map saved entity back to DTO
-        return responseDTO;
+        // Use private method here
+        return mapFreelancerToDTO(savedFreelancer);
     }
+
+    private FreelancerDTO mapFreelancerToDTO(Freelancer freelancer) {
+        FreelancerDTO dto = modelMapper.map(freelancer, FreelancerDTO.class);
+        Set<CategoryDTO> categoryDTOSet = freelancer.getCategories().stream()
+                .map(category -> modelMapper.map(category, CategoryDTO.class))
+                .collect(Collectors.toSet());
+        dto.setCategoriesDTO(categoryDTOSet);
+        return dto;
+    }
+
 
     @Override
 
