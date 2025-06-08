@@ -50,7 +50,6 @@ class FreelancerProfileServiceImplTest {
     void setup() {
         inputFreelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
         freelancerEntity = FreelancerTestDataFactory.createFreelancerEntity(FREELANCER_ID);
-
     }
 
     @Test
