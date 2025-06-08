@@ -1,6 +1,8 @@
 package com.jobmatrix.serviceimpl;
 import com.common.dto.FreelancerDTO;
+import com.common.dto.ProfileVisibilityDTO;
 import com.common.entity.Freelancer;
+import com.common.enums.ProfileVisibility;
 import com.common.exceptionHandling.FreelancerNotFoundException;
 import com.jobmatrix.repository.FreelancerRepository;
 import com.jobmatrix.repository.CategoryRepository;
@@ -42,7 +44,7 @@ class FreelancerProfileServiceImplTest {
     private final UUID FREELANCER_ID = UUID.randomUUID();
     private FreelancerDTO inputFreelancerDTO;
     private Freelancer freelancerEntity;
-    // private FreelancerDTO freelancerDTO; // This seems unused, can be removed or clarified if needed later
+    private FreelancerDTO freelancerDTO; // This seems unused, can be removed or clarified if needed later
 
     @BeforeEach
     void setup() {
@@ -237,6 +239,36 @@ class FreelancerProfileServiceImplTest {
         verify(modelMapper).map(inputFreelancerDTO, Freelancer.class); // Initial DTO -> Entity map
         verify(categoryRepository).findById(nonExistentCategoryId); // Verified it was called for the non-existent one
         verify(freelancerRepository, never()).save(any(Freelancer.class)); // Save should not be called
+    }
+
+    @Test
+    void updateProfileVisibility_shouldUpdateSuccessfully() {
+        ProfileVisibilityDTO dto = new ProfileVisibilityDTO();
+        dto.setFreelancerId(FREELANCER_ID);
+        dto.setProfileVisibility(ProfileVisibility.PUBLIC);
+
+        when(freelancerRepository.findById(FREELANCER_ID)).thenReturn(Optional.of(freelancerEntity));
+
+        freelancerProfileService.updateProfileVisibility(dto);
+
+        verify(freelancerRepository).findById(FREELANCER_ID);
+        verify(freelancerRepository).save(freelancerEntity);
+        assertEquals(ProfileVisibility.PUBLIC, freelancerEntity.getProfileVisibility());
+    }
+
+    @Test
+    void updateProfileVisibility_shouldThrowExceptionIfNotFound() {
+        ProfileVisibilityDTO dto = new ProfileVisibilityDTO();
+        dto.setFreelancerId(FREELANCER_ID);
+        dto.setProfileVisibility(ProfileVisibility.PRIVATE);
+
+        when(freelancerRepository.findById(FREELANCER_ID)).thenReturn(Optional.empty());
+
+        assertThrows(FreelancerNotFoundException.class,
+                () -> freelancerProfileService.updateProfileVisibility(dto));
+
+        verify(freelancerRepository).findById(FREELANCER_ID);
+        verify(freelancerRepository, never()).save(any());
     }
 }
 
