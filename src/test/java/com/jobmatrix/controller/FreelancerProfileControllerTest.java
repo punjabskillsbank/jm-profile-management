@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.UUID;
@@ -83,7 +84,15 @@ class FreelancerProfileControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.profileStatus").value("APPROVED"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.educations").isArray())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.jobs").isArray())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.certificates").isArray());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.certificates").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.profileVisibility").value("PUBLIC"));
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/freelancer/create_profile")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(inputFreelancerDTO)))
+                .andReturn();
+
+        System.out.println(result.getResponse().getContentAsString());
     }
 
     private final UUID TEST_ID = UUID.randomUUID();

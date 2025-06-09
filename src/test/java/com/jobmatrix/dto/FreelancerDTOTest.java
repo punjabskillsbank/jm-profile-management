@@ -121,4 +121,14 @@ public class FreelancerDTOTest {
         assertEquals(1, violations.size(), "Expected 1 validation error for null categoriesDTO");
         assertEquals("categories cannot be null.", violations.iterator().next().getMessage());
     }
+
+    // Negative Case: Null profile visibility
+    @Test
+    public void testFreelancerDTO_ProfileVisibility_Null() {
+        freelancerDTO.setProfileVisibility(null);
+        Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
+        assertEquals(1, violations.size(), "Expected 1 validation error for null profileVisibility");
+        assertEquals("profileVisibility cannot be null.", violations.iterator().next().getMessage());
+    }
+
 }
