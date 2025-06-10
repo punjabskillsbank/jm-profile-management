@@ -87,12 +87,6 @@ class FreelancerProfileControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.certificates").isArray())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.profileVisibility").value("PUBLIC"));
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/freelancer/create_profile")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(inputFreelancerDTO)))
-                .andReturn();
-
-        System.out.println(result.getResponse().getContentAsString());
     }
 
     private final UUID TEST_ID = UUID.randomUUID();

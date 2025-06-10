@@ -42,6 +42,7 @@ public class FreelancerTestDataFactory {
                 .jobs(createJobList(freelancerId))
                 .certificates(createCertificateList(freelancerId))
                 .profileStatus(ProfileStatus.APPROVED)
+                .profileVisibility(ProfileVisibility.PRIVATE)
                 .createdAt(Timestamp.valueOf(LocalDateTime.now()))
                 .updatedAt(Timestamp.valueOf(LocalDateTime.now()))
                 .categories(createCategoryEntitySet()) // Add categories for entity
