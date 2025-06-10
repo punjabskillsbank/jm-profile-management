@@ -369,7 +369,7 @@ class FreelancerProfileServiceImplTest {
     void updateCategories_shouldThrowCategoryNotFound_whenCategoryNotFound() {
         // Arrange
         UUID freelancerId = FREELANCER_ID;
-        Set<Long> categoryIds = Set.of(1L, 2L, 3L);
+        Set<Long> categoryIds = Set.of(1L, 2L);
         
         Freelancer existingFreelancer = FreelancerTestDataFactory.createFreelancerEntity(freelancerId);
         when(freelancerRepository.findById(freelancerId)).thenReturn(Optional.of(existingFreelancer));
@@ -379,7 +379,7 @@ class FreelancerProfileServiceImplTest {
         category.setCategoryId(1L);
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
         
-        // The other categories won't be found
+        // The other category won't be found
         when(categoryRepository.findById(2L)).thenReturn(Optional.empty());
 
         // Act & Assert
@@ -389,5 +389,6 @@ class FreelancerProfileServiceImplTest {
 
         assertEquals("Category not found with ID: 2", exception.getMessage());
         verify(freelancerRepository).findById(freelancerId);
+        verify(categoryRepository, times(2)).findById(anyLong());
     }
 }
