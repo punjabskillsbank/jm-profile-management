@@ -11,6 +11,7 @@ import com.common.entity.Freelancer;
 import com.common.entity.Job;
 import com.common.entity.Category; // Added for Category entity
 import com.common.enums.ProfileStatus;
+import com.common.enums.ProfileVisibility;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -41,6 +42,7 @@ public class FreelancerTestDataFactory {
                 .jobs(createJobList(freelancerId))
                 .certificates(createCertificateList(freelancerId))
                 .profileStatus(ProfileStatus.APPROVED)
+                .profileVisibility(ProfileVisibility.PRIVATE)
                 .createdAt(Timestamp.valueOf(LocalDateTime.now()))
                 .updatedAt(Timestamp.valueOf(LocalDateTime.now()))
                 .categories(createCategoryEntitySet()) // Add categories for entity
@@ -66,6 +68,7 @@ public class FreelancerTestDataFactory {
                 .certificates(createCertificateListDTO(freelancerId))
                 .profileStatus(ProfileStatus.APPROVED)
                 .categoriesDTO(createCategoryDTOSet()) // Add categories, now a Set
+                .profileVisibility(ProfileVisibility.PRIVATE)
                 .build();
     }
 

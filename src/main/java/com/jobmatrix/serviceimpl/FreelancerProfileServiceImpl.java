@@ -2,6 +2,7 @@ package com.jobmatrix.serviceimpl;
 
 import com.common.dto.CategoryDTO;
 import com.common.dto.FreelancerDTO;
+import com.common.dto.ProfileVisibilityDTO;
 import com.common.entity.Category;
 import com.common.entity.Freelancer;
 import com.common.exceptionHandling.FreelancerNotFoundException;
@@ -77,5 +78,13 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
         return modelMapper.map(freelancer, FreelancerDTO.class);
     }
 
+    @Override
+    @Transactional
+    public void updateProfileVisibility(ProfileVisibilityDTO dto) {
+        Freelancer freelancer = freelancerRepository.findById(dto.getFreelancerId())
+                .orElseThrow(() -> new FreelancerNotFoundException(dto.getFreelancerId()));
 
+        freelancer.setProfileVisibility(dto.getProfileVisibility());
+        freelancerRepository.save(freelancer);
+    }
 }

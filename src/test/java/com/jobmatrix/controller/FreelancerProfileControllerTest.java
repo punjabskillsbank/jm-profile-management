@@ -1,7 +1,9 @@
 package com.jobmatrix.controller;
 
 import com.common.dto.FreelancerDTO;
+import com.common.dto.ProfileVisibilityDTO;
 import com.common.entity.Freelancer;
+import com.common.enums.ProfileVisibility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import com.jobmatrix.service.FreelancerProfileService;
@@ -15,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.UUID;
@@ -81,7 +84,9 @@ class FreelancerProfileControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.profileStatus").value("APPROVED"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.educations").isArray())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.jobs").isArray())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.certificates").isArray());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.certificates").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.profileVisibility").value("PUBLIC"));
+
     }
 
     private final UUID TEST_ID = UUID.randomUUID();
@@ -114,4 +119,20 @@ class FreelancerProfileControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.isAbcMember").value(true))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.profilePhotoURL").value("https://example.com/profile.jpg"));
     }
+
+    @Test
+    void updateProfileVisibilityTest_shouldReturn204() throws Exception {
+        ProfileVisibilityDTO dto = new ProfileVisibilityDTO();
+        dto.setFreelancerId(FREELANCER_ID);
+        dto.setProfileVisibility(ProfileVisibility.PUBLIC);
+
+        // Mock service method
+        Mockito.doNothing().when(freelancerProfileService).updateProfileVisibility(Mockito.any(ProfileVisibilityDTO.class));
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/api/freelancer/update_visibility")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
 }
