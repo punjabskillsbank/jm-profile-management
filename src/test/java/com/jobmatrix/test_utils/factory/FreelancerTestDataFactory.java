@@ -68,7 +68,7 @@ public class FreelancerTestDataFactory {
                 .certificates(createCertificateListDTO(freelancerId))
                 .profileStatus(ProfileStatus.APPROVED)
                 .categoriesDTO(createCategoryDTOSet()) // Add categories, now a Set
-                .profileVisibility(ProfileVisibility.PUBLIC)
+                .profileVisibility(ProfileVisibility.PRIVATE)
                 .build();
     }
 
