@@ -14,16 +14,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import java.util.Optional;
-import java.util.UUID;
+
+import java.util.*;
+
 import com.common.dto.CategoryDTO;
 import com.common.entity.Category;
 import com.jobmatrix.exceptionHandling.CategoryNotFound;
 import com.jobmatrix.exceptionHandling.NullCategoriesOfferedException;
 import com.jobmatrix.exceptionHandling.CategoriesOfferedLimitExceededException;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
+
 import static org.mockito.ArgumentMatchers.eq;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,12 +33,14 @@ class FreelancerProfileServiceImplTest {
 
     @Mock
     private FreelancerRepository freelancerRepository;
+
     @Mock
     private ModelMapper modelMapper;
+
     @Mock
     private CategoryRepository categoryRepository;
-    @InjectMocks
 
+    @InjectMocks
     private FreelancerProfileServiceImpl freelancerProfileService;
     private final UUID FREELANCER_ID = UUID.randomUUID();
     private FreelancerDTO inputFreelancerDTO;
@@ -270,5 +271,123 @@ class FreelancerProfileServiceImplTest {
         verify(freelancerRepository).findById(FREELANCER_ID);
         verify(freelancerRepository, never()).save(any());
     }
-}
 
+    @Test
+    void updateCategories_success_shouldUpdateCategories() {
+        // Arrange
+        UUID freelancerId = FREELANCER_ID;
+        Set<Long> categoryIds = Set.of(1L, 2L);
+        
+        // Mock existing freelancer
+        Freelancer existingFreelancer = FreelancerTestDataFactory.createFreelancerEntity(freelancerId);
+        when(freelancerRepository.findById(freelancerId)).thenReturn(Optional.of(existingFreelancer));
+        
+        // Mock categories
+        Set<Category> newCategories = new HashSet<>();
+        for (Long categoryId : categoryIds) {
+            Category category = new Category();
+            category.setCategoryId(categoryId);
+            newCategories.add(category);
+            when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+        }
+        
+        // Mock save operation
+        when(freelancerRepository.save(any(Freelancer.class))).thenReturn(existingFreelancer);
+        
+        // Mock DTO mapping
+        FreelancerDTO expectedDTO = FreelancerTestDataFactory.createFreelancerDTO(freelancerId);
+        
+        // Mock category DTO mapping
+        Set<CategoryDTO> expectedCategoryDTOs = new HashSet<>();
+        for (Category category : newCategories) {
+            CategoryDTO categoryDTO = CategoryDTO.builder()
+                .categoryId(category.getCategoryId())
+                .category("Category " + category.getCategoryId())
+                .build();
+            expectedCategoryDTOs.add(categoryDTO);
+            when(modelMapper.map(category, CategoryDTO.class)).thenReturn(categoryDTO);
+        }
+        
+        // Mock final DTO mapping
+        when(modelMapper.map(existingFreelancer, FreelancerDTO.class)).thenReturn(expectedDTO);
+
+        // Act
+        FreelancerDTO result = freelancerProfileService.updateCategories(freelancerId, categoryIds);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(freelancerId, result.getFreelancerId());
+        assertNotNull(result.getCategoriesDTO());
+        assertEquals(newCategories.size(), result.getCategoriesDTO().size());
+        assertTrue(result.getCategoriesDTO().containsAll(expectedCategoryDTOs));
+        
+        // Verify interactions
+        verify(freelancerRepository).findById(freelancerId);
+        for (Long categoryId : categoryIds) {
+            verify(categoryRepository).findById(categoryId);
+        }
+        verify(freelancerRepository).save(any(Freelancer.class));
+        verify(modelMapper).map(existingFreelancer, FreelancerDTO.class);
+        for (Category category : newCategories) {
+            verify(modelMapper).map(category, CategoryDTO.class);
+        }
+    }
+
+    @Test
+    void updateCategories_shouldThrowFreelancerNotFoundException_whenFreelancerNotFound() {
+        // Arrange
+        UUID freelancerId = FREELANCER_ID;
+        Set<Long> categoryIds = Set.of(1L, 2L);
+        
+        when(freelancerRepository.findById(freelancerId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        FreelancerNotFoundException exception = assertThrows(FreelancerNotFoundException.class, () -> {
+            freelancerProfileService.updateCategories(freelancerId, categoryIds);
+        });
+
+        assertEquals("Freelancer not found with ID: " + freelancerId, exception.getMessage());
+        verify(freelancerRepository).findById(freelancerId);
+        verifyNoInteractions(categoryRepository);
+    }
+
+    @Test
+    void updateCategories_shouldThrowCategoriesOfferedLimitExceededException_whenTooManyCategories() {
+        // Arrange
+        UUID freelancerId = FREELANCER_ID;
+        Set<Long> tooManyCategoryIds = Set.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L);
+
+        // Act & Assert
+        CategoriesOfferedLimitExceededException exception = assertThrows(CategoriesOfferedLimitExceededException.class, () -> {
+            freelancerProfileService.updateCategories(freelancerId, tooManyCategoryIds);
+        });
+
+        assertEquals("Cannot assign more than 10 categories.", exception.getMessage());
+    }
+
+    @Test
+    void updateCategories_shouldThrowCategoryNotFound_whenCategoryNotFound() {
+        // Arrange
+        UUID freelancerId = FREELANCER_ID;
+        Set<Long> categoryIds = Set.of(1L, 2L, 3L);
+        
+        Freelancer existingFreelancer = FreelancerTestDataFactory.createFreelancerEntity(freelancerId);
+        when(freelancerRepository.findById(freelancerId)).thenReturn(Optional.of(existingFreelancer));
+        
+        // Only mock one category to be found
+        Category category = new Category();
+        category.setCategoryId(1L);
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
+        
+        // The other categories won't be found
+        when(categoryRepository.findById(2L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        CategoryNotFound exception = assertThrows(CategoryNotFound.class, () -> {
+            freelancerProfileService.updateCategories(freelancerId, categoryIds);
+        });
+
+        assertEquals("Category not found with ID: 2", exception.getMessage());
+        verify(freelancerRepository).findById(freelancerId);
+    }
+}
