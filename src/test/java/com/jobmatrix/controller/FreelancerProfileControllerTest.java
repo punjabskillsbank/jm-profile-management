@@ -1,8 +1,12 @@
 package com.jobmatrix.controller;
 
+import com.common.dto.CategoryDTO;
 import com.common.dto.FreelancerDTO;
+import com.common.dto.FreelancerServicesUpdateRequestDTO;
 import com.common.entity.Freelancer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import com.jobmatrix.service.FreelancerProfileService;
 import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
@@ -16,7 +20,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.mockito.Mockito.when;
@@ -113,5 +122,35 @@ class FreelancerProfileControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.phoneNumber").value("+919876543210"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.isAbcMember").value(true))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.profilePhotoURL").value("https://example.com/profile.jpg"));
+    }
+
+    @Test
+    void updateCategoriesForFreelancerIdTest() throws Exception {
+        // Create test data
+        Set<Long> categoryIds = new HashSet<>(Arrays.asList(3L, 4L));
+        FreelancerServicesUpdateRequestDTO request = new FreelancerServicesUpdateRequestDTO(categoryIds);
+
+        // Create expected response using the existing mappedResponseDTO
+        Set<CategoryDTO> updatedCategories = new HashSet<>(Arrays.asList(
+                CategoryDTO.builder().categoryId(3L).category("Frontend Development").build(),
+                CategoryDTO.builder().categoryId(4L).category("ReactJS").build()
+        ));
+        FreelancerDTO expectedResponse = mappedResponseDTO.toBuilder()
+                .categoriesDTO(updatedCategories)
+                .build();
+
+        // Mock service behavior
+        when(freelancerProfileService.updateCategories(freelancerId, categoryIds))
+                .thenReturn(expectedResponse);
+
+        // Perform request
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/freelancer/" + freelancerId + "/category")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.categoriesDTO[*].categoryId")
+                        .value(containsInAnyOrder(3, 4)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.categoriesDTO[*].category")
+                        .value(containsInAnyOrder("Frontend Development", "ReactJS")));
     }
 }
