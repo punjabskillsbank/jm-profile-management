@@ -71,7 +71,6 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
 
 
     @Override
-
     public FreelancerDTO getFreelancerProfileById(UUID freelancerId) {
         Freelancer freelancer = freelancerRepository.findById(freelancerId)
                 .orElseThrow(() -> new FreelancerNotFoundException(freelancerId));
@@ -83,8 +82,31 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
     public void updateProfileVisibility(ProfileVisibilityDTO dto) {
         Freelancer freelancer = freelancerRepository.findById(dto.getFreelancerId())
                 .orElseThrow(() -> new FreelancerNotFoundException(dto.getFreelancerId()));
-
         freelancer.setProfileVisibility(dto.getProfileVisibility());
         freelancerRepository.save(freelancer);
+    }
+
+    public FreelancerDTO updateCategories(UUID freelancerId, Set<Long> categoryIds) {
+        if (categoryIds == null || categoryIds.isEmpty()) {
+            throw new NullCategoriesOfferedException();
+        } else if (categoryIds.size() > 10) {
+            throw new CategoriesOfferedLimitExceededException();
+        }
+
+        Freelancer freelancer = freelancerRepository.findById(freelancerId)
+                .orElseThrow(() -> new FreelancerNotFoundException(freelancerId));
+
+        Set<Category> newCategories = categoryIds.stream()
+                .map(categoryId -> categoryRepository.findById(categoryId)
+                        .orElseThrow(() -> new CategoryNotFound(categoryId)))
+                .collect(Collectors.toSet());
+
+        freelancer.setCategories(newCategories);  // overwrite existing categories
+
+        Freelancer updatedFreelancer = freelancerRepository.save(freelancer);
+
+        logger.info("Updated categories for freelancer ID: " + freelancerId);
+
+        return mapFreelancerToDTO(updatedFreelancer);
     }
 }

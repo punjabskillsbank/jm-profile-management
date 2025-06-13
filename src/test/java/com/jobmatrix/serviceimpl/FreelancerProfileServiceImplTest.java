@@ -14,37 +14,40 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import java.util.Optional;
-import java.util.UUID;
+
+import java.util.*;
+
 import com.common.dto.CategoryDTO;
 import com.common.entity.Category;
 import com.jobmatrix.exceptionHandling.CategoryNotFound;
 import com.jobmatrix.exceptionHandling.NullCategoriesOfferedException;
 import com.jobmatrix.exceptionHandling.CategoriesOfferedLimitExceededException;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
+
 import static org.mockito.ArgumentMatchers.eq;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
+
+import java.util.stream.Collectors;
 
 @ExtendWith(MockitoExtension.class)
 class FreelancerProfileServiceImplTest {
 
     @Mock
     private FreelancerRepository freelancerRepository;
+
     @Mock
     private ModelMapper modelMapper;
+
     @Mock
     private CategoryRepository categoryRepository;
-    @InjectMocks
 
+    @InjectMocks
     private FreelancerProfileServiceImpl freelancerProfileService;
     private final UUID FREELANCER_ID = UUID.randomUUID();
     private FreelancerDTO inputFreelancerDTO;
     private Freelancer freelancerEntity;
-    private FreelancerDTO freelancerDTO; // This seems unused, can be removed or clarified if needed later
 
     @BeforeEach
     void setup() {
@@ -58,7 +61,7 @@ class FreelancerProfileServiceImplTest {
         // inputFreelancerDTO and freelancerEntity are initialized with categories via FreelancerTestDataFactory
 
         // 1. Mock initial DTO to Entity mapping for Freelancer's main fields
-        when(modelMapper.map(inputFreelancerDTO, Freelancer.class)).thenReturn(freelancerEntity);
+        doReturn(freelancerEntity).when(modelMapper).map(inputFreelancerDTO, Freelancer.class);
 
         // 2. Mock CategoryRepository to return category entities when searched by ID
         // These are the Category entities associated with freelancerEntity from the factory
@@ -95,7 +98,7 @@ class FreelancerProfileServiceImplTest {
                 .profileStatus(freelancerEntity.getProfileStatus())
                 // CategoriesDTO is NOT set here, as the service does it in a subsequent step
                 .build();
-        when(modelMapper.map(any(Freelancer.class), eq(FreelancerDTO.class))).thenReturn(baseMappedResponseDTO);
+        doReturn(baseMappedResponseDTO).when(modelMapper).map(any(Freelancer.class), eq(FreelancerDTO.class));
 
         // 5. Mock mapping of individual Category entities (from saved Freelancer) to CategoryDTOs
         // These are the CategoryDTOs associated with inputFreelancerDTO from the factory
@@ -105,7 +108,7 @@ class FreelancerProfileServiceImplTest {
                 .filter(e -> e.getCategoryId().equals(catDTO.getCategoryId()))
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("Mismatch between test DTO and Entity categories for mocking"));
-            when(modelMapper.map(correspondingEntity, CategoryDTO.class)).thenReturn(catDTO);
+            doReturn(catDTO).when(modelMapper).map(correspondingEntity, CategoryDTO.class);
         }
 
         // Act
@@ -143,7 +146,7 @@ class FreelancerProfileServiceImplTest {
         Freelancer freelancer = new Freelancer();
         FreelancerDTO expectedDTO = FreelancerTestDataFactory.createFreelancerDTO(freelancerId);
         when(freelancerRepository.findById(freelancerId)).thenReturn(Optional.of(freelancer));
-        when(modelMapper.map(freelancer, FreelancerDTO.class)).thenReturn(expectedDTO);
+        doReturn(expectedDTO).when(modelMapper).map(freelancer, FreelancerDTO.class);
         FreelancerDTO result = freelancerProfileService.getFreelancerProfileById(freelancerId);
         assertNotNull(result);
         assertEquals(expectedDTO, result);
@@ -270,5 +273,192 @@ class FreelancerProfileServiceImplTest {
         verify(freelancerRepository).findById(FREELANCER_ID);
         verify(freelancerRepository, never()).save(any());
     }
-}
 
+    @Test
+    void updateCategories_success_shouldUpdateCategories() {
+        // Arrange
+        // Use existing freelancer from setup()
+        when(freelancerRepository.findById(FREELANCER_ID)).thenReturn(Optional.of(freelancerEntity));
+        
+        // Mock categories
+        Set<Category> categories = new HashSet<>();
+        Set<Long> categoryIds = Set.of(1L, 2L); // Define categoryIds here
+        for (Long categoryId : categoryIds) {
+            Category category = new Category();
+            category.setCategoryId(categoryId);
+            categories.add(category);
+            when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+        }
+        // Mock save operation
+        when(freelancerRepository.save(any(Freelancer.class))).thenReturn(freelancerEntity);
+        
+        // Mock DTO mapping
+        FreelancerDTO expectedDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
+        
+        // Mock category DTO mapping
+        Set<CategoryDTO> categoryDTOs = new HashSet<>();
+        for (Category category : categories) {
+            CategoryDTO categoryDTO = CategoryDTO.builder()
+                .categoryId(category.getCategoryId())
+                .category("Category " + category.getCategoryId())
+                .build();
+            categoryDTOs.add(categoryDTO);
+            doReturn(categoryDTO).when(modelMapper).map(eq(category), eq(CategoryDTO.class));
+        }
+        
+        // Set categories in the expected DTO
+        expectedDTO.setCategoriesDTO(categoryDTOs);
+        
+        // Mock final DTO mapping
+        doReturn(expectedDTO).when(modelMapper).map(freelancerEntity, FreelancerDTO.class);
+
+        // Act
+        FreelancerDTO result = freelancerProfileService.updateCategories(FREELANCER_ID, categoryIds);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(FREELANCER_ID, result.getFreelancerId());
+        assertNotNull(result.getCategoriesDTO());
+        assertEquals(categories.size(), result.getCategoriesDTO().size());
+        assertTrue(result.getCategoriesDTO().containsAll(categoryDTOs));
+        
+        // Verify interactions
+        verify(freelancerRepository).findById(FREELANCER_ID);
+        for (Long categoryId : categoryIds) {
+            verify(categoryRepository).findById(categoryId);
+        }
+        verify(freelancerRepository).save(any(Freelancer.class));
+        verify(modelMapper).map(freelancerEntity, FreelancerDTO.class);
+        for (Category category : categories) {
+            verify(modelMapper).map(eq(category), eq(CategoryDTO.class));
+        }
+    }
+
+    @Test
+    void completeFlow_createAndUpdateCategories() {
+        // Arrange
+        // Initial categories: 1, 3, 7
+        Set<CategoryDTO> initialCategoryDTOs = Set.of(
+                CategoryDTO.builder().categoryId(1L).category("Category 1").build(),
+                CategoryDTO.builder().categoryId(3L).category("Category 3").build(),
+                CategoryDTO.builder().categoryId(7L).category("Category 7").build()
+        );
+
+        // Create initial freelancer DTO with categories
+        FreelancerDTO initialFreelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
+        initialFreelancerDTO.setCategoriesDTO(initialCategoryDTOs);
+
+        // Mock initial categories
+        Set<Category> initialCategories = new HashSet<>();
+        for (CategoryDTO dto : initialCategoryDTOs) {
+            Category category = new Category();
+            category.setCategoryId(dto.getCategoryId());
+            category.setCategory(dto.getCategory());
+            initialCategories.add(category);
+            when(categoryRepository.findById(dto.getCategoryId())).thenReturn(Optional.of(category));
+        }
+
+        // Mock initial DTO to entity mapping
+        Freelancer initialEntity = FreelancerTestDataFactory.createFreelancerEntity(FREELANCER_ID);
+        when(modelMapper.map(initialFreelancerDTO, Freelancer.class)).thenReturn(initialEntity);
+
+        // Mock initial save
+        when(freelancerRepository.save(any(Freelancer.class))).thenReturn(initialEntity);
+
+        // Mock DTO mapping for initial creation
+        FreelancerDTO createdDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
+
+        // Set categories in the entity before mapping
+        initialEntity.setCategories(initialCategories);
+
+        // Mock the complete DTO mapping for creation
+        when(modelMapper.map(initialEntity, FreelancerDTO.class)).thenReturn(createdDTO);
+
+        // Mock category DTO mapping for creation
+        for (Category category : initialCategories) {
+            CategoryDTO categoryDTO = CategoryDTO.builder()
+                    .categoryId(category.getCategoryId())
+                    .category(category.getCategory())
+                    .build();
+            when(modelMapper.map(category, CategoryDTO.class)).thenReturn(categoryDTO);
+        }
+
+        // Act - Create freelancer
+        FreelancerDTO actualCreatedDTO = freelancerProfileService.createFreelancerProfile(initialFreelancerDTO);
+
+        // Assert - Verify creation
+        assertNotNull(actualCreatedDTO);
+        assertEquals(FREELANCER_ID, actualCreatedDTO.getFreelancerId());
+        assertNotNull(actualCreatedDTO.getCategoriesDTO());
+        assertEquals(3, actualCreatedDTO.getCategoriesDTO().size());
+        assertTrue(actualCreatedDTO.getCategoriesDTO().stream()
+                .map(CategoryDTO::getCategoryId)
+                .allMatch(id -> id == 1L || id == 3L || id == 7L));
+
+        // Arrange - Update categories: 2, 5, 7
+        Set<Long> newCategoryIds = Set.of(2L, 5L, 7L);
+
+        // Mock new categories
+        Set<Category> newCategories = new HashSet<>();
+        for (Long categoryId : newCategoryIds) {
+            Category category = new Category();
+            category.setCategoryId(categoryId);
+            category.setCategory("Category " + categoryId);
+            newCategories.add(category);
+            when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+        }
+
+        // Mock save operation for update
+        when(freelancerRepository.save(any(Freelancer.class))).thenReturn(initialEntity);
+
+        // Mock the repository to return the entity when finding by ID
+        when(freelancerRepository.findById(FREELANCER_ID)).thenReturn(Optional.of(initialEntity));
+
+        // Mock DTO mapping for update
+        FreelancerDTO updatedDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
+
+        // Mock category DTO mapping for update
+        Set<CategoryDTO> expectedCategoryDTOs = new HashSet<>();
+        for (Category category : newCategories) {
+            CategoryDTO categoryDTO = CategoryDTO.builder()
+                    .categoryId(category.getCategoryId())
+                    .category(category.getCategory())
+                    .build();
+            expectedCategoryDTOs.add(categoryDTO);
+            when(modelMapper.map(category, CategoryDTO.class)).thenReturn(categoryDTO);
+        }
+
+        // Set categories in the entity before mapping for update
+        initialEntity.setCategories(newCategories);
+
+        // Mock the complete DTO mapping for update
+        when(modelMapper.map(initialEntity, FreelancerDTO.class)).thenReturn(updatedDTO);
+
+        // Set the categories on the DTO directly
+        updatedDTO.setCategoriesDTO(expectedCategoryDTOs);
+
+        // Act - Update categories
+        FreelancerDTO actualUpdatedDTO = freelancerProfileService.updateCategories(FREELANCER_ID, newCategoryIds);
+
+        // Assert - Verify update
+        assertNotNull(actualUpdatedDTO);
+        assertEquals(FREELANCER_ID, actualUpdatedDTO.getFreelancerId());
+        assertNotNull(actualUpdatedDTO.getCategoriesDTO());
+        assertEquals(3, actualUpdatedDTO.getCategoriesDTO().size());
+        assertTrue(actualUpdatedDTO.getCategoriesDTO().containsAll(expectedCategoryDTOs));
+
+        // Verify that old categories are not present
+        assertFalse(actualUpdatedDTO.getCategoriesDTO().stream()
+                        .map(CategoryDTO::getCategoryId)
+                        .anyMatch(id -> id == 1L || id == 3L),
+                "Old categories (1 and 3) should not be present in the result");
+
+        // Verify interactions
+        verify(freelancerRepository, times(2)).save(any(Freelancer.class));
+        verify(modelMapper, times(2)).map(any(Freelancer.class), eq(FreelancerDTO.class));
+        verify(categoryRepository, times(6)).findById(anyLong());
+        for (Category category : newCategories) {
+            verify(modelMapper).map(category, CategoryDTO.class);
+        }
+    }
+}
