@@ -1,7 +1,6 @@
 package com.jobmatrix.controller;
 
 import com.common.dto.FreelancerDTO;
-import com.jobmatrix.dto.FreelancerProfileCreationResponse;
 import com.jobmatrix.service.FreelancerProfileService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -10,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.UUID;
 
 @RestController
@@ -23,11 +21,10 @@ public class FreelancerProfileController {
     private final ModelMapper modelMapper;
 
     @PostMapping("/create_profile")
-    public ResponseEntity<FreelancerProfileCreationResponse> initiateProfileCreation(
-            @Valid @RequestBody FreelancerDTO freelancerDTO,
-            @RequestParam String contentType
+    public ResponseEntity<FreelancerDTO> initiateProfileCreation(
+            @Valid @RequestBody FreelancerDTO freelancerDTO
     ) {
-        FreelancerProfileCreationResponse result = freelancerProfileService.initiateProfileCreation(freelancerDTO, contentType);
+        FreelancerDTO result = freelancerProfileService.createFreelancerProfile(freelancerDTO);
         return ResponseEntity.ok(result);
     }
 

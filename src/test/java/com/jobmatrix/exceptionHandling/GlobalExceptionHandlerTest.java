@@ -1,6 +1,7 @@
 package com.jobmatrix.exceptionHandling;
-import com.common.exceptionHandling.FreelancerNotFoundException;
+
 import com.common.exceptionHandling.ClientNotFoundException;
+import com.common.exceptionHandling.FreelancerNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jobmatrix.controller.ClientProfileController;
 import com.jobmatrix.controller.FreelancerProfileController;
@@ -13,12 +14,12 @@ import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
 import java.util.UUID;
 
 @WebMvcTest(controllers = {FreelancerProfileController.class, ClientProfileController.class})

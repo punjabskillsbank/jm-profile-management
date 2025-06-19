@@ -1,8 +1,6 @@
 package com.jobmatrix.serviceimpl;
 import com.common.dto.FreelancerDTO;
 import com.common.entity.Freelancer;
-import com.jobmatrix.dto.FreelancerProfileCreationResponse;
-import com.jobmatrix.dto.PresignedUrlResponse;
 import com.common.exceptionHandling.FreelancerNotFoundException;
 import com.jobmatrix.repository.FreelancerRepository;
 import com.jobmatrix.service.FileService;
@@ -15,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Optional;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,7 +36,6 @@ class FreelancerProfileServiceImplTest {
     private final UUID FREELANCER_ID = UUID.randomUUID();
     private FreelancerDTO freelancerDTO;
     private Freelancer freelancerEntity;
-    private PresignedUrlResponse presignedUrlResponse;
     private FreelancerDTO inputFreelancerDTO;
 
     @BeforeEach
@@ -47,32 +43,20 @@ class FreelancerProfileServiceImplTest {
         freelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
         inputFreelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
         freelancerEntity = FreelancerTestDataFactory.createFreelancerEntity(FREELANCER_ID);
-        try {
-            URL uploadUrl = new URL("https://s3-upload-url");
-            presignedUrlResponse = new PresignedUrlResponse();
-            presignedUrlResponse.setS3Key("profile-photos/" + FREELANCER_ID + ".jpg");
-            presignedUrlResponse.setUploadUrl(uploadUrl);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Failed to construct upload URL", e);
-        }
     }
 
     @Test
-    void initiateProfileCreation_shouldStoreS3KeyAndReturnFreelancerAndUploadUrl() throws MalformedURLException {
-        when(fileService.generateProfilePhotoUrl(any(), any())).thenReturn(presignedUrlResponse);
+    void createFreelancerProfile_shouldStoreS3KeyAndReturnFreelancerAndUploadUrl() throws MalformedURLException {
         when(modelMapper.map(freelancerDTO, Freelancer.class)).thenReturn(freelancerEntity);
         when(modelMapper.map(freelancerEntity, FreelancerDTO.class)).thenReturn(freelancerDTO);
         when(freelancerRepository.save(any(Freelancer.class))).thenReturn(freelancerEntity);
 
-        FreelancerProfileCreationResponse result = freelancerProfileService.initiateProfileCreation(freelancerDTO, "image/jpeg");
+        FreelancerDTO result = freelancerProfileService.createFreelancerProfile(freelancerDTO);
 
         assertNotNull(result);
-        assertNotNull(result.getFreelancerDTO());
-        assertEquals(freelancerDTO, result.getFreelancerDTO());
-        assertEquals(new URL("https://s3-upload-url"), result.getPresignedUrl());
-        FreelancerDTO returnedDTO =  result.getFreelancerDTO();
-        assertEquals(presignedUrlResponse.getS3Key(), returnedDTO.getProfilePhotoS3Key());
-        verify(fileService, times(1)).generateProfilePhotoUrl(FREELANCER_ID.toString(), "image/jpeg");
+        assertEquals(freelancerDTO, result);
+        assertEquals(freelancerDTO.getFreelancerId(), result.getFreelancerId());
+        assertEquals(freelancerDTO.getProfilePhotoS3Key(), result.getProfilePhotoS3Key());
         verify(modelMapper, times(1)).map(freelancerDTO, Freelancer.class);
         verify(modelMapper, times(1)).map(freelancerEntity, FreelancerDTO.class);
         verify(freelancerRepository, times(1)).save(freelancerEntity);
