@@ -93,6 +93,7 @@ public class FreelancerDTOTest {
         freelancerDTO.setHourlyRate(-10);
         Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
         assertEquals(1, violations.size(), "Expected 1 validation error for negative hourly rate");
+        assertEquals("hourlyRate must be greater than 0.", violations.iterator().next().getMessage());
     }
 
 
@@ -111,4 +112,23 @@ public class FreelancerDTOTest {
         Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
         assertEquals(1, violations.size(), "Expected 1 validation error for phone number not starting with 6-9");
     }
+
+    // Negative Case: Null categoriesDTO
+    @Test
+    public void testFreelancerDTO_CategoriesDTO_Null() {
+        freelancerDTO.setCategoriesDTO(null);
+        Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
+        assertEquals(1, violations.size(), "Expected 1 validation error for null categoriesDTO");
+        assertEquals("categories cannot be null.", violations.iterator().next().getMessage());
+    }
+
+    // Negative Case: Null profile visibility
+    @Test
+    public void testFreelancerDTO_ProfileVisibility_Null() {
+        freelancerDTO.setProfileVisibility(null);
+        Set<ConstraintViolation<FreelancerDTO>> violations = validator.validate(freelancerDTO);
+        assertEquals(1, violations.size(), "Expected 1 validation error for null profileVisibility");
+        assertEquals("profileVisibility cannot be null.", violations.iterator().next().getMessage());
+    }
+
 }

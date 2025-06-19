@@ -24,7 +24,6 @@ class CertificateDTOTest {
     @Test
     void testDefaultConstructor() {
         CertificateDTO dto = new CertificateDTO();
-        assertNull(dto.getCertificateId());
         assertNull(dto.getCertificateName());
         assertNull(dto.getIssuedBy());
         assertNull(dto.getIssueDate());
@@ -43,9 +42,8 @@ class CertificateDTOTest {
         String credentialUrl = "https://example.com/cert";
         UUID userId = UUID.randomUUID();
 
-        CertificateDTO dto = new CertificateDTO(certificateId, certificateName, issuedBy, issueDate, expiryDate, credentialUrl, userId);
+        CertificateDTO dto = new CertificateDTO(certificateName, issuedBy, issueDate, expiryDate, credentialUrl, userId);
 
-        assertEquals(certificateId, dto.getCertificateId());
         assertEquals(certificateName, dto.getCertificateName());
         assertEquals(issuedBy, dto.getIssuedBy());
         assertEquals(issueDate, dto.getIssueDate());
@@ -64,7 +62,6 @@ class CertificateDTOTest {
         String credentialUrl = "https://google.com/cert";
         UUID userId = UUID.randomUUID();
 
-        certificateDTO.setCertificateId(certificateId);
         certificateDTO.setCertificateName(certificateName);
         certificateDTO.setIssuedBy(issuedBy);
         certificateDTO.setIssueDate(issueDate);
@@ -72,7 +69,6 @@ class CertificateDTOTest {
         certificateDTO.setCredentialUrl(credentialUrl);
         certificateDTO.setFreelancerId(userId);
 
-        assertEquals(certificateId, certificateDTO.getCertificateId());
         assertEquals(certificateName, certificateDTO.getCertificateName());
         assertEquals(issuedBy, certificateDTO.getIssuedBy());
         assertEquals(issueDate, certificateDTO.getIssueDate());

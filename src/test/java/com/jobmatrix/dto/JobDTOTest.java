@@ -41,7 +41,6 @@ class JobDTOTest {
 
         // Assert
         assertNotNull(emptyJobDTO);
-        assertNull(emptyJobDTO.getJobId());
         assertNull(emptyJobDTO.getJobTitle());
         assertNull(emptyJobDTO.getCompanyName());
         assertNull(emptyJobDTO.getStartDate());
@@ -55,7 +54,6 @@ class JobDTOTest {
     void testAllArgsConstructor() {
         // Arrange & Act
         JobDTO jobDTO = new JobDTO(
-                TEST_JOB_ID,
                 TEST_JOB_TITLE,
                 TEST_COMPANY_NAME,
                 TEST_START_DATE,
@@ -65,23 +63,12 @@ class JobDTOTest {
         );
 
         // Assert
-        assertEquals(TEST_JOB_ID, jobDTO.getJobId());
         assertEquals(TEST_JOB_TITLE, jobDTO.getJobTitle());
         assertEquals(TEST_COMPANY_NAME, jobDTO.getCompanyName());
         assertEquals(TEST_START_DATE, jobDTO.getStartDate());
         assertEquals(TEST_END_DATE, jobDTO.getEndDate());
         assertEquals(TEST_JOB_RESPONSIBILITIES, jobDTO.getJobResponsibilities());
         assertEquals(TEST_USER_ID, jobDTO.getFreelancerId());
-    }
-
-    @Test
-    @DisplayName("Test JobId Getter and Setter")
-    void testJobIdGetterAndSetter() {
-        // Act
-        jobDTO.setJobId(TEST_JOB_ID);
-
-        // Assert
-        assertEquals(TEST_JOB_ID, jobDTO.getJobId());
     }
 
     @Test

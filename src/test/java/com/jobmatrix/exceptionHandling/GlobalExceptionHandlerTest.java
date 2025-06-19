@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jobmatrix.controller.ClientProfileController;
 import com.jobmatrix.controller.FreelancerProfileController;
 import com.jobmatrix.dto.ClientDTO;
+import com.common.dto.FreelancerDTO;
+import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
 import com.jobmatrix.service.ClientProfileService;
 import com.jobmatrix.service.FreelancerProfileService;
 import com.jobmatrix.test_utils.factory.ClientTestDataFactory;
@@ -43,6 +45,8 @@ class GlobalExceptionHandlerTest {
 
     private final UUID CLIENT_ID = UUID.randomUUID();
     private final UUID FREELANCER_ID= UUID.randomUUID();
+    private final UUID USER_ID = UUID.randomUUID(); // For UserNotFoundException
+    private final Long CATEGORY_ID = 123L; // For CategoryNotFound
 
     @Test
     void shouldReturnValidationErrors_whenInvalidInputGiven() throws Exception {
@@ -89,5 +93,52 @@ class GlobalExceptionHandlerTest {
                 .andExpect(MockMvcResultMatchers.content().string("Freelancer not found with ID: " + FREELANCER_ID));
     }
 
+    @Test
+    void shouldReturnCategoryNotFoundException_whenCategoryNotFound() throws Exception {
+        // Mock the service method called by POST /api/freelancer/create_profile
+        Mockito.when(freelancerProfileService.createFreelancerProfile(Mockito.any(FreelancerDTO.class)))
+                .thenThrow(new CategoryNotFound(CATEGORY_ID));
+
+        // Create a valid FreelancerDTO to send in the request body
+        FreelancerDTO validFreelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/freelancer/create_profile")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validFreelancerDTO)))
+                .andExpect(MockMvcResultMatchers.status().isNotFound()) // Expect 404 due to CategoryNotFound
+                .andExpect(MockMvcResultMatchers.content().string("Category not found with ID: " + CATEGORY_ID));
+    }
+
+    @Test
+    void shouldReturnBadRequest_whenNullCategoriesOffered() throws Exception {
+        // Mock the service method called by POST /api/freelancer/create_profile
+        Mockito.when(freelancerProfileService.createFreelancerProfile(Mockito.any(FreelancerDTO.class)))
+                .thenThrow(new NullCategoriesOfferedException());
+
+        // Create a valid FreelancerDTO to send in the request body
+        FreelancerDTO validFreelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/freelancer/create_profile")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validFreelancerDTO)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().string("Categories cannot be null."));
+    }
+
+    @Test
+    void shouldReturnBadRequest_whenCategoriesOfferedLimitExceeded() throws Exception {
+        // Mock the service method called by POST /api/freelancer/create_profile
+        Mockito.when(freelancerProfileService.createFreelancerProfile(Mockito.any(FreelancerDTO.class)))
+                .thenThrow(new CategoriesOfferedLimitExceededException());
+
+        // Create a valid FreelancerDTO to send in the request body
+        FreelancerDTO validFreelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/freelancer/create_profile")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validFreelancerDTO)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().string("Cannot assign more than 10 categories."));
+    }
 
 }
