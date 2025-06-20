@@ -35,14 +35,6 @@ public class FreelancerProfileServiceImpl implements FreelancerProfileService {
     @Override
     @Transactional
     public FreelancerDTO createFreelancerProfile(FreelancerDTO freelancerDTO) {
-
-        // Save the freelancer entity to the database
-        Freelancer freelancer = modelMapper.map(freelancerDTO, Freelancer.class);
-        freelancer = freelancerRepository.save(freelancer);
-        FreelancerDTO outputFreelancerDTO = modelMapper.map(freelancer, FreelancerDTO.class);
-
-        return outputFreelancerDTO;
-    public FreelancerDTO createFreelancerProfile(FreelancerDTO freelancerDTO) {
         if (freelancerDTO.getCategoriesDTO() == null || freelancerDTO.getCategoriesDTO().isEmpty()) {
             throw new NullCategoriesOfferedException();
         } else if (freelancerDTO.getCategoriesDTO().size() > 10) {

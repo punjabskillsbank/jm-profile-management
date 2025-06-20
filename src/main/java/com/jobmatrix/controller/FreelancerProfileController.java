@@ -4,6 +4,7 @@ import com.common.dto.FreelancerDTO;
 import com.common.dto.ProfileVisibilityDTO;
 import com.common.dto.FreelancerServicesUpdateRequestDTO;
 import com.jobmatrix.service.FreelancerProfileService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

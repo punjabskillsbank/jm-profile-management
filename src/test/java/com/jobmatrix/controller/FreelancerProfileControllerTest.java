@@ -5,8 +5,6 @@ import com.common.dto.FreelancerDTO;
 import com.common.dto.FreelancerServicesUpdateRequestDTO;
 import com.common.entity.Freelancer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import com.jobmatrix.service.FreelancerProfileService;
 import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,12 +17,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.mockito.Mockito.when;
 
 @WebMvcTest(FreelancerProfileController.class)
@@ -54,6 +52,7 @@ class FreelancerProfileControllerTest {
         inputFreelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
         savedFreelancer = FreelancerTestDataFactory.createFreelancerEntity(FREELANCER_ID);
         mappedResponseDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
+        freelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
     }
 
     @Test
@@ -123,11 +122,11 @@ class FreelancerProfileControllerTest {
                 .build();
 
         // Mock service behavior
-        when(freelancerProfileService.updateCategories(freelancerId, categoryIds))
+        when(freelancerProfileService.updateCategories(FREELANCER_ID, categoryIds))
                 .thenReturn(expectedResponse);
 
         // Perform request
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/freelancer/" + freelancerId + "/category")
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/freelancer/" + FREELANCER_ID + "/category")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
