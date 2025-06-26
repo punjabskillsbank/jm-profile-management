@@ -24,7 +24,7 @@ public class FreelancerProfileController {
     private final ModelMapper modelMapper;
 
     @PostMapping("/create_profile")
-    public ResponseEntity<FreelancerDTO> initiateProfileCreation(
+    public ResponseEntity<FreelancerDTO> createFreelancerProfile(
             @Valid @RequestBody FreelancerDTO freelancerDTO
     ) {
         FreelancerDTO result = freelancerProfileService.createFreelancerProfile(freelancerDTO);

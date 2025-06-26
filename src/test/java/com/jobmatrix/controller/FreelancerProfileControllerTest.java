@@ -56,9 +56,9 @@ class FreelancerProfileControllerTest {
     }
 
     @Test
-    void initiateProfileCreationTest() throws Exception {
+    void FreelancerProfileCreationTest() throws Exception {
 
-        // Mock service behavior (assuming initiateProfileCreation returns an array with the created profile and upload URL)
+        // Mock service behavior (assuming createFreelancerProfile returns an array with the created profile and upload URL)
         when(freelancerProfileService.createFreelancerProfile(Mockito.any(FreelancerDTO.class))).thenReturn(freelancerDTO);
 
         when(modelMapper.map(savedFreelancer, FreelancerDTO.class))
