@@ -37,7 +37,7 @@ public class FreelancerTestDataFactory {
                 .postalCode("560001")
                 .phoneNumber("+919876543210")
                 .isAbcMember(true)
-                .profilePhotoURL("https://example.com/profile.jpg")
+                .profilePhotoS3Key("profile_photos/" + freelancerId + ".jpg")
                 .educations(createEducationList(freelancerId))
                 .jobs(createJobList(freelancerId))
                 .certificates(createCertificateList(freelancerId))
@@ -62,7 +62,7 @@ public class FreelancerTestDataFactory {
                 .postalCode("560001")
                 .phoneNumber("+919876543210")
                 .isAbcMember(true)
-                .profilePhotoURL("https://example.com/profile.jpg")
+                .profilePhotoS3Key("profile_photos/" + freelancerId + ".jpg")
                 .educations(createEducationListDTO(freelancerId))
                 .jobs(createJobListDTO(freelancerId))
                 .certificates(createCertificateListDTO(freelancerId))
@@ -90,7 +90,7 @@ public class FreelancerTestDataFactory {
     private static List<Education> createEducationList(UUID freelancerId) {
         return Arrays.asList(
                 new Education(1L, "B.Tech", "Computer Science", "IIT Delhi", 2015, 2019, freelancerId,
-                              Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()),null)
+                        Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()),null)
         );
     }
 

@@ -5,6 +5,7 @@ import com.common.entity.Freelancer;
 import com.common.enums.ProfileVisibility;
 import com.common.exceptionHandling.FreelancerNotFoundException;
 import com.jobmatrix.repository.FreelancerRepository;
+import com.jobmatrix.service.FileService;
 import com.jobmatrix.repository.CategoryRepository;
 import com.jobmatrix.test_utils.factory.FreelancerTestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,21 +15,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-
+import java.net.MalformedURLException;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.*;
-
 import com.common.dto.CategoryDTO;
 import com.common.entity.Category;
 import com.jobmatrix.exceptionHandling.CategoryNotFound;
 import com.jobmatrix.exceptionHandling.NullCategoriesOfferedException;
 import com.jobmatrix.exceptionHandling.CategoriesOfferedLimitExceededException;
-
 import static org.mockito.ArgumentMatchers.eq;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
-
 import java.util.stream.Collectors;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,16 +41,22 @@ class FreelancerProfileServiceImplTest {
     private ModelMapper modelMapper;
 
     @Mock
+    private FileService fileService;
+
+
+    @Mock
     private CategoryRepository categoryRepository;
 
     @InjectMocks
     private FreelancerProfileServiceImpl freelancerProfileService;
     private final UUID FREELANCER_ID = UUID.randomUUID();
-    private FreelancerDTO inputFreelancerDTO;
+    private FreelancerDTO freelancerDTO;
     private Freelancer freelancerEntity;
+    private FreelancerDTO inputFreelancerDTO;
 
     @BeforeEach
     void setup() {
+        freelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
         inputFreelancerDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
         freelancerEntity = FreelancerTestDataFactory.createFreelancerEntity(FREELANCER_ID);
     }
@@ -94,7 +100,7 @@ class FreelancerProfileServiceImplTest {
                 .postalCode(freelancerEntity.getPostalCode())
                 .phoneNumber(freelancerEntity.getPhoneNumber())
                 .isAbcMember(freelancerEntity.getIsAbcMember())
-                .profilePhotoURL(freelancerEntity.getProfilePhotoURL())
+                .profilePhotoS3Key(freelancerEntity.getProfilePhotoS3Key())
                 .profileStatus(freelancerEntity.getProfileStatus())
                 // CategoriesDTO is NOT set here, as the service does it in a subsequent step
                 .build();
@@ -105,9 +111,9 @@ class FreelancerProfileServiceImplTest {
         Set<CategoryDTO> expectedResponseCategoryDTOs = inputFreelancerDTO.getCategoriesDTO();
         for (CategoryDTO catDTO : expectedResponseCategoryDTOs) {
             Category correspondingEntity = expectedPersistedCategories.stream()
-                .filter(e -> e.getCategoryId().equals(catDTO.getCategoryId()))
-                .findFirst()
-                .orElseThrow(() -> new AssertionError("Mismatch between test DTO and Entity categories for mocking"));
+                    .filter(e -> e.getCategoryId().equals(catDTO.getCategoryId()))
+                    .findFirst()
+                    .orElseThrow(() -> new AssertionError("Mismatch between test DTO and Entity categories for mocking"));
             doReturn(catDTO).when(modelMapper).map(correspondingEntity, CategoryDTO.class);
         }
 
@@ -279,7 +285,7 @@ class FreelancerProfileServiceImplTest {
         // Arrange
         // Use existing freelancer from setup()
         when(freelancerRepository.findById(FREELANCER_ID)).thenReturn(Optional.of(freelancerEntity));
-        
+
         // Mock categories
         Set<Category> categories = new HashSet<>();
         Set<Long> categoryIds = Set.of(1L, 2L); // Define categoryIds here
@@ -291,24 +297,24 @@ class FreelancerProfileServiceImplTest {
         }
         // Mock save operation
         when(freelancerRepository.save(any(Freelancer.class))).thenReturn(freelancerEntity);
-        
+
         // Mock DTO mapping
         FreelancerDTO expectedDTO = FreelancerTestDataFactory.createFreelancerDTO(FREELANCER_ID);
-        
+
         // Mock category DTO mapping
         Set<CategoryDTO> categoryDTOs = new HashSet<>();
         for (Category category : categories) {
             CategoryDTO categoryDTO = CategoryDTO.builder()
-                .categoryId(category.getCategoryId())
-                .category("Category " + category.getCategoryId())
-                .build();
+                    .categoryId(category.getCategoryId())
+                    .category("Category " + category.getCategoryId())
+                    .build();
             categoryDTOs.add(categoryDTO);
             doReturn(categoryDTO).when(modelMapper).map(eq(category), eq(CategoryDTO.class));
         }
-        
+
         // Set categories in the expected DTO
         expectedDTO.setCategoriesDTO(categoryDTOs);
-        
+
         // Mock final DTO mapping
         doReturn(expectedDTO).when(modelMapper).map(freelancerEntity, FreelancerDTO.class);
 
@@ -321,7 +327,7 @@ class FreelancerProfileServiceImplTest {
         assertNotNull(result.getCategoriesDTO());
         assertEquals(categories.size(), result.getCategoriesDTO().size());
         assertTrue(result.getCategoriesDTO().containsAll(categoryDTOs));
-        
+
         // Verify interactions
         verify(freelancerRepository).findById(FREELANCER_ID);
         for (Long categoryId : categoryIds) {

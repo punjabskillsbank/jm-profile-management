@@ -10,10 +10,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.UUID;
 
 @RestController
@@ -25,12 +23,12 @@ public class FreelancerProfileController {
     private final FreelancerProfileService freelancerProfileService;
     private final ModelMapper modelMapper;
 
-    // POST mapping to save the freelancer profile data in database
-    @Operation(summary = "Create a new freelancer profile", description = "Save the freelancer profile data in the database")
     @PostMapping("/create_profile")
-    public ResponseEntity<FreelancerDTO> createProfile(@Valid @RequestBody FreelancerDTO freelancerDTO) {
-        FreelancerDTO dto  = freelancerProfileService.createFreelancerProfile(freelancerDTO);
-        return new ResponseEntity<>(dto, HttpStatus.CREATED);
+    public ResponseEntity<FreelancerDTO> createFreelancerProfile(
+            @Valid @RequestBody FreelancerDTO freelancerDTO
+    ) {
+        FreelancerDTO result = freelancerProfileService.createFreelancerProfile(freelancerDTO);
+        return ResponseEntity.ok(result);
     }
 
     //GET mapping for the freelancer
