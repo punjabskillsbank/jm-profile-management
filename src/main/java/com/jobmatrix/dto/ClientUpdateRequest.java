@@ -4,6 +4,8 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -11,6 +13,7 @@ import lombok.*;
 @Builder(toBuilder = true)
 public class ClientUpdateRequest {
 
+    private UUID userId;
     @Pattern(regexp = "^(\\+91)?[6789]\\d{9}$", message= "Please enter a valid Phone Number")
     private String phoneNumber;
     @Size(max = 500, message = "bio cannot exceed 500 characters")

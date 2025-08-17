@@ -1,7 +1,7 @@
 package com.jobmatrix.serviceimpl;
 
 import com.common.enums.AccountStatus;
-import com.jobmatrix.entity.User;
+import com.common.entity.User;
 import com.jobmatrix.exceptionHandling.UserNotFoundException;
 import com.jobmatrix.repository.UserAccountRepository;
 import com.jobmatrix.service.UserAccountService;
@@ -18,7 +18,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 
     @Transactional
     @Override
-    public User updateUserAccount(UUID userId) {
+    public com.common.entity.User updateUserAccount(UUID userId) {
 
         User tempUser = userAccountRepository.findById(userId)
                 .orElseThrow( ()-> new UserNotFoundException(userId));
