@@ -2,14 +2,14 @@ package com.jobmatrix.test_utils.factory;
 
 import com.common.enums.AccountStatus;
 import com.common.enums.UserRole;
-import com.jobmatrix.entity.User;
+import com.common.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class UserTestDataFactory {
 
-    public static User createUserEntity(UUID userId){
+    public static com.common.entity.User createUserEntity(UUID userId){
         return User.builder()
                 .userId(userId)
                 .email("testuser@gmail.com")
