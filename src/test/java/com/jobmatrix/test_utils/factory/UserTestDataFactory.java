@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class UserTestDataFactory {
 
-    public static com.common.entity.User createUserEntity(UUID userId){
+    public static User createUserEntity(UUID userId){
         return User.builder()
                 .userId(userId)
                 .email("testuser@gmail.com")
