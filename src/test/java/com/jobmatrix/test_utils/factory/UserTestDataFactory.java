@@ -2,7 +2,7 @@ package com.jobmatrix.test_utils.factory;
 
 import com.common.enums.AccountStatus;
 import com.common.enums.UserRole;
-import com.jobmatrix.entity.User;
+import com.common.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

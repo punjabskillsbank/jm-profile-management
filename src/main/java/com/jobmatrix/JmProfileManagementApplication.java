@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
 @Import({CorsConfig.class, AwsConfig.class})
-@EntityScan(basePackages = {"com.jobmatrix", "com.common.entity"})
+@EntityScan(basePackages = {"com.common.entity"})
 public class JmProfileManagementApplication {
 
 	public static void main(String[] args) {

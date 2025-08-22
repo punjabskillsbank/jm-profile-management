@@ -1,7 +1,7 @@
 package com.jobmatrix.controller;
 
 import com.common.enums.AccountStatus;
-import com.jobmatrix.entity.User;
+import com.common.entity.User;
 import com.jobmatrix.serviceimpl.UserAccountServiceImpl;
 import com.jobmatrix.test_utils.factory.UserTestDataFactory;
 import org.junit.jupiter.api.Test;

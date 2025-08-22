@@ -1,6 +1,6 @@
 package com.jobmatrix.service;
 
-import com.jobmatrix.entity.User;
+import com.common.entity.User;
 
 import java.util.UUID;
 
