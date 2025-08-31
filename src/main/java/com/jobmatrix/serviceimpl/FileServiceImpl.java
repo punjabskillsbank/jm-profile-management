@@ -1,9 +1,9 @@
 package com.jobmatrix.serviceimpl;
 
+import com.common.service.S3Service;
 import com.jobmatrix.dto.PresignedUrlResponse;
 import com.jobmatrix.repository.ClientProfileRepository;
 import com.jobmatrix.service.FileService;
-import com.jobmatrix.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
