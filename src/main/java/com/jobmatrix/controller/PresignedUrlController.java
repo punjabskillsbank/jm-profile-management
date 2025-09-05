@@ -1,6 +1,6 @@
 package com.jobmatrix.controller;
 
-import com.jobmatrix.dto.PresignedUrlResponse;
+import com.common.dto.PresignedUrlResponseDTO;
 import com.jobmatrix.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +17,8 @@ public class PresignedUrlController {
     private final FileService fileService;
 
     @GetMapping("/upload")
-    public ResponseEntity<PresignedUrlResponse> generateUploadUrl(@RequestParam String userId, @RequestParam String contentType) {
-        PresignedUrlResponse presignedUrlResponse = fileService.generateProfilePhotoUrl(userId, contentType);
-        return ResponseEntity.ok(presignedUrlResponse);
+    public ResponseEntity<PresignedUrlResponseDTO> generateUploadUrl(@RequestParam String userId, @RequestParam String contentType) {
+        PresignedUrlResponseDTO presignedUrlResponseDTO = fileService.generateProfilePhotoUrl(userId, contentType);
+        return ResponseEntity.ok(presignedUrlResponseDTO);
     }
 }

@@ -1,6 +1,6 @@
 package com.jobmatrix.service;
 
-import com.jobmatrix.dto.PresignedUrlResponse;
+import com.common.dto.PresignedUrlResponseDTO;
 
 public interface FileService {
 
@@ -11,6 +11,6 @@ public interface FileService {
      * @param contentType the MIME type of the file
      * @return an array containing [uploadUrl, downloadUrl]
      */
-    PresignedUrlResponse generateProfilePhotoUrl(String userId, String contentType);
+    PresignedUrlResponseDTO generateProfilePhotoUrl(String userId, String contentType);
 
 }
