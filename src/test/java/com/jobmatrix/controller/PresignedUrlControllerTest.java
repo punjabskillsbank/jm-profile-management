@@ -1,6 +1,6 @@
 package com.jobmatrix.controller;
 
-import com.jobmatrix.dto.PresignedUrlResponseDTO;
+import com.common.dto.PresignedUrlResponseDTO;
 import com.jobmatrix.service.FileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

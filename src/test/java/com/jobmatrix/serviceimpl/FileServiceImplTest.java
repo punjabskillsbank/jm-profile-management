@@ -1,7 +1,7 @@
 package com.jobmatrix.serviceimpl;
 
 import com.common.util.S3PresignedURLUtil;
-import com.jobmatrix.dto.PresignedUrlResponseDTO;
+import com.common.dto.PresignedUrlResponseDTO;
 import com.jobmatrix.repository.ClientProfileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
