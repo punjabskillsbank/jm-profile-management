@@ -1,8 +1,8 @@
 package com.jobmatrix.serviceimpl;
 
-import com.jobmatrix.dto.PresignedUrlResponse;
+import com.common.util.S3PresignedURLUtil;
+import com.common.dto.PresignedUrlResponseDTO;
 import com.jobmatrix.repository.ClientProfileRepository;
-import com.jobmatrix.service.S3Service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 public class FileServiceImplTest {
 
     @Mock
-    private S3Service s3Service;
+    private S3PresignedURLUtil s3Service;
 
     @Mock
     private ClientProfileRepository clientProfileRepository;
@@ -36,7 +36,7 @@ public class FileServiceImplTest {
             "image/jpeg", "image/jpg", "image/png", "image/webp"
     );
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024;// 10MB
-    private PresignedUrlResponse presignedUrlResponse;
+    private PresignedUrlResponseDTO presignedUrlResponse;
     private final UUID FREELANCER_ID = UUID.randomUUID();
 
     @BeforeEach
@@ -44,7 +44,7 @@ public class FileServiceImplTest {
 
         try {
             URL uploadUrl = new URL("https://s3-upload-url");
-            presignedUrlResponse = new PresignedUrlResponse();
+            presignedUrlResponse = new PresignedUrlResponseDTO();
             presignedUrlResponse.setS3Key("profile_photos/" + FREELANCER_ID + ".jpg");
             presignedUrlResponse.setUploadUrl(uploadUrl);
         } catch (MalformedURLException e) {
@@ -60,7 +60,7 @@ public class FileServiceImplTest {
                 .thenReturn(presignedUrlResponse.getUploadUrl());
 
         // Call the method under test
-        PresignedUrlResponse response = fileService.generateProfilePhotoUrl(FREELANCER_ID.toString(), contentType);
+        PresignedUrlResponseDTO response = fileService.generateProfilePhotoUrl(FREELANCER_ID.toString(), contentType);
 
         // Validate the response
         assertNotNull(response);

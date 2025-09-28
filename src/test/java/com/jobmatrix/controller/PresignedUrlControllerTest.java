@@ -1,6 +1,6 @@
 package com.jobmatrix.controller;
 
-import com.jobmatrix.dto.PresignedUrlResponse;
+import com.common.dto.PresignedUrlResponseDTO;
 import com.jobmatrix.service.FileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ public class PresignedUrlControllerTest {
     @MockitoBean
     private FileService fileService;
 
-    private PresignedUrlResponse presignedUrlResponse;
+    private PresignedUrlResponseDTO presignedUrlResponse;
     private final UUID FREELANCER_ID = UUID.randomUUID();
 
     @BeforeEach
@@ -34,7 +34,7 @@ public class PresignedUrlControllerTest {
 
         try {
             URL uploadUrl = new URL("https://s3-upload-url");
-            presignedUrlResponse = new PresignedUrlResponse();
+            presignedUrlResponse = new PresignedUrlResponseDTO();
             presignedUrlResponse.setS3Key("profile-photos/" + FREELANCER_ID + ".jpg");
             presignedUrlResponse.setUploadUrl(uploadUrl);
         } catch (MalformedURLException e) {

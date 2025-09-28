@@ -1,11 +1,12 @@
 package com.jobmatrix.serviceimpl;
 
-import com.jobmatrix.dto.PresignedUrlResponse;
+import com.common.util.S3PresignedURLUtil;
+import com.common.dto.PresignedUrlResponseDTO;
 import com.jobmatrix.repository.ClientProfileRepository;
 import com.jobmatrix.service.FileService;
-import com.jobmatrix.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.net.URL;
 import java.util.Arrays;
@@ -21,11 +22,11 @@ public class FileServiceImpl implements FileService {
     );
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
-    private final S3Service s3Service;
+    private final S3PresignedURLUtil s3Service;
     private final ClientProfileRepository clientProfileRepository;
 
     @Override
-    public PresignedUrlResponse generateProfilePhotoUrl(String userId, String contentType) {
+    public PresignedUrlResponseDTO generateProfilePhotoUrl(String userId, String contentType) {
         validateContentType(contentType);
 
         // creates the S3 key for the profile photo
@@ -34,7 +35,7 @@ public class FileServiceImpl implements FileService {
         // Generate presigned URL for uploading the profile photo
         URL uploadUrl = s3Service.generatePresignedUploadUrl(s3Key, contentType);
 
-        return new PresignedUrlResponse(uploadUrl, s3Key);
+        return new PresignedUrlResponseDTO(uploadUrl, s3Key);
     }
 
     private void validateContentType(String contentType) {
